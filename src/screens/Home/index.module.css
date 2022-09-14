@@ -1,0 +1,196 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+.homePage {
+  position: fixed;
+  left: 0;
+  right: 0;
+  box-sizing: border-box;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background-color: gray;
+}
+.homePage .pinkCookie {
+  position: absolute;
+  box-sizing: border-box;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.homePage .pinkCookie .AnimationAlways1s {
+  animation-duration: 1s;
+  animation-play-state: running;
+  animation-iteration-count: infinite;
+  animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.homePage .pinkCookie .cookieJitterAnimation {
+  animation-name: cookieJitter;
+  animation-duration: 1s;
+  animation-play-state: running;
+  animation-iteration-count: infinite;
+  animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.homePage .pinkCookie .ringDynamicVagueAnimation {
+  animation-name: ringDynamicVague;
+  animation-duration: 1s;
+  animation-play-state: running;
+  animation-iteration-count: infinite;
+  animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.homePage .pinkCookie .ringFixedJitterAnimation {
+  animation-name: ringFixedJitter;
+  animation-duration: 1s;
+  animation-play-state: running;
+  animation-iteration-count: infinite;
+  animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation-duration: 0.9s;
+}
+.homePage .pinkCookie .ringDynamicFineLightDiffusionAnimation {
+  animation-name: ringDynamicFineLightDiffusion;
+  animation-duration: 1s;
+  animation-play-state: running;
+  animation-iteration-count: infinite;
+  animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+.homePage .pinkCookie .cookieDynamic {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  animation-name: cookieJitter;
+  animation-duration: 1s;
+  animation-play-state: running;
+  animation-iteration-count: infinite;
+  animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.homePage .pinkCookie .cookieDynamic canvas {
+  position: absolute;
+  left: 10px;
+  display: inline-block;
+  box-sizing: border-box;
+  border-radius: 50%;
+}
+.homePage .pinkCookie .cookieDynamic .ringDynamic {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: inline-block;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background: white;
+  width: 100%;
+  height: 100%;
+  animation-name: ringDynamicVague;
+  animation-duration: 1s;
+  animation-play-state: running;
+  animation-iteration-count: infinite;
+  animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.homePage .pinkCookie .cookieDynamic .ringDynamicInsideShadow {
+  position: relative;
+  background-color: transparent;
+  border-radius: 50%;
+}
+.homePage .pinkCookie .ring {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: inline-block;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background: white;
+}
+.homePage .pinkCookie .ringFixed {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: inline-block;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background: white;
+  opacity: 0.5;
+  animation-name: ringFixedJitter;
+  animation-duration: 1s;
+  animation-play-state: running;
+  animation-iteration-count: infinite;
+  animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation-duration: 0.9s;
+}
+.homePage .pinkCookie .ringDynamicFineLight {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: inline-block;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background: white;
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  box-shadow: inset 0 0 20px 0 rgba(255, 255, 255, 0.15);
+  animation-name: ringDynamicFineLightDiffusion;
+  animation-duration: 1s;
+  animation-play-state: running;
+  animation-iteration-count: infinite;
+  animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes cookieJitter {
+  0% {
+    transform: scale(1);
+  }
+  10% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes ringDynamicVague {
+  0% {
+    background-color: white;
+  }
+  10% {
+    background-color: #f9eaf1;
+  }
+  100% {
+    background-color: white;
+  }
+}
+@keyframes ringFixedJitter {
+  0% {
+    transform: scale(1);
+  }
+  9% {
+    transform: scale(1.01);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes ringDynamicFineLightDiffusion {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  10% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+/*# sourceMappingURL=index.module.css.map */
