@@ -3,7 +3,7 @@ import {useEffect, useState} from "react";
 
 function PinkCookie({width, height, midOffset}) {
     const [ids, setId] = useState();
-    let cookieDiameter = width / 3.5;
+    let cookieDiameter = width / 3;
     if (width <= height+200) {
         // 如果是窄型屏幕
         cookieDiameter = height / 2.5;
