@@ -17,167 +17,183 @@
   background-color: gray;
 
 
-  .pinkCookie {
-    position: absolute;
-    box-sizing: border-box;
-    border-radius: 50%;
+}
+
+.pinkCookie {
+  position: absolute;
+  box-sizing: border-box;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+
+  &:hover {
+    transition: 0.3s;
+    transform: scale(1.07);
+  }
+
+  .AnimationAlways1s {
+    animation-duration: 1s;
+    animation-play-state: running;
+    animation-iteration-count: infinite;
+    animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .cookieJitterAnimation {
+    animation-name: cookieJitter;
+    .AnimationAlways1s();
+  }
+
+  .ringDynamicVagueAnimation {
+    animation-name: ringDynamicVague;
+    .AnimationAlways1s();
+  }
+
+  .ringFixedJitterAnimation {
+    animation-name: ringFixedJitter;
+    .AnimationAlways1s();
+    animation-duration: 0.9s;
+  }
+
+  .ringDynamicFineLightDiffusionAnimation {
+    animation-name: ringDynamicFineLightDiffusion;
+    .AnimationAlways1s();
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .cookieDynamic {
+    position: relative;
+    width: 100%;
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    .cookieJitterAnimation();
 
-
-    &:hover {
-      transition: 0.3s;
-      transform: scale(1.07);
-    }
-
-    .AnimationAlways1s {
-      animation-duration: 1s;
-      animation-play-state: running;
-      animation-iteration-count: infinite;
-      animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-
-    .cookieJitterAnimation {
-      animation-name: cookieJitter;
-      .AnimationAlways1s();
-    }
-
-    .ringDynamicVagueAnimation {
-      animation-name: ringDynamicVague;
-      .AnimationAlways1s();
-    }
-
-    .ringFixedJitterAnimation {
-      animation-name: ringFixedJitter;
-      .AnimationAlways1s();
-      animation-duration: 0.9s;
-    }
-
-    .ringDynamicFineLightDiffusionAnimation {
-      animation-name: ringDynamicFineLightDiffusion;
-      .AnimationAlways1s();
-      animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .cookieDynamic {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      .cookieJitterAnimation();
-
-      canvas {
-        position: absolute;
-        left: 10px;
-        display: inline-block;
-        box-sizing: border-box;
-        border-radius: 50%;
-      }
-
-      .ringDynamic {
-        .ring();
-        width: 100%;
-        height: 100%;
-        .ringDynamicVagueAnimation();
-      }
-
-      .ringDynamicInsideShadow {
-        position: relative;
-        background-color: transparent;
-        border-radius: 50%;
-      }
-    }
-
-    .ring {
+    canvas {
       position: absolute;
-      left: 0;
-      top: 0;
+      left: 10px;
       display: inline-block;
       box-sizing: border-box;
       border-radius: 50%;
-      background: white;
     }
 
-    .ringFixed {
-      .ring();
-      opacity: 0.5;
-      .ringFixedJitterAnimation();
-    }
-
-    .ringDynamicFineLight {
+    .ringDynamic {
       .ring();
       width: 100%;
       height: 100%;
-      background-color: transparent;
-      box-shadow: inset 0 0 20px 0 rgba(255, 255, 255, 0.15);
-      .ringDynamicFineLightDiffusionAnimation() ;
+      .ringDynamicVagueAnimation();
     }
 
-    @keyframes cookieJitter {
-      0% {
-        transform: scale(1);
-      }
-      10% {
-        transform: scale(0.95);
-      }
-      100% {
-        transform: scale(1);
-      }
+    .ringDynamicInsideShadow {
+      position: relative;
+      background-color: transparent;
+      border-radius: 50%;
     }
-    @keyframes ringDynamicVague {
-      0% {
-        background-color: white;
-      }
-      10% {
-        background-color: rgba(249, 234, 241, 1);
-      }
-      100% {
-        background-color: white;
-      }
+  }
+
+  .ring {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: inline-block;
+    box-sizing: border-box;
+    border-radius: 50%;
+    background: white;
+  }
+
+  .ringFixed {
+    .ring();
+    opacity: 0.5;
+    .ringFixedJitterAnimation();
+  }
+
+  .ringDynamicFineLight {
+    .ring();
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    box-shadow: inset 0 0 20px 0 rgba(255, 255, 255, 0.15);
+    .ringDynamicFineLightDiffusionAnimation() ;
+  }
+
+  @keyframes cookieJitter {
+    0% {
+      transform: scale(1);
     }
-    @keyframes ringFixedJitter {
-      0% {
-        transform: scale(1);
-      }
-      9% {
-        transform: scale(1.01);
-      }
-      100% {
-        transform: scale(1);
-      }
+    10% {
+      transform: scale(0.95);
     }
-    @keyframes ringDynamicFineLightDiffusion {
-      0% {
-        transform: scale(0.8);
-        opacity: 1;
-      }
-      10% {
-        transform: scale(1);
-        opacity: 1;
-      }
-      100% {
-        transform: scale(1.5);
-        opacity: 0;
-      }
+    100% {
+      transform: scale(1);
+    }
+  }
+  @keyframes ringDynamicVague {
+    0% {
+      background-color: white;
+    }
+    10% {
+      background-color: rgba(249, 234, 241, 1);
+    }
+    100% {
+      background-color: white;
+    }
+  }
+  @keyframes ringFixedJitter {
+    0% {
+      transform: scale(1);
+    }
+    9% {
+      transform: scale(1.01);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  @keyframes ringDynamicFineLightDiffusion {
+    0% {
+      transform: scale(0.8);
+      opacity: 1;
+    }
+    10% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1.5);
+      opacity: 0;
     }
   }
 }
 
 .backGroundImgBox {
-  .backGroundImg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  min-width: 100%;
+  min-height: 100%;
+  z-index: -1;
+  display: inline-block;
+  user-select: none;
+
+  .backGroundImgMask {
     position: absolute;
     left: 0;
     top: 0;
     min-width: 100%;
     min-height: 100%;
-    z-index: -1;
+    z-index: 10;
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+
+  .backGroundImg {
     display: inline-block;
-    box-sizing: border-box;
-    user-select: none;
+    width: 100%;
+    height: auto;
+    z-index: -1;
+    image-orientation: flip;
   }
 }

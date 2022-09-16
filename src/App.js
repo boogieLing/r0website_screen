@@ -4,6 +4,7 @@ import Login from './screens/Login';
 import Home from "./screens/Home";
 import {useEffect} from "react";
 import osuStore from "@/stores/osuStore";
+import {observer} from "mobx-react-lite";
 
 function App() {
     useEffect(() => {
@@ -26,4 +27,4 @@ function App() {
     );
 }
 
-export default App;
+export default observer(App);
