@@ -4,6 +4,8 @@ import {useEffect, useState} from "react";
 import constants from "./const.js";
 import useNodeBoundingRect from "@/hooks/useNodeBoundingRect";
 import yard from "@/static/pic/yard.jpg";
+import osuStore from '@/stores/osuStore'
+import {observer} from 'mobx-react-lite'
 
 const Home = () => {
     const [rect, topActions] = useNodeBoundingRect();
@@ -43,12 +45,19 @@ const Home = () => {
             });
         });
     }, []);
+    const [background, setBackground] = useState(yard + "");
+    useEffect(() => {
+        setBackground(osuStore.getCurImageUrl());
+    }, [])
     return <div
         className={home.homePage} id={constants.homeId} ref={topActions}
-        onMouseMove={handleMouseMove}
-    >
+        onMouseMove={handleMouseMove}>
         <PinkCookie width={topActionsWidth} height={topActionsHeight} midOffset={midOffset}/>
-        <img src={yard} className={home.backGroundImg} alt=""/>
+        <div>
+            <img src={background} className={home.backGroundImg} alt=""/>
+        </div>
+
     </div>;
 };
-export default Home;
+// 包裹组件让视图响应数据变化
+export default observer(Home);

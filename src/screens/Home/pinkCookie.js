@@ -3,7 +3,7 @@ import {useEffect, useState} from "react";
 
 function PinkCookie({width, height, midOffset}) {
     const [ids, setId] = useState();
-    let cookieDiameter = width / 3;
+    let cookieDiameter = width / 3.2;
     if (width <= height+200) {
         // 如果是窄型屏幕
         cookieDiameter = height / 2.5;
@@ -19,7 +19,7 @@ function PinkCookie({width, height, midOffset}) {
         offsetX = -(percentageX > 0 ? (percentageX - threshold): (percentageX + threshold)) * 17;
     }
     if (Math.abs(percentageY) > threshold) {
-        offsetY = -(percentageY > 0 ? (percentageY - threshold): (percentageY + threshold)) * 17;
+        offsetY = -(percentageY > 0 ? (percentageY - threshold): (percentageY + threshold)) * 23;
     }
     useEffect(() => {
         let id = "PinkCookie" + ("_" + Math.random()).replace(".", "_");
