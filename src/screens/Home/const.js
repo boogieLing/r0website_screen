@@ -1,3 +1,0 @@
-global.constants = {
-    homeId : 'homeLayout'
-}

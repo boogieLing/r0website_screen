@@ -30,7 +30,7 @@ class OsuStore {
     // 只要调用这个方法 就可以从后端拿到数据并且存入channelList
     getRandomBeatmap = async () => {
         const res = await axios.get(this.baseUrl + "/random_beatmap");
-        this.curBeatmap = new Beatmap(res.data.name, res.data.data.images, res.data.data.songs);
+        this.setCurBeatmap(res.data.name, res.data.data.images, res.data.data.songs);
         this.beatmapSet.push(this.curBeatmap);
     };
 
@@ -61,6 +61,9 @@ class OsuStore {
             this.imageRoute,
             this.defaultImage,
         ].join("/");
+    };
+    setCurBeatmap = (name, images, songs) => {
+        this.curBeatmap = new Beatmap(name, images,songs);
     };
 }
 

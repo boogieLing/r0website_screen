@@ -1,10 +1,12 @@
+import {useEffect, useState} from "react";
+import {observer} from "mobx-react-lite";
 import home from "./index.module.less";
 import PinkCookie from "./pinkCookie";
-import {useEffect, useState} from "react";
-import constants from "./const.js";
 import useNodeBoundingRect from "@/hooks/useNodeBoundingRect";
 import osuStore from "@/stores/osuStore";
-import {observer} from "mobx-react-lite";
+import globalStore from "@/stores/globalStore";
+import DynamicBackground from "@/screens/Home/dynamicBackground";
+import ReactDocumentTitle from "@/utils/title";
 
 const Home = () => {
     const [rect, topActions] = useNodeBoundingRect();
@@ -29,20 +31,21 @@ const Home = () => {
     // 鼠标是否经过一次以上的中线
     const [offsetFlag, setOffsetFlag] = useState(false);
     const handleMouseMove = (event) => {
+        const offsetX = event.clientX - topActionsWidth / 2;
+        const offsetY = event.clientY - topActionsHeight / 2;
         if (!offsetFlag) {
-            const _x = event.clientX > topActionsWidth / 2;
-            const _y = event.clientY > topActionsHeight / 2;
-            if (_x !== enterPos.x && _y !== enterPos.y) {
+            const _x = offsetX > 0;
+            const _y = offsetY > 0;
+            if (_x !== enterPos.x || _y !== enterPos.y) {
                 setOffsetFlag(true);
             }
         }
         if (offsetFlag) {
             setMidOffset({
-                x: event.clientX - topActionsWidth / 2,
-                y: event.clientY - topActionsHeight / 2,
+                x: offsetX,
+                y: offsetY,
             });
         }
-
     };
     const handleMouseEnter = (event) => {
         setEnterPos({
@@ -75,15 +78,17 @@ const Home = () => {
             });
         });
     }, []);
-    return <div
-        className={home.homePage} id={constants.homeId} ref={topActions}
-        onMouseLeave={handleMouseLeave} onMouseEnter={handleMouseEnter} onMouseMove={handleMouseMove}>
-        <PinkCookie width={topActionsWidth} height={topActionsHeight} midOffset={midOffset}/>
-        <div className={home.backGroundImgBox}>
-            <div className={home.backGroundImgMask}/>
-            <img src={osuStore.curImageUrl} className={home.backGroundImg} alt=""/>
+    return <ReactDocumentTitle title={globalStore.webSiteTitle + " - Home"}>
+        <div
+            className={home.homePage} id={globalStore.homeId} ref={topActions}
+            onMouseLeave={handleMouseLeave} onMouseEnter={handleMouseEnter} onMouseMove={handleMouseMove}>
+            <PinkCookie width={topActionsWidth} height={topActionsHeight} midOffset={midOffset}/>
+            <DynamicBackground
+                curImageUrl={osuStore.curImageUrl}
+                width={topActionsWidth} height={topActionsHeight} midOffset={midOffset}
+            />
         </div>
-    </div>;
+    </ReactDocumentTitle>;
 };
 // 包裹组件让视图响应数据变化
 export default observer(Home);
