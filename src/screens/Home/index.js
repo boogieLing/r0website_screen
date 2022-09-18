@@ -95,7 +95,7 @@ const Home = () => {
         setPersonalInfoHover(false);
     };
     const [showLogin, setShowLogin] = useState(false);
-    const [playBuiun] = useSound(buiun, {volume: 0.7});
+    const [playBuiun] = useSound(buiun, {volume: 0.5});
 
     const showLoginHandle = () => {
         playBuiun();
@@ -105,7 +105,7 @@ const Home = () => {
         setShowLogin(false);
     };
     const textSize = topActionsWidth / 140;
-    const [playBiui] = useSound(biui, {volume: 0.7});
+    const [playBiui] = useSound(biui, {volume: 0.5});
     return <ReactDocumentTitle title={globalStore.webSiteTitle + " - Home"}>
         <div
             className={home.homePage} id={globalStore.homeId} ref={topActions}

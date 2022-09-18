@@ -65,7 +65,7 @@ function PinkCookie({width, height, midOffset}) {
                 }}/>
                 <div className={pinkCookie.ringDynamic} style={{
                     mask: `radial-gradient(transparent ${ringWidth}px, #000 ${ringWidth}px)`,
-                    webkitMask: `radial-gradient(transparent ${ringWidth}px, #000 ${ringWidth}px)`,
+                    WebkitMask: `radial-gradient(transparent ${ringWidth}px, #000 ${ringWidth}px)`,
                 }}/>
                 <div className={pinkCookie.ringDynamicInsideShadow} style={{
                     width: `${ringWidth * 2}px`,
@@ -79,7 +79,7 @@ function PinkCookie({width, height, midOffset}) {
 
             <div className={pinkCookie.ringFixed} style={{
                 mask: `radial-gradient(transparent ${ringWidth}px, #000 ${ringWidth}px)`,
-                webkitMask: `radial-gradient(transparent ${ringWidth}px, #000 ${ringWidth}px)`,
+                WebkitMask: `radial-gradient(transparent ${ringWidth}px, #000 ${ringWidth}px)`,
                 width: `${cookieDiameter}px`,
                 height: `${cookieDiameter}px`,
             }}/>

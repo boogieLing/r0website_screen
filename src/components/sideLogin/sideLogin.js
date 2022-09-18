@@ -6,8 +6,8 @@ import buiu from "@/static/mp3/bu-iu.wav";
 import bunnnnn from "@/static/mp3/bunnnnn.wav";
 
 const SideLogin = ({show, hiddenLoginHandle}) => {
-    const [playBuiu] = useSound(buiu, {volume: 0.5});
-    const [playBunnnnn] = useSound(bunnnnn, {volume: 0.5});
+    const [playBuiu] = useSound(buiu, {volume: 0.3});
+    const [playBunnnnn] = useSound(bunnnnn, {volume: 0.3});
 
     return <div className={sideLoginStyle.main + " " + (show ? "hiddenLoginHandle": sideLoginStyle.mainHidden)}>
         <div onMouseEnter={() => playBuiu()}
