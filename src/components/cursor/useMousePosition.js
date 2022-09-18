@@ -70,9 +70,9 @@ function draw(ctx, canvasDom) {
     if (globalStore.mouseTrack.length >= 3) {
         // 绘制鼠标轨迹
         setColor(
-            160, 216, 245,
+            153, 153, 255
         );
-        setMaxWidth(7);
+        setMaxWidth(6);
         setRoundCap(true);
         drawLaserPen(ctx, globalStore.mouseTrack);
     }

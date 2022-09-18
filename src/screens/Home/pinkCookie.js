@@ -18,7 +18,7 @@ function PinkCookie({width, height, midOffset}) {
 
     let offsetX = 0;
     let offsetY = 0;
-    const threshold = 0.8;
+    const threshold = 0.4; // 发生粉饼偏移的下限
     if (Math.abs(percentageX) > threshold) {
         offsetX = -(percentageX > 0 ? (percentageX - threshold): (percentageX + threshold)) * 17;
     }

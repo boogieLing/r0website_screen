@@ -15,6 +15,7 @@
   background: transparent !important;
   pointer-events: none;
   z-index: 1000;
-  opacity: 0.5;
+  opacity: 0.8;
+  filter: brightness(110%) drop-shadow(0px 0px 20px white) blur(1px);
 }
 /*# sourceMappingURL=App.module.css.map */
