@@ -15,10 +15,7 @@
   align-items: center;
   flex-direction: column;
   background-color: gray;
-
-
 }
-
 
 .backGroundImgBox {
   position: absolute;
@@ -42,11 +39,193 @@
     z-index: 10;
     background-color: rgba(0, 0, 0, 0.3);
   }
+
   .backGroundImg {
     position: absolute;
     display: inline-block;
     z-index: -1;
     object-fit: cover;
     object-position: center;
+  }
+}
+
+.infoBox {
+  position: absolute;
+  width: 100%;
+  height: 11%;
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-end;
+  padding: 10px;
+  box-sizing: border-box;
+  transition: 0.5s;
+}
+
+.bottomInfo {
+  .infoBox();
+  left: 0;
+  bottom: 0;
+
+  .personalInfo {
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-end;
+
+    &:hover {
+      .description .descriptionItem {
+        color: rgb(232, 169, 67);
+      }
+    }
+
+    .sign {
+      position: relative;
+      height: 100%;
+      width: auto;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .descriptionRunning {
+      animation: textScale 1s 1 running cubic-bezier(0.250, 0.250, 0.000, 0.990) forwards;
+      text-shadow: 0 0 5px rgba(0, 0, 0, .7);
+    }
+
+    .description {
+      position: relative;
+      height: 100%;
+      width: auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: flex-start;
+      margin-left: 10px;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+
+      .descriptionItem {
+        position: relative;
+        width: auto;
+        height: auto;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 10px;
+        letter-spacing: 0.7px;
+        font-family: "sourceCodeProRegular", serif;
+        transition: 0.5s;
+      }
+
+      .descriptionItemEmp {
+        font-weight: 900;
+        color: white;
+      }
+    }
+  }
+}
+
+.topInfo {
+  .infoBox();
+  left: 0;
+  top: 0;
+  padding: 4px;
+  height: 11vh;
+
+  .loginBox {
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    border-radius: 3px;
+    transition: 0.3s;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+      filter: brightness(110%);
+    }
+
+    .loginHead {
+      position: relative;
+      height: 100%;
+      width: calc(11vh ~"-" 3px); // TODO 没办法了，丑陋的写法！
+      display: inline-block;
+      box-sizing: border-box;
+      background: transparent;
+
+      img {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: transparent;
+        pointer-events: none;
+      }
+    }
+
+    .loginInfo {
+      position: relative;
+      height: 100%;
+      width: auto;
+      margin-left: 10px;
+      color: white;
+      font-family: "sourceCodeProRegular", serif;
+      font-size: 1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+      letter-spacing: 0.3px;
+      padding-right: 50px;
+      text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+
+      .loginInfoName {
+
+      }
+
+      .loginTips {
+        font-size: 0.7rem;
+      }
+    }
+  }
+}
+
+@keyframes textScale {
+  0% {
+    transform-origin: left bottom;
+    transform: scale(1);
+  }
+  20% {
+    transform-origin: left bottom;
+    transform: scale(1.15);
+  }
+  40% {
+    transform-origin: left bottom;
+    transform: scale(1.07);
+  }
+  60% {
+    transform-origin: left bottom;
+    transform: scale(1.12);
+  }
+  80% {
+    transform-origin: left bottom;
+    transform: scale(1.08);
+  }
+  100% {
+    transform-origin: left bottom;
+    transform: scale(1.1);
   }
 }

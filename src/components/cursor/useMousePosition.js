@@ -18,6 +18,11 @@ const useMousePosition = () => {
         if (globalStore.appCanvasDom) {
             // do nothing.
         } else {
+            setColor(
+                153, 153, 255
+            );
+            setMaxWidth(6);
+            setRoundCap(true);
             globalStore.setAppCanvasDom(document.querySelector("#" + globalStore.appCanvasId));
         }
         const canvasDom = globalStore.appCanvasDom;
@@ -63,20 +68,26 @@ function startDraw(ctx, canvasDom) {
 }
 
 function draw(ctx, canvasDom) {
+    // 参照官方写法：https://github.com/boogieLing/laser-pen/blob/main/example/main.ts
     ctx.clearRect(0, 0, canvasDom.width, canvasDom.height);
     // 过滤掉一些失效的轨迹坐标
     const mouseTrack = drainPoints(globalStore.mouseTrack);
     globalStore.setMouseTrack(mouseTrack);
+    let needDrawInNextFrame = false
     if (globalStore.mouseTrack.length >= 3) {
         // 绘制鼠标轨迹
-        setColor(
-            153, 153, 255
-        );
-        setMaxWidth(6);
-        setRoundCap(true);
         drawLaserPen(ctx, globalStore.mouseTrack);
+        needDrawInNextFrame = true
     }
-    globalStore.setCursorDrawingFalse();
+    const _draw = () => {
+        draw(ctx, canvasDom);
+    };
+    if (needDrawInNextFrame) {
+        requestAnimationFrame(_draw); // 鼠标移动停止时回收动画
+    } else {
+        globalStore.setCursorDrawingFalse(); // 鼠标移动停止时暂停绘画动画
+    }
+
 }
 
 export default useMousePosition;

@@ -3,8 +3,11 @@ import R0n from "@/static/pic/R0n.png";
 import {useEffect, useState} from "react";
 import colorStore from "@/stores/colorStore";
 
+import useSound from "use-sound";
+import basi from "@/static/mp3/ba-si-ba-si.wav";
 const pinkCookieCanvasId = "pinkCookieCanvasId";
 const randomColor = colorStore.randomColor;
+
 function PinkCookie({width, height, midOffset}) {
     const [ids, setId] = useState();
     let cookieDiameter = width * 11 / 33;
@@ -39,13 +42,20 @@ function PinkCookie({width, height, midOffset}) {
         }
     }, [cookieDiameter, pinkCookieCanvas]);
 
+    const [playBasi, {stop}] = useSound(
+        basi,
+        {
+            loop: true,
+            volume: 0.3,
+        }
+    );
     return (
         <div className={pinkCookie.pinkCookie} style={{
             height: `${cookieDiameter}px`,
             width: `${cookieDiameter}px`,
             top: `${offsetY + (height - cookieDiameter) / 2}px`,
             left: `${offsetX + (width - cookieDiameter) / 2}px`,
-        }} id={ids}>
+        }} id={ids} onMouseEnter={() => playBasi()} onMouseLeave={() => stop()}>
             <div className={pinkCookie.cookieDynamic}>
                 <canvas
                     id={pinkCookieCanvasId}

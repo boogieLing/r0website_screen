@@ -1,7 +1,5 @@
 .cursor .lightCircle {
   position: absolute;
-  width: 40px;
-  height: 40px;
   box-sizing: border-box;
   display: flex;
   justify-content: center;

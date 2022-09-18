@@ -44,4 +44,182 @@
   object-fit: cover;
   object-position: center;
 }
+.infoBox {
+  position: absolute;
+  width: 100%;
+  height: 11%;
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-end;
+  padding: 10px;
+  box-sizing: border-box;
+  transition: 0.5s;
+}
+.bottomInfo {
+  position: absolute;
+  width: 100%;
+  height: 11%;
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-end;
+  padding: 10px;
+  box-sizing: border-box;
+  transition: 0.5s;
+  left: 0;
+  bottom: 0;
+}
+.bottomInfo .personalInfo {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-end;
+}
+.bottomInfo .personalInfo:hover .description .descriptionItem {
+  color: #e8a943;
+}
+.bottomInfo .personalInfo .sign {
+  position: relative;
+  height: 100%;
+  width: auto;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  pointer-events: none;
+}
+.bottomInfo .personalInfo .descriptionRunning {
+  animation: textScale 1s 1 running cubic-bezier(0.25, 0.25, 0, 0.99) forwards;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+}
+.bottomInfo .personalInfo .description {
+  position: relative;
+  height: 100%;
+  width: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  margin-left: 10px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.bottomInfo .personalInfo .description .descriptionItem {
+  position: relative;
+  width: auto;
+  height: auto;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 10px;
+  letter-spacing: 0.7px;
+  font-family: "sourceCodeProRegular", serif;
+  transition: 0.5s;
+}
+.bottomInfo .personalInfo .description .descriptionItemEmp {
+  font-weight: 900;
+  color: white;
+}
+.topInfo {
+  position: absolute;
+  width: 100%;
+  height: 11%;
+  background: rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-end;
+  padding: 10px;
+  box-sizing: border-box;
+  transition: 0.5s;
+  left: 0;
+  top: 0;
+  padding: 4px;
+  height: 11vh;
+}
+.topInfo .loginBox {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  border-radius: 3px;
+  transition: 0.3s;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.topInfo .loginBox:hover {
+  background: rgba(255, 255, 255, 0.2);
+  filter: brightness(110%);
+}
+.topInfo .loginBox .loginHead {
+  position: relative;
+  height: 100%;
+  width: calc(11vh - 3px);
+  display: inline-block;
+  box-sizing: border-box;
+  background: transparent;
+}
+.topInfo .loginBox .loginHead img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  pointer-events: none;
+}
+.topInfo .loginBox .loginInfo {
+  position: relative;
+  height: 100%;
+  width: auto;
+  margin-left: 10px;
+  color: white;
+  font-family: "sourceCodeProRegular", serif;
+  font-size: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  letter-spacing: 0.3px;
+  padding-right: 50px;
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+}
+.topInfo .loginBox .loginInfo .loginTips {
+  font-size: 0.7rem;
+}
+@keyframes textScale {
+  0% {
+    transform-origin: left bottom;
+    transform: scale(1);
+  }
+  20% {
+    transform-origin: left bottom;
+    transform: scale(1.15);
+  }
+  40% {
+    transform-origin: left bottom;
+    transform: scale(1.07);
+  }
+  60% {
+    transform-origin: left bottom;
+    transform: scale(1.12);
+  }
+  80% {
+    transform-origin: left bottom;
+    transform: scale(1.08);
+  }
+  100% {
+    transform-origin: left bottom;
+    transform: scale(1.1);
+  }
+}
 /*# sourceMappingURL=index.module.css.map */

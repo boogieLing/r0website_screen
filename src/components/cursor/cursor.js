@@ -8,21 +8,27 @@ const Cursor = () => {
     const {clientX, clientY} = useMousePosition();
     const [cursor] = useContext(CursorContext);
     const [isVisible, setIsVisible] = useState(false);
-
+    const [isDown, setIsDown] = useState(false);
     useEffect(() => {
         const handleMouseEnter = () => setIsVisible(true);
         const handleMouseLeave = () => {
             setIsVisible(false);
             globalStore.appCanvasCtx.clearRect(0, 0, globalStore.appCanvasDom.width, globalStore.appCanvasDom.height);
         };
+        const handleMouseDown = () => setIsDown(true);
+        const handleMouseUp = () => setIsDown(false);
         document.body.addEventListener("mouseenter", handleMouseEnter);
         document.body.addEventListener("mouseleave", handleMouseLeave);
+        document.body.addEventListener("mousedown", handleMouseDown);
+        document.body.addEventListener("mouseup", handleMouseUp);
         return () => {
             document.body.removeEventListener("mouseenter", handleMouseEnter);
             document.body.removeEventListener("mouseleave", handleMouseLeave);
+            document.body.removeEventListener("mousedown", handleMouseDown);
+            document.body.removeEventListener("mouseup", handleMouseUp);
         };
     }, []);
-
+    const cursorDiameter = 40 * (isDown ? 1.3: 1);
     return (
         <div style={{
             position: "fixed",
@@ -36,7 +42,10 @@ const Cursor = () => {
             <div style={{
                 left: clientX,
                 top: clientY,
-                transform: `translate(-50%, -50%) scale(${cursor.active ? 2.5: 1})`,
+                width: `${cursorDiameter}px`,
+                height: `${cursorDiameter}px`,
+                borderWidth: `${cursorDiameter/10}px`,
+                transform: `translate(-50%, -50%)`,
                 opacity: isVisible && clientX > 1 ? 1: 0,
             }} className={cursorStyle.lightCircle}>
                 <div className={cursorStyle.lightShadow}/>

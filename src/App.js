@@ -8,8 +8,8 @@ import globalStore from "@/stores/globalStore";
 import {observer} from "mobx-react-lite";
 import CursorContextProvider from "@/components/cursor/cursorContextProvider";
 import Cursor from "@/components/cursor/cursor";
-import appStyle from "./App.module.less";
 import {useWindowSize} from "@/hooks/windowSize";
+import appStyle from "./App.module.less";
 
 function App() {
     useEffect(() => {
