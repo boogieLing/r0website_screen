@@ -21,7 +21,36 @@ const SideLogin = ({show, hiddenLoginHandle}) => {
             <div className={sideLoginStyle.backText}/>
         </div>
         <div className={sideLoginStyle.mainPage}>
-            <h1>Login or sign in ?</h1>
+            <h1>今日天气不错！</h1>
+            <span className={sideLoginStyle.sentence}>Life is a bear, we must learn to support ourselves.</span>
+            <div className={sideLoginStyle.signInBox}>
+                <div className={sideLoginStyle.tips}><span>WELCOME</span></div>
+                <div className={sideLoginStyle.signInItems}>
+                    <span className={sideLoginStyle.signInSpan}>SIGN IN</span>
+                    <div className={sideLoginStyle.inputItem}>
+                        <span className={sideLoginStyle.inputTips}>Username</span>
+                        <input id="InputUsername"/>
+                    </div>
+                    <div className={sideLoginStyle.inputItem}>
+                        <span className={sideLoginStyle.inputTips}>Password</span>
+                        <input id="InputPassword"/>
+                    </div>
+                    <div className={sideLoginStyle.optionItem}>
+                        <button className={sideLoginStyle.optionCheck}/>
+                        <div className={sideLoginStyle.optionTips}>Remember Username</div>
+                    </div>
+                    <div className={sideLoginStyle.optionItem}>
+                        <button className={sideLoginStyle.optionCheck}/>
+                        <div className={sideLoginStyle.optionTips}>Remember Password</div>
+                    </div>
+                    <div className={sideLoginStyle.buttonItem}>
+                        <span className={sideLoginStyle.buttonTips}>Sign in</span>
+                    </div>
+                    <div className={sideLoginStyle.buttonItem}>
+                        <span className={sideLoginStyle.buttonTips}>Create an account</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>;
 };

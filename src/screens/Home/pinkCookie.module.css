@@ -12,6 +12,7 @@
   -ms-user-select: none;
   user-select: none;
   z-index: 110;
+  pointer-events: none;
 }
 .bigR0Box .R0Dynamic {
   position: relative;

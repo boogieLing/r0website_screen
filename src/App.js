@@ -1,6 +1,5 @@
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import {isMobile, isMobileSafari, isSafari} from "react-device-detect";
-// 导入页面组件
 import Login from "./screens/Login";
 import Home from "./screens/Home";
 import {useEffect} from "react";
@@ -38,7 +37,7 @@ function App() {
                     width={canvasSize.width} height={canvasSize.height}
                     className={appStyle.globalCanvas} id={globalStore.appCanvasId}/>
                 <Routes>
-                    < Route path="/" element={<Home/>}/>
+                    <Route path="/" element={<Home/>}/>
                     <Route path="/login" element={<Login>
                         <div>children</div>
                     </Login>}/>

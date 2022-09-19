@@ -31,7 +31,7 @@ const Cursor = () => {
     }, []);
     const [isSafari,] = useLocalStorage("isSafari", false)
     const cursorDiameter = 40 * (isSafari ? 1 : (isDown ? 1.3 : 1));
-    const borderColor = isDown ? (isSafari ? "#00cec9" : "white") : "white";
+    const borderColor = isDown ? (isSafari ? "#fdcb6e" : "white") : "white";
     return (
         <div style={{
             position: "fixed",

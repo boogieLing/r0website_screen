@@ -20,6 +20,7 @@
 .mainPage {
   position: relative;
   width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -29,16 +30,159 @@
   box-sizing: border-box;
   padding-top: 40px;
   text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 .mainPage h1 {
+  margin-top: 10%;
   position: relative;
   font-size: 1.3rem;
   font-weight: 200;
   letter-spacing: 0.2px;
+  display: block;
+  flex: 1;
+}
+.mainPage .sentence {
+  position: relative;
+  letter-spacing: 0.3px;
+  font-size: 1rem;
+  display: block;
+  flex: 1;
+}
+.signInBox {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 0 5% 0 15%;
+  margin-bottom: 45%;
+}
+.signInBox:after {
+  content: "";
+  position: absolute;
+  width: 3px;
+  height: 105%;
+  left: 15%;
+  background: rgba(255, 255, 255, 0.3);
+}
+.signInBox .tips {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+}
+.signInBox .tips span {
+  position: relative;
+  display: inline-block;
+  box-sizing: border-box;
+  font-size: 1.3rem;
+  color: #58dafe;
+  letter-spacing: 0.7px;
+  transform: scaleY(1.2);
+}
+.signInBox .signInItems {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 100%;
+  box-sizing: border-box;
+}
+.signInBox .signInItems .signInSpan {
+  position: relative;
+  display: inline-block;
+  box-sizing: border-box;
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 0.7px;
+  transform: scaleY(1.2);
+  padding: 10px;
+}
+.signInBox .signInItems .item {
+  width: 100%;
+}
+.signInBox .signInItems .inputItem {
+  position: relative;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  box-sizing: border-box;
+  padding: 10px 5px 10px 10px;
+}
+.signInBox .signInItems .inputItem .inputTips {
+  position: relative;
+  font-size: 1rem;
+  letter-spacing: 0.3px;
+  flex: 1;
+}
+.signInBox .signInItems .inputItem input {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  margin-top: 10px;
+}
+.signInBox .signInItems .optionItem {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 10px;
+  padding-left: 10px;
+  box-sizing: border-box;
+}
+.signInBox .signInItems .optionItem .optionCheck {
+  position: relative;
+  width: 15px;
+  height: 15px;
+  display: inline-block;
+  border-radius: 50%;
+  border-style: solid;
+  border-width: 2px;
+  border-color: #eb748b;
+  background: transparent;
+  box-sizing: border-box;
+  margin-right: 10px;
+}
+.signInBox .signInItems .optionItem .optionCheck:active {
+  background: #eb748b;
+}
+.signInBox .signInItems .optionItem .optionTips {
+  position: relative;
+  font-size: 1rem;
+  letter-spacing: 0.6px;
+  flex: 1;
+  transform: scaleY(1.05);
+}
+.signInBox .signInItems .buttonItem {
+  position: relative;
+  width: 90%;
+  padding: 10px 0 10px 10px;
+  box-sizing: border-box;
+}
+.signInBox .signInItems .buttonItem .buttonTips {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 10px 0;
+  text-align: center;
+  background: #2297b9;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
 }
 .backBtn {
   position: absolute;
-  bottom: 30px;
+  bottom: 10%;
   left: 0;
   height: 40px;
   width: auto;

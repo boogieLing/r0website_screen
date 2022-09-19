@@ -46,7 +46,7 @@ function PinkCookie({width, height, midOffset}) {
         basi,
         {
             loop: true,
-            volume: 0.3,
+            volume: 0.1,
         }
     );
     return (
