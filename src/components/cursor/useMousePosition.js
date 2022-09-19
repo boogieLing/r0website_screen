@@ -1,13 +1,14 @@
 import {useState, useEffect} from "react";
 import globalStore from "@/stores/globalStore";
 import {drainPoints, drawLaserPen, setColor, setMaxWidth, setRoundCap} from "laser-pen";
+import useLocalStorage from "@/hooks/localStorage";
 
 const useMousePosition = () => {
     const [position, setPosition] = useState({
         clientX: 0,
         clientY: 0,
     });
-
+    const [tail,] = useLocalStorage("printMouseTail", false);
     const updatePosition = event => {
         const {pageX, pageY, clientX, clientY} = event;
         setPosition({
@@ -35,14 +36,17 @@ const useMousePosition = () => {
             } else {
                 globalStore.setAppCanvasCtx(canvasDom.getContext("2d"));
             }
-            const canvasPos = globalStore.appCanvasPos;
-            const ctx = globalStore.appCanvasCtx;
-            globalStore.pushMouseTrack({
-                x: clientX - canvasPos.x,
-                y: clientY - canvasPos.y,
-                time: Date.now(),
-            });
-            startDraw(ctx, canvasDom);
+            if (tail) {
+                const canvasPos = globalStore.appCanvasPos;
+                const ctx = globalStore.appCanvasCtx;
+                globalStore.pushMouseTrack({
+                    x: clientX - canvasPos.x,
+                    y: clientY - canvasPos.y,
+                    time: Date.now(),
+                });
+                startDraw(ctx, canvasDom);
+            }
+
         }
     };
 
