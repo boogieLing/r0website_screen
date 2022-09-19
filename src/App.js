@@ -15,15 +15,16 @@ import useLocalStorage from "@/hooks/localStorage";
 
 function App() {
     const [, setMouseTail] = useLocalStorage("printMouseTail", false)
+    const [, setIsSafari] = useLocalStorage("isSafari", false)
     useEffect(() => {
         osuStore.getRandomBeatmap().then(_ => {
         });
         if (isSafari || isMobile || isMobileSafari) {
-            console.log("qwq");
             setMouseTail(false);
+            setIsSafari(true);
         } else {
-            console.log("qaq");
             setMouseTail(true);
+            setIsSafari(false);
         }
 
     }, []);

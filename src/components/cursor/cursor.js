@@ -3,6 +3,7 @@ import useMousePosition from "./useMousePosition";
 import {CursorContext} from "./cursorContextProvider";
 import cursorStyle from "./cursor.module.less";
 import globalStore from "@/stores/globalStore";
+import useLocalStorage from "@/hooks/localStorage";
 // Follow: https://medium.com/@jaredloson/custom-javascript-cursor-in-react-d7ffefb2db38
 const Cursor = () => {
     const {clientX, clientY} = useMousePosition();
@@ -28,7 +29,9 @@ const Cursor = () => {
             document.body.removeEventListener("mouseup", handleMouseUp);
         };
     }, []);
-    const cursorDiameter = 40 * (isDown ? 1.3: 1);
+    const [isSafari,] = useLocalStorage("isSafari", false)
+    const cursorDiameter = 40 * (isSafari ? 1 : (isDown ? 1.3 : 1));
+    const borderColor = isDown ? (isSafari ? "#00cec9" : "white") : "white";
     return (
         <div style={{
             position: "fixed",
@@ -44,9 +47,10 @@ const Cursor = () => {
                 top: clientY,
                 width: `${cursorDiameter}px`,
                 height: `${cursorDiameter}px`,
-                borderWidth: `${cursorDiameter/10}px`,
+                borderWidth: `${cursorDiameter / 10}px`,
                 transform: `translate(-50%, -50%)`,
-                opacity: isVisible && clientX > 1 ? 1: 0,
+                opacity: isVisible && clientX > 1 ? 1 : 0,
+                borderColor: borderColor,
             }} className={cursorStyle.lightCircle}>
                 <div className={cursorStyle.lightShadow}/>
                 <div className={cursorStyle.lightArcBox}>
@@ -57,8 +61,8 @@ const Cursor = () => {
             <div className={cursorStyle.cursorImg} style={{
                 left: clientX,
                 top: clientY,
-                transform: `translate(-50%, -50%) scale(${cursor.active ? 2.5: 1})`,
-                opacity: isVisible && clientX > 1 ? 1: 0,
+                transform: `translate(-50%, -50%) scale(${cursor.active ? 2.5 : 1})`,
+                opacity: isVisible && clientX > 1 ? 1 : 0,
             }}/>
         </div>
     );

@@ -52,7 +52,9 @@ export default function useLocalStorage(
             }
         })
 
-        return window.removeEventListener(customEvent, null);
+        return () => {
+            window.removeEventListener(customEvent, null);
+        }
     }, [key, storedValue])
 
     return [storedValue, setValue]
