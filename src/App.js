@@ -13,7 +13,7 @@ import appStyle from "./App.module.less";
 import useLocalStorage from "@/hooks/localStorage";
 
 function App() {
-    const [, setMouseTail] = useLocalStorage("printMouseTail", false)
+    const [mouseTail, setMouseTail] = useLocalStorage("printMouseTail", false)
     const [, setIsSafari] = useLocalStorage("isSafari", false)
     useEffect(() => {
         osuStore.getRandomBeatmap().then(_ => {
@@ -25,7 +25,6 @@ function App() {
             setMouseTail(true);
             setIsSafari(false);
         }
-
     }, []);
     //  <Cursor/> 一定要在较高的层级，保证先渲染
     const canvasSize = useWindowSize();
@@ -34,7 +33,7 @@ function App() {
         <BrowserRouter>
             <div className={appStyle.App}>
                 <canvas
-                    width={canvasSize.width} height={canvasSize.height}
+                    width={mouseTail ? canvasSize.width : 0} height={mouseTail ? canvasSize.height : 0}
                     className={appStyle.globalCanvas} id={globalStore.appCanvasId}/>
                 <Routes>
                     <Route path="/" element={<Home/>}/>

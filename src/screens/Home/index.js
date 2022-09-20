@@ -106,6 +106,7 @@ const Home = () => {
     };
     const textSize = topActionsWidth / 140;
     const [playBiui] = useSound(biui, {volume: 0.5});
+
     return <ReactDocumentTitle title={globalStore.webSiteTitle + " - Home"}>
         <div
             className={home.homePage} id={globalStore.homeId} ref={topActions}
@@ -118,11 +119,11 @@ const Home = () => {
                 curImageUrl={osuStore.curImageUrl}
                 width={topActionsWidth} height={topActionsHeight} midOffset={midOffset}
             />
-            <div className={home.bottomInfo} style={{opacity: isLeave ? 0.15: 1,}}>
+            <div className={home.bottomInfo} style={{opacity: isLeave ? 0.15 : 1,}}>
                 <div className={home.personalInfo}
                      onMouseLeave={personalInfoLeave} onMouseEnter={personalInfoEnter}>
                     <img src={signImg} alt="" className={home.sign}/>
-                    <div className={home.description + " " + (personalInfoHover ? home.descriptionRunning: "")}>
+                    <div className={home.description + " " + (personalInfoHover ? home.descriptionRunning : "")}>
                         <div
                             className={home.descriptionItem + " " + home.descriptionItemEmp}
                             style={{
@@ -142,7 +143,7 @@ const Home = () => {
                     </div>
                 </div>
             </div>
-            <div className={home.topInfo} style={{opacity: isLeave ? 0.15: 1,}}>
+            <div className={home.topInfo} style={{opacity: isLeave ? 0.15 : 1,}}>
                 <div className={home.loginBox} onClick={showLoginHandle} onMouseEnter={() => playBiui()}>
                     <div className={home.loginHead}><img src="" alt=""/></div>
                     <div className={home.loginInfo}>

@@ -1,3 +1,13 @@
+.checkBackground {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 110%;
+  height: 0;
+  background: red;
+  pointer-events: none;
+  z-index: -10;
+}
 .main {
   position: fixed;
   left: 0;
@@ -12,9 +22,11 @@
   transition: 0.5s;
   background: rgba(0, 0, 0, 0.5);
   overflow: hidden;
+  white-space: nowrap !important;
+  transform: translateX(0%) !important;
 }
 .mainHidden {
-  width: 0 !important;
+  transform: translateX(-100%) !important;
   opacity: 0 !important;
 }
 .mainPage {
@@ -34,6 +46,7 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  white-space: nowrap !important;
 }
 .mainPage h1 {
   margin-top: 10%;
@@ -50,6 +63,12 @@
   font-size: 1rem;
   display: block;
   flex: 1;
+}
+.sayPosition {
+  position: relative;
+  width: 100%;
+  height: auto;
+  box-sizing: border-box;
 }
 .signInBox {
   position: relative;
@@ -88,6 +107,7 @@
   transform: scaleY(1.2);
 }
 .signInBox .signInItems {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
