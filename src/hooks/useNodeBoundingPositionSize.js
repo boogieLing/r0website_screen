@@ -1,4 +1,4 @@
-import {useState, useRef, useEffect} from "react";
+import {useState} from "react";
 import React from "react";
 // Follow: https://gist.github.com/morajabi/523d7a642d8c0a2f71fcfa0d8b3d2846
 export const useNodeBoundingPositionSize = () => {

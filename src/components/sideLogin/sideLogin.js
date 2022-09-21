@@ -1,11 +1,10 @@
 import sideLoginStyle from "./sideLogin.module.less";
 import backIconImg from "./backIcon.png";
 import useSound from "use-sound";
-
 import buiu from "@/static/mp3/bu-iu.wav";
 import bunnnnn from "@/static/mp3/bunnnnn.wav";
 import {useEffect, useRef, useState} from "react";
-import SayMyPosition from "@/components/sideLogin/sayMyPosition";
+import R0List from "@/components/r0List/r0List";
 
 const SideLogin = ({show, hiddenLoginHandle}) => {
     const [playBuiu] = useSound(buiu, {volume: 0.3});
@@ -46,37 +45,35 @@ const SideLogin = ({show, hiddenLoginHandle}) => {
             <div className={sideLoginStyle.signInBox}>
                 <div className={sideLoginStyle.tips}><span>WELCOME</span></div>
                 <div className={sideLoginStyle.signInItems} ref={fatherRef}>
-                    <div className={sideLoginStyle.checkBackground} style={{
-                        top:`${checkSize.top}px`,
-                        height:`${checkSize.height}px`,
-                    }}/>
-                    <span className={sideLoginStyle.signInSpan}>SIGN IN</span>
-                    <SayMyPosition setCurrentCheckPosition={setCurrentCheckPosition}>
+                    <R0List style={{
+                        width: "100%"
+                    }} option={{
+                        lights: [0, 0, 0, 1, 1, 0, 0]
+                    }}>
+                        <span className={sideLoginStyle.signInSpan}>SIGN IN</span>
                         <div className={sideLoginStyle.inputItem}>
                             <span className={sideLoginStyle.inputTips}>Username</span>
                             <input id="InputUsername"/>
                         </div>
-                    </SayMyPosition>
-                    <SayMyPosition setCurrentCheckPosition={setCurrentCheckPosition}>
                         <div className={sideLoginStyle.inputItem}>
                             <span className={sideLoginStyle.inputTips}>Password</span>
                             <input id="InputPassword"/>
                         </div>
-                    </SayMyPosition>
-                    <div className={sideLoginStyle.optionItem}>
-                        <button className={sideLoginStyle.optionCheck}/>
-                        <div className={sideLoginStyle.optionTips}>Remember Username</div>
-                    </div>
-                    <div className={sideLoginStyle.optionItem}>
-                        <button className={sideLoginStyle.optionCheck}/>
-                        <div className={sideLoginStyle.optionTips}>Remember Password</div>
-                    </div>
-                    <div className={sideLoginStyle.buttonItem}>
-                        <span className={sideLoginStyle.buttonTips}>Sign in</span>
-                    </div>
-                    <div className={sideLoginStyle.buttonItem}>
-                        <span className={sideLoginStyle.buttonTips}>Create an account</span>
-                    </div>
+                        <div className={sideLoginStyle.optionItem}>
+                            <button className={sideLoginStyle.optionCheck}/>
+                            <div className={sideLoginStyle.optionTips}>Remember Username</div>
+                        </div>
+                        <div className={sideLoginStyle.optionItem}>
+                            <button className={sideLoginStyle.optionCheck}/>
+                            <div className={sideLoginStyle.optionTips}>Remember Password</div>
+                        </div>
+                        <div className={sideLoginStyle.buttonItem}>
+                            <span className={sideLoginStyle.buttonTips}>Sign in</span>
+                        </div>
+                        <div className={sideLoginStyle.buttonItem}>
+                            <span className={sideLoginStyle.buttonTips}>Create an account</span>
+                        </div>
+                    </R0List>
                 </div>
             </div>
         </div>

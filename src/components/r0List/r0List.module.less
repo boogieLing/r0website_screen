@@ -1,14 +1,52 @@
+@borderWith: 5px;
+
 .r0List {
   position: relative;
+  box-sizing: border-box;
+
+  .leftBorder {
+    position: absolute;
+    width: @borderWith;
+    height: calc(100% ~"+" 20px);
+    left: -@borderWith;
+    top: -10px;
+    background: rgba(255, 255, 255, 0.3);
+    pointer-events: none;
+    z-index: 20;
+  }
 }
 
 .checkBack {
   position: absolute;
-  width: 101%;
+  width: 100%;
   right: 0;
   height: 0;
   box-sizing: border-box;
-  background: red;
-  z-index: -100;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1;
   pointer-events: none;
+  transition-timing-function: cubic-bezier(0.235, -0.410, 0.410, 1.400);
+}
+
+.clickLight {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  background: linear-gradient(to right, #fdcb6e , transparent 100%);
+  transition: 0.2s;
+  transform-origin: left;
+  &:after {
+    content: "";
+    position: absolute;
+    width: @borderWith;
+    height: 100%;
+    top: 0;
+    left: -@borderWith;
+    box-sizing: border-box;
+    background: #ffea00;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+  }
 }

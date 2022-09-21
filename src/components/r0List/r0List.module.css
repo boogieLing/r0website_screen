@@ -1,14 +1,48 @@
 .r0List {
   position: relative;
+  box-sizing: border-box;
+}
+.r0List .leftBorder {
+  position: absolute;
+  width: 5px;
+  height: calc(100% + 20px);
+  left: -5px;
+  top: -10px;
+  background: rgba(255, 255, 255, 0.3);
+  pointer-events: none;
+  z-index: 20;
 }
 .checkBack {
   position: absolute;
-  width: 101%;
+  width: 100%;
   right: 0;
   height: 0;
   box-sizing: border-box;
-  background: red;
-  z-index: -100;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1;
   pointer-events: none;
+  transition-timing-function: cubic-bezier(0.235, -0.41, 0.41, 1.4);
+}
+.clickLight {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  background: linear-gradient(to right, #fdcb6e, transparent 100%);
+  transition: 0.2s;
+  transform-origin: left;
+}
+.clickLight:after {
+  content: "";
+  position: absolute;
+  width: 5px;
+  height: 100%;
+  top: 0;
+  left: -5px;
+  box-sizing: border-box;
+  background: #ffea00;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
 }
 /*# sourceMappingURL=r0List.module.css.map */

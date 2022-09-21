@@ -1,6 +1,6 @@
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import {isMobile, isMobileSafari, isSafari} from "react-device-detect";
-import Login from "./screens/Login";
+import Test from "./screens/Test";
 import Home from "./screens/Home";
 import {useEffect} from "react";
 import osuStore from "@/stores/osuStore";
@@ -37,8 +37,7 @@ function App() {
                     className={appStyle.globalCanvas} id={globalStore.appCanvasId}/>
                 <Routes>
                     <Route path="/" element={<Home/>}/>
-                    <Route path="/login" element={<Login>
-                    </Login>}/>
+                    <Route path="/test" element={<Test/>}/>
                 </Routes>
             </div>
         </BrowserRouter>
