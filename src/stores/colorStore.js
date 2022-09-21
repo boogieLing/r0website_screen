@@ -26,7 +26,7 @@ class ColorStore {
         ),
         new color(
             "mix_yellow_red", "rgba(240, 131, 0, 0.9)", "#fddea5",
-            ["#f7b977", "#ee836f", "#ee7948","#e17b34"],
+            ["#f7b977", "#ee836f", "#ee7948", "#e17b34"],
         ),
         new color(
             "yellow", "rgba(162, 32, 65, 0.9)", "#f3bf88",
@@ -64,6 +64,15 @@ class ColorStore {
         const colorLen = this.colors.length;
         const index = Math.round(Math.random() * (colorLen - 1));
         return this.colors[index];
+    }
+
+    color(name) {
+        this.colors.forEach(function (color) {
+            if (color.color_name === name) {
+                return color;
+            }
+        });
+        return this.colors[0];
     }
 }
 

@@ -18,12 +18,12 @@
   right: 0;
   height: 0;
   box-sizing: border-box;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.8);
   z-index: 1;
   pointer-events: none;
   transition-timing-function: cubic-bezier(0.235, -0.41, 0.41, 1.4);
 }
-.clickLight {
+.clickLeft {
   position: absolute;
   left: 0;
   top: 0;
@@ -34,7 +34,7 @@
   transition: 0.2s;
   transform-origin: left;
 }
-.clickLight:after {
+.clickLeft:after {
   content: "";
   position: absolute;
   width: 5px;

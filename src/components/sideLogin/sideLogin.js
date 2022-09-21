@@ -3,32 +3,18 @@ import backIconImg from "./backIcon.png";
 import useSound from "use-sound";
 import buiu from "@/static/mp3/bu-iu.wav";
 import bunnnnn from "@/static/mp3/bunnnnn.wav";
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useState} from "react";
 import R0List from "@/components/r0List/r0List";
+import OptionItem from "@/components/sideLogin/optionItem";
+import ButtonItem from "@/components/sideLogin/buttonItem";
+import InputItem from "@/components/sideLogin/inputItem";
 
 const SideLogin = ({show, hiddenLoginHandle}) => {
     const [playBuiu] = useSound(buiu, {volume: 0.3});
     const [playBunnnnn] = useSound(bunnnnn, {volume: 0.3});
-    const fatherRef = useRef();
-    const [fatherPosition, setFatherPosition] = useState({left: 0, top: 0});
-    const [currentCheckPosition, setCurrentCheckPosition] = useState({left: 0, top: 0, width: 0, height: 0});
-    const [checkSize, setCheckSize] = useState({top: 0, height: 0});
-    useEffect(() => {
-        if (fatherRef && fatherRef.current) {
-            setFatherPosition({
-                left: fatherRef.current.getBoundingClientRect().left,
-                top: fatherRef.current.getBoundingClientRect().top,
-            })
-        }
-    }, [fatherRef]);
-    useEffect(() => {
-        const topOffset = currentCheckPosition.top - fatherPosition.top;
-        setCheckSize({
-            top: topOffset,
-            height: currentCheckPosition.height
-        })
-    }, [currentCheckPosition]);
-    return <div className={sideLoginStyle.main + (show ? "" : " " + sideLoginStyle.mainHidden)}>
+    const [username, setUserName] = useState("");
+    const [password, setPassword] = useState("");
+    return <div className={sideLoginStyle.main + (show ? "": " " + sideLoginStyle.mainHidden)}>
         <div onMouseEnter={() => playBuiu()}
              className={sideLoginStyle.backBtn} onClick={() => {
             hiddenLoginHandle();
@@ -44,35 +30,21 @@ const SideLogin = ({show, hiddenLoginHandle}) => {
             <span className={sideLoginStyle.sentence}>Life is a bear, we must learn to support ourselves.</span>
             <div className={sideLoginStyle.signInBox}>
                 <div className={sideLoginStyle.tips}><span>WELCOME</span></div>
-                <div className={sideLoginStyle.signInItems} ref={fatherRef}>
+                <div className={sideLoginStyle.signInItems}>
                     <R0List style={{
                         width: "100%"
                     }} option={{
                         lights: [0, 0, 0, 1, 1, 0, 0]
                     }}>
                         <span className={sideLoginStyle.signInSpan}>SIGN IN</span>
-                        <div className={sideLoginStyle.inputItem}>
-                            <span className={sideLoginStyle.inputTips}>Username</span>
-                            <input id="InputUsername"/>
-                        </div>
-                        <div className={sideLoginStyle.inputItem}>
-                            <span className={sideLoginStyle.inputTips}>Password</span>
-                            <input id="InputPassword"/>
-                        </div>
-                        <div className={sideLoginStyle.optionItem}>
-                            <button className={sideLoginStyle.optionCheck}/>
-                            <div className={sideLoginStyle.optionTips}>Remember Username</div>
-                        </div>
-                        <div className={sideLoginStyle.optionItem}>
-                            <button className={sideLoginStyle.optionCheck}/>
-                            <div className={sideLoginStyle.optionTips}>Remember Password</div>
-                        </div>
-                        <div className={sideLoginStyle.buttonItem}>
-                            <span className={sideLoginStyle.buttonTips}>Sign in</span>
-                        </div>
-                        <div className={sideLoginStyle.buttonItem}>
-                            <span className={sideLoginStyle.buttonTips}>Create an account</span>
-                        </div>
+                        <InputItem inputTips={"Username"} id={"InputUsername"}
+                                   sendData={(data) => setUserName(data)}/>
+                        <InputItem type="password" inputTips={"Password"} id={"InputPassword"}
+                                   sendData={(data) => setPassword(data)}/>
+                        <OptionItem optionTips={"Remember Username"} check={true}/>
+                        <OptionItem optionTips={"Remember Password"}/>
+                        <ButtonItem buttonTips={"Sign in"}/>
+                        <ButtonItem buttonTips={"Create an account"}/>
                     </R0List>
                 </div>
             </div>

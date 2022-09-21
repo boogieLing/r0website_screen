@@ -38,7 +38,7 @@ const R0List = ({children, style, classNameO, option}) => {
         }}/>
         <div className={listStyle.leftBorder}/>
         {React.Children.map(children, (child, index) => {
-            let clickLight = true;
+            let clickLight;
             if (_option.lights[index] && _option.lights[index] !== 0) {
                 clickLight = _option.lights[index];
             } else {

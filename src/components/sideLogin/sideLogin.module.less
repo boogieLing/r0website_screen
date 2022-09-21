@@ -1,5 +1,4 @@
 
-
 .main {
   position: fixed;
   left: 0;
@@ -124,6 +123,9 @@
     }
 
     .inputItem {
+      @leftPadding: 10px;
+      @bottomPadding: 10px;
+
       position: relative;
       width: 90%;
       display: flex;
@@ -131,7 +133,7 @@
       justify-content: flex-start;
       align-items: flex-start;
       box-sizing: border-box;
-      padding: 10px 5px 10px 10px;
+      padding: 10px 5px @bottomPadding @leftPadding;
 
       .inputTips {
         position: relative;
@@ -145,6 +147,26 @@
         flex: 1;
         width: 100%;
         margin-top: 10px;
+        outline: none;
+        background: transparent;
+        border: none;
+        border-bottom: solid 2px white;
+        color: white;
+        display: block;
+      }
+
+      .inputItemCheck {
+        position: absolute;
+        bottom: @bottomPadding;
+        left: @leftPadding;
+        right: 5px;
+        transition: 0.3s;
+        transform-origin: left;
+        height: 2px;
+        width: 100%;
+        box-sizing: border-box;
+        background: #00cec9;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
       }
     }
 
@@ -160,12 +182,12 @@
 
       .optionCheck {
         position: relative;
-        width: 15px;
-        height: 15px;
+        width: 12px;
+        height: 12px;
         display: inline-block;
         border-radius: 50%;
         border-style: solid;
-        border-width: 2px;
+        border-width: 1px;
         border-color: rgb(235, 116, 139);
         background: transparent;
         box-sizing: border-box;
@@ -178,8 +200,8 @@
 
       .optionTips {
         position: relative;
-        font-size: 1rem;
-        letter-spacing: 0.6px;
+        font-size: 0.8rem;
+        letter-spacing: 1px;
         flex: 1;
         transform: scaleY(1.05);
       }
@@ -191,6 +213,7 @@
       width: 90%;
       padding: 10px 0 10px 10px;
       box-sizing: border-box;
+
       .buttonTips {
         position: relative;
         display: block;
