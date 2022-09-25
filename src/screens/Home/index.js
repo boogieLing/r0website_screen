@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import {observer} from "mobx-react-lite";
 import home from "./index.module.less";
 
-import PinkCookie from "./pinkCookie";
+import PinkCookie from "@/components/pinkCookie/pinkCookie";
 import useNodeBoundingRect from "@/hooks/useNodeBoundingRect";
 import osuStore from "@/stores/osuStore";
 import globalStore from "@/stores/globalStore";

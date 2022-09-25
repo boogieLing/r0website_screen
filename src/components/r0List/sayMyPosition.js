@@ -8,8 +8,8 @@ import listStyle from "./r0List.module.less";
 
 const SayMyPosition = ({children, setCurrentCheckPosition, clickLight}) => {
     const [playBiui] = useSound(biui, {volume: 0.3});
-    const [playCli] = useSound(cli, {volume: 0.5});
-    const [playCla] = useSound(cla, {volume: 0.5});
+    const [playCli] = useSound(cli, {volume: 0.2});
+    const [playCla] = useSound(cla, {volume: 0.2});
 
     const [position, positionRef] = useNodeBoundingPositionSize();
     const [check, setCheck] = useState(false);

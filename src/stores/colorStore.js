@@ -66,14 +66,6 @@ class ColorStore {
         return this.colors[index];
     }
 
-    color(name) {
-        this.colors.forEach(function (color) {
-            if (color.color_name === name) {
-                return color;
-            }
-        });
-        return this.colors[0];
-    }
 }
 
 const colorStore = new ColorStore();

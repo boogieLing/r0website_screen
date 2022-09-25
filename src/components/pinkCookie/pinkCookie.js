@@ -1,12 +1,36 @@
 import pinkCookie from "./pinkCookie.module.less";
-import R0n from "@/static/pic/R0n.png";
-import {useEffect, useState} from "react";
-import colorStore from "@/stores/colorStore";
 
+import {useEffect, useState} from "react";
+
+import colorStore from "@/stores/colorStore";
+import R0n from "@/static/pic/R0n.png";
 import useSound from "use-sound";
 import basi from "@/static/mp3/ba-si-ba-si.wav";
+import PinkCookieSideList from "@/components/pinkCookie/pinkCookieSideList";
+
 const pinkCookieCanvasId = "pinkCookieCanvasId";
 const randomColor = colorStore.randomColor;
+
+class optionListItem {
+    title = "Unknown";
+    icon = "";
+    tips = "Nothing wrote in here, just a text for testing";
+    key = "Unknown";
+
+    constructor(title, icon, tips, key) {
+        this.title = title;
+        this.icon = icon;
+        this.tips = tips;
+        this.key = key;
+    }
+}
+
+const optionList = [
+    new optionListItem("Unknown", R0n, "Nothing wrote in here, just a text for testing", "Test1"),
+    new optionListItem("Unknown", R0n, "Nothing wrote in here, just a text for testing", "Test2"),
+    new optionListItem("Unknown", R0n, "Nothing wrote in here, just a text for testing", "Test3"),
+    new optionListItem("Unknown", R0n, "Nothing wrote in here, just a text for testing", "Test4"),
+];
 
 function PinkCookie({width, height, midOffset}) {
     const [ids, setId] = useState();
@@ -50,44 +74,54 @@ function PinkCookie({width, height, midOffset}) {
         }
     );
     return (
-        <div className={pinkCookie.pinkCookie} style={{
-            height: `${cookieDiameter}px`,
-            width: `${cookieDiameter}px`,
-            top: `${offsetY + (height - cookieDiameter) / 2}px`,
-            left: `${offsetX + (width - cookieDiameter) / 2}px`,
-        }} id={ids} onMouseEnter={() => playBasi()} onMouseLeave={() => stop()}>
-            <div className={pinkCookie.cookieDynamic}>
-                <canvas
-                    id={pinkCookieCanvasId}
-                    width={cookieDiameter ? cookieDiameter - 20: 150}
-                    height={cookieDiameter ? cookieDiameter - 20: 150} style={{
-                    backgroundColor: `${randomColor.background}`
-                }}/>
-                <div className={pinkCookie.ringDynamic} style={{
+        <>
+            <PinkCookieSideList
+                height={cookieDiameter} color={randomColor}
+                show={true} optionList={optionList} style={{
+                top: `${offsetY + (height - cookieDiameter) / 2}px`,
+                left: `${offsetX + width / 2}px`,
+                height: `${cookieDiameter}px`,
+                width: `${cookieDiameter * 1.15}px`,
+            }}/>
+            <div className={pinkCookie.pinkCookie} style={{
+                height: `${cookieDiameter}px`,
+                width: `${cookieDiameter}px`,
+                top: `${offsetY + (height - cookieDiameter) / 2}px`,
+                left: `${offsetX + (width - cookieDiameter) / 2}px`,
+            }} id={ids} onMouseEnter={() => playBasi()} onMouseLeave={() => stop()}>
+                <div className={pinkCookie.cookieDynamic}>
+                    <canvas
+                        id={pinkCookieCanvasId}
+                        width={cookieDiameter ? cookieDiameter - 20: 150}
+                        height={cookieDiameter ? cookieDiameter - 20: 150} style={{
+                        backgroundColor: `${randomColor.background}`
+                    }}/>
+                    <div className={pinkCookie.ringDynamic} style={{
+                        mask: `radial-gradient(transparent ${ringWidth}px, #000 ${ringWidth}px)`,
+                        WebkitMask: `radial-gradient(transparent ${ringWidth}px, #000 ${ringWidth}px)`,
+                    }}/>
+                    <div className={pinkCookie.ringDynamicInsideShadow} style={{
+                        width: `${ringWidth * 2}px`,
+                        height: `${ringWidth * 2}px`,
+                        boxShadow: `inset 0 0 5px 0 ${randomColor.hard_color}`
+                    }}/>
+                    <div className={pinkCookie.bigR0Box}>
+                        <img src={R0n} alt="" className={pinkCookie.R0Dynamic}/>
+                    </div>
+                </div>
+                <div className={pinkCookie.ringFixed} style={{
                     mask: `radial-gradient(transparent ${ringWidth}px, #000 ${ringWidth}px)`,
                     WebkitMask: `radial-gradient(transparent ${ringWidth}px, #000 ${ringWidth}px)`,
-                }}/>
-                <div className={pinkCookie.ringDynamicInsideShadow} style={{
-                    width: `${ringWidth * 2}px`,
-                    height: `${ringWidth * 2}px`,
-                    boxShadow: `inset 0 0 5px 0 ${randomColor.hard_color}`
+                    width: `${cookieDiameter}px`,
+                    height: `${cookieDiameter}px`,
                 }}/>
                 <div className={pinkCookie.bigR0Box}>
-                    <img src={R0n} alt="" className={pinkCookie.R0Dynamic}/>
+                    <img src={R0n} alt="" className={pinkCookie.R0Fixed}/>
                 </div>
+                <div className={pinkCookie.ringDynamicFineLight}/>
             </div>
 
-            <div className={pinkCookie.ringFixed} style={{
-                mask: `radial-gradient(transparent ${ringWidth}px, #000 ${ringWidth}px)`,
-                WebkitMask: `radial-gradient(transparent ${ringWidth}px, #000 ${ringWidth}px)`,
-                width: `${cookieDiameter}px`,
-                height: `${cookieDiameter}px`,
-            }}/>
-            <div className={pinkCookie.bigR0Box}>
-                <img src={R0n} alt="" className={pinkCookie.R0Fixed}/>
-            </div>
-            <div className={pinkCookie.ringDynamicFineLight}/>
-        </div>
+        </>
     );
 }
 
