@@ -10,6 +10,8 @@
   //border: solid 1px black;
   padding: 40px 0;
   z-index: 0;
+  transition: 0.6s;
+  transform-origin: left;
 }
 
 .PinkCookieSideListMove {
@@ -46,13 +48,14 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  transition: 0.25s cubic-bezier(0.235, -0.310, 0.310, 3.00);
+  // transition: 0.25s cubic-bezier(0.235, -0.310, 0.310, 3.00);
+  transition: 0.25s;
   background: #2a4073;
 
   &:hover {
-    transform: translateY(-10px);
+    // transform: translateY(-10px);
     z-index: 100;
-    background: #de5b95;
+    // background: #de5b95;
     .infoBox{
       .tips{
         opacity: 1;
@@ -70,9 +73,9 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: space-evenly;
     align-items: flex-start;
-
+    height: 100%;
     span {
       position: relative;
       display: block;

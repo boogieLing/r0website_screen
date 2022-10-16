@@ -9,6 +9,8 @@
   align-items: flex-start;
   padding: 40px 0;
   z-index: 0;
+  transition: 0.6s;
+  transform-origin: left;
 }
 .PinkCookieSideListMove {
   transition: 0.25s cubic-bezier(0.235, -0.31, 0.31, 3);
@@ -38,13 +40,11 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  transition: 0.25s cubic-bezier(0.235, -0.31, 0.31, 3);
+  transition: 0.25s;
   background: #2a4073;
 }
 .PinkCookieSideListItem:hover {
-  transform: translateY(-10px);
   z-index: 100;
-  background: #de5b95;
 }
 .PinkCookieSideListItem:hover .infoBox .tips {
   opacity: 1;
@@ -58,8 +58,9 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: space-evenly;
   align-items: flex-start;
+  height: 100%;
 }
 .PinkCookieSideListItem .infoBox span {
   position: relative;
