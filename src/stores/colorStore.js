@@ -57,6 +57,7 @@ class ColorStore {
     constructor() {
         makeAutoObservable(this, {
             randomColor: computed,
+            pink: computed
         });  // 响应式处理
     }
 
@@ -64,6 +65,10 @@ class ColorStore {
         const colorLen = this.colors.length;
         const index = Math.round(Math.random() * (colorLen - 1));
         return this.colors[index];
+    }
+
+    get pink() {
+        return this.colors[0];
     }
 
 }

@@ -29,7 +29,7 @@ class optionListItem {
 const optionList = [
     new optionListItem("Blog", R0n, "Some dispensable personal creations", "Blog"),
     new optionListItem("Thinking", R0n, "The seat of this wandering soul", "Thinking"),
-    new optionListItem("Who's R0", R0n, "What a creature r0 is...", "WhosR0"),
+    new optionListItem("What's R0", R0n, "What a creature r0 is...", "WhosR0"),
     new optionListItem("More", R0n, "Other features of this site", "More"),
 ];
 
