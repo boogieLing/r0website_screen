@@ -1,20 +1,22 @@
 import listStyle from "./pinkCookieSideList.module.less";
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {clearTriangles, randomIsoscelesTriangles} from "@/utils/randomTriangles";
 import colorStore from "@/stores/colorStore";
 
 const pinkCookieListItemCanvasId = "pinkCookieListItemCanvasId";
 const pinkColor = colorStore.pink;
 
-function PinkCookieSideListItem({isEnter, height, width, value, id}) {
+function PinkCookieSideListItem({height, width, value, id}) {
     const [isCheck, setIsCheck] = useState(false);
-    const mouseEnterHandler = () => {
-        setIsCheck(true);
-    };
-    const mouseLeaveHandler = () => {
-        setIsCheck(false);
-    };
     const [pinkCookieListItemCanvas, setPinkCookieCanvas] = useState(null);
+
+    const mouseEnterHandler = useCallback(() => {
+        setIsCheck(true);
+    }, []);
+    const mouseLeaveHandler = useCallback(() => {
+        setIsCheck(false);
+    }, []);
+
     useEffect(() => {
         if (height * width > 0 && pinkCookieListItemCanvas && isCheck) {
             randomIsoscelesTriangles(pinkCookieListItemCanvas, width, height, pinkColor.list);
@@ -25,9 +27,10 @@ function PinkCookieSideListItem({isEnter, height, width, value, id}) {
             setPinkCookieCanvas(document.querySelector("#" + pinkCookieListItemCanvasId + id));
         }
     }, [height, width, pinkCookieListItemCanvas, isCheck, id]);
+
     return <div className={listStyle.PinkCookieSideListItem} key={value.key} style={{
         height: `${height * 0.15}px`,
-        backgroundColor: `rgba(9, 132, 227,1.0)`,
+        backgroundColor: `rgba(9, 132, 227, 1.0)`,
         opacity: isCheck ? "1" : "0.7"
     }} onMouseEnter={mouseEnterHandler} onMouseLeave={mouseLeaveHandler}>
         <canvas
@@ -55,19 +58,18 @@ function PinkCookieSideListItem({isEnter, height, width, value, id}) {
             <span className={listStyle.tips} style={{
                 fontSize: `${height / 50}px`,
                 WebkitTransformOrigin: "0 0", //兼容chrome的小字体
-                WebkitTransform:"scale(0.9)",
+                WebkitTransform: "scale(0.9)",
             }}>
                 {value.tips}
             </span>
         </div>
-        <div style={{
-            background: `url(${value.icon})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            width: `${height * 0.13}px`,
-            height: `${height * 0.13}px`,
-            zIndex: 0,
-        }}/>
+        <div
+            className={listStyle.iconBox}
+            style={{
+                background: `url(${value.icon})`,
+                width: `${height * value.iconRate}px`,
+                height: `${height * 0.25}px`,
+            }}/>
     </div>;
 }
 

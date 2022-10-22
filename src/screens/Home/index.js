@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useMemo, useState} from "react";
 import {observer} from "mobx-react-lite";
 import home from "./index.module.less";
 
@@ -23,13 +23,6 @@ const Home = () => {
     const [topActionsHeight, setTopActionsHeight] = useState(
         0
     );
-    useEffect(() => {
-        if (rect && rect.width) {
-            // 实际上的高度为：react.width + padding + border-width
-            setTopActionsWidth(rect.width);
-            setTopActionsHeight(rect.height);
-        }
-    }, [rect]);
     // 实时中线偏移量
     const [midOffset, setMidOffset] = useState({x: 0, y: 0});
     // 鼠标进入的位置相对于中线是正还是负
@@ -37,7 +30,17 @@ const Home = () => {
     // 鼠标是否经过一次以上的中线
     const [offsetFlag, setOffsetFlag] = useState(false);
     const [isLeave, setIsLeave] = useState(false);
-    const handleMouseMove = (event) => {
+    const [personalInfoHover, setPersonalInfoHover] = useState(false);
+
+    useEffect(() => {
+        if (rect && rect.width) {
+            // 实际上的高度为：react.width + padding + border-width
+            setTopActionsWidth(rect.width);
+            setTopActionsHeight(rect.height);
+        }
+    }, [rect]);
+
+    const handleMouseMove = useCallback((event) => {
         const offsetX = event.clientX - topActionsWidth / 2;
         const offsetY = event.clientY - topActionsHeight / 2;
         if (!offsetFlag) {
@@ -53,15 +56,15 @@ const Home = () => {
                 y: offsetY,
             });
         }
-    };
-    const handleMouseEnter = (event) => {
+    }, [topActionsWidth, topActionsHeight, offsetFlag, enterPos]);
+    const handleMouseEnter = useCallback((event) => {
         setEnterPos({
             x: event.clientX > topActionsWidth / 2,
             y: event.clientY > topActionsHeight / 2,
         });
         setIsLeave(false);
-    };
-    const handleMouseLeave = () => {
+    }, [topActionsWidth, topActionsHeight]);
+    const handleMouseLeave = useCallback(() => {
         setMidOffset({
             x: 0,
             y: 0,
@@ -72,7 +75,7 @@ const Home = () => {
             y: false
         });
         setIsLeave(true);
-    };
+    }, []);
     useEffect(() => {
         window.addEventListener("focus", () => {
             setMidOffset({
@@ -87,25 +90,26 @@ const Home = () => {
             });
         });
     }, []);
-    const [personalInfoHover, setPersonalInfoHover] = useState(false);
-    const personalInfoEnter = () => {
-        setPersonalInfoHover(true);
-    };
-    const personalInfoLeave = () => {
-        setPersonalInfoHover(false);
-    };
-    const [showLogin, setShowLogin] = useState(false);
-    const [playBuiun] = useSound(buiun, {volume: 0.5});
 
-    const showLoginHandle = () => {
+    const personalInfoEnter = useCallback(() => {
+        setPersonalInfoHover(true);
+    }, []);
+    const personalInfoLeave = useCallback(() => {
+        setPersonalInfoHover(false);
+    }, []);
+    const [showLogin, setShowLogin] = useState(false);
+
+    const [playBuiun] = useSound(buiun, {volume: 0.5});
+    const [playBiui] = useSound(biui, {volume: 0.5});
+
+    const showLoginHandle = useCallback(() => {
         playBuiun();
         setShowLogin(true);
-    };
-    const hiddenLoginHandle = () => {
+    }, []);
+    const hiddenLoginHandle = useCallback(() => {
         setShowLogin(false);
-    };
-    const textSize = topActionsWidth / 140;
-    const [playBiui] = useSound(biui, {volume: 0.5});
+    }, []);
+    const textSize = useMemo(() => topActionsWidth / 140, []);
 
     return <ReactDocumentTitle title={globalStore.webSiteTitle + " - Home"}>
         <div
