@@ -1,16 +1,26 @@
 import listStyle from "./pinkCookieSideList.module.less";
+
 import {useCallback, useEffect, useState} from "react";
+import useSound from "use-sound";
+
 import {clearTriangles, randomIsoscelesTriangles} from "@/utils/randomTriangles";
 import colorStore from "@/stores/colorStore";
+
+import buiu from "@/static/mp3/bu-iu.wav";
+import bunnnnn from "@/static/mp3/bunnnnn.wav";
 
 const pinkCookieListItemCanvasId = "pinkCookieListItemCanvasId";
 const pinkColor = colorStore.pink;
 
 function PinkCookieSideListItem({height, width, value, id}) {
+    const [playBuiu] = useSound(buiu, {volume: 0.3});
+    const [playBunnnnn] = useSound(bunnnnn, {volume: 0.3});
+
     const [isCheck, setIsCheck] = useState(false);
     const [pinkCookieListItemCanvas, setPinkCookieCanvas] = useState(null);
 
     const mouseEnterHandler = useCallback(() => {
+        playBuiu();
         setIsCheck(true);
     }, []);
     const mouseLeaveHandler = useCallback(() => {

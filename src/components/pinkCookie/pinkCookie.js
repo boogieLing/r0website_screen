@@ -12,6 +12,8 @@ import thinking from "@/static/pic/thinking.png";
 import book from "@/static/pic/book.png";
 import coffee_cat from "@/static/pic/coffee_cat.png";
 import basi from "@/static/mp3/ba-si-ba-si.wav";
+import bennn from "@/static/mp3/bennn.wav";
+import bunnnnn from "@/static/mp3/bunnnnn.wav";
 
 const pinkCookieCanvasId = "pinkCookieCanvasId";
 const randomColor = colorStore.randomColor;
@@ -96,8 +98,24 @@ function PinkCookie({width, height, midOffset}) {
             volume: 0.1,
         }
     );
-
+    const [playBennn] = useSound(
+        bennn,
+        {
+            volume: 0.7,
+        }
+    );
+    const [playBunnnnn] = useSound(
+        bunnnnn,
+        {
+            volume: 0.5,
+        }
+    );
     const onClickHandler = useCallback(() => {
+        if (!showList) {
+            playBennn();
+        } else {
+            playBunnnnn();
+        }
         setShowList(!showList);
     }, [showList]);
 

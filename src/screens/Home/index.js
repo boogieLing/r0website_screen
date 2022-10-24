@@ -1,16 +1,17 @@
+import home from "./index.module.less";
 import {useCallback, useEffect, useMemo, useState} from "react";
 import {observer} from "mobx-react-lite";
-import home from "./index.module.less";
+import useSound from "use-sound";
 
 import PinkCookie from "@/components/pinkCookie/pinkCookie";
+import SideLogin from "@/components/sideLogin/sideLogin";
 import useNodeBoundingRect from "@/hooks/useNodeBoundingRect";
 import osuStore from "@/stores/osuStore";
 import globalStore from "@/stores/globalStore";
 import DynamicBackground from "@/screens/Home/dynamicBackground";
 import ReactDocumentTitle from "@/utils/title";
+
 import signImg from "@/static/pic/sign_line.png" ;
-import SideLogin from "@/components/sideLogin/sideLogin";
-import useSound from "use-sound";
 import biui from "@/static/mp3/bi-ui-bi-ui.wav";
 import buiun from "@/static/mp3/bu-iun.wav";
 
@@ -109,7 +110,7 @@ const Home = () => {
     const hiddenLoginHandle = useCallback(() => {
         setShowLogin(false);
     }, []);
-    const textSize = useMemo(() => topActionsWidth / 140, []);
+    const textSize = useMemo(() => topActionsWidth / 140, [topActionsWidth]);
 
     return <ReactDocumentTitle title={globalStore.webSiteTitle + " - Home"}>
         <div

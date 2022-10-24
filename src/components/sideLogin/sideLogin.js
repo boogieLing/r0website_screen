@@ -3,7 +3,7 @@ import backIconImg from "./backIcon.png";
 import useSound from "use-sound";
 import buiu from "@/static/mp3/bu-iu.wav";
 import bunnnnn from "@/static/mp3/bunnnnn.wav";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import R0List from "@/components/r0List/r0List";
 import OptionItem from "@/components/sideLogin/optionItem";
 import ButtonItem from "@/components/sideLogin/buttonItem";
