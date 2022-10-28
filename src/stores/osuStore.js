@@ -35,12 +35,12 @@ class OsuStore {
     };
 
     get curImageUrl() {
-        if (osuStore.curBeatmap && osuStore.curBeatmap.images.length > 0) {
+        if (this.curBeatmap && this.curBeatmap.images.length > 0) {
             return [
-                osuStore.baseUrl,
-                osuStore.imageRoute,
-                osuStore.curBeatmap.name,
-                osuStore.curBeatmap.images[0]
+                this.baseUrl,
+                this.imageRoute,
+                this.curBeatmap.name,
+                this.curBeatmap.images[0]
             ].join("/");
         } else {
             return this.getDefaultImageUrl();

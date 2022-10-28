@@ -1,0 +1,83 @@
+.blogTopBox {
+  @height: 175px;
+  @border: 3px solid rgba(0, 206, 201,1.0);
+  @borderBoxBackColor: rgba(0, 0, 0, 0.8);
+  @borderLeftBottomBoxHeight: 8px;
+  @borderLeftBoxWidth: 450px;
+  @borderRightBoxHeight: 75px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  box-sizing: border-box;
+  width: 100%;
+  height: @height;
+  background: transparent;
+
+  .borderLeftBottom {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: @borderLeftBottomBoxHeight;
+    width: @borderLeftBoxWidth;
+    border-radius: 0 0 5px 0 / 0 0 8px 0;
+    border-right: @border;
+    border-bottom: @border;
+    z-index: 10;
+  }
+
+  .borderRightBack {
+    position: absolute;
+    left: @borderLeftBoxWidth;
+    top: 0;
+    right: 0;
+    height: @height - 5px;
+    width: 150px;
+    box-sizing: border-box;
+    clip-path: path('M 0 0 L 150 0 L 150 95 A 150 80 0 0 0 0,170 z');
+    background: @borderBoxBackColor;
+    box-shadow: 0 0 20px black;
+  }
+
+  .borderRight {
+    position: absolute;
+    top: @height - @borderRightBoxHeight - 5px;
+    right: 0;
+    height: @borderRightBoxHeight;
+    width: calc(100% ~"-" @borderLeftBoxWidth);
+    box-sizing: border-box;
+    border-radius: 150px 0 0 0 / (@borderRightBoxHeight + 5px) 0 0 0;
+    border-left: @border;
+    border-top: @border;
+    z-index: 10;
+  }
+
+  .borderClone {
+    border-width: 5px;
+    border-color: rgba(0, 206, 201,1.0);
+    filter: blur(6px);
+
+    &.borderLeftBottom {
+      filter: blur(3px);
+      border-image: linear-gradient(to right, rgba(225, 112, 85, 1.0), rgba(253, 203, 110, 1.0), rgba(0, 206, 201, 1.0)) 2 2 2 2;
+    }
+  }
+
+  .backLeft {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: @height;
+    width: @borderLeftBoxWidth;
+    background: @borderBoxBackColor;
+    box-sizing: border-box;
+  }
+
+  .backRight {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: @height - @borderRightBoxHeight - 5px;
+    width: calc(100% ~"-" @borderLeftBoxWidth ~"-" 150px);
+    background: @borderBoxBackColor;
+  }
+}

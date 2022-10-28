@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" autoUpload="Always" serverName="tencent cloud" exclude=".svn;.cvs;.idea;.DS_Store;.git;.hg;*.hprof;*.pyc;node_modules" remoteFilesAllowedToDisappearOnAutoupload="false">
+    <serverData>
+      <paths name="tencent cloud">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/www.r0r0.pink/r0website_screen" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
+  </component>
+</project>

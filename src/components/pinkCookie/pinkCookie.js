@@ -1,12 +1,19 @@
 import pinkCookie from "./pinkCookie.module.less";
 
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useMemo, useState} from "react";
+import useSound from "use-sound";
 
 import colorStore from "@/stores/colorStore";
-import R0n from "@/static/pic/R0n.png";
-import useSound from "use-sound";
-import basi from "@/static/mp3/ba-si-ba-si.wav";
 import PinkCookieSideList from "@/components/pinkCookie/pinkCookieSideList";
+import {randomIsoscelesTriangles} from "@/utils/randomTriangles";
+
+import R0n from "@/static/pic/R0n.png";
+import thinking from "@/static/pic/thinking.png";
+import book from "@/static/pic/book.png";
+import coffee_cat from "@/static/pic/coffee_cat.png";
+import basi from "@/static/mp3/ba-si-ba-si.wav";
+import bennn from "@/static/mp3/bennn.wav";
+import bunnnnn from "@/static/mp3/bunnnnn.wav";
 
 const pinkCookieCanvasId = "pinkCookieCanvasId";
 const randomColor = colorStore.randomColor;
@@ -14,50 +21,68 @@ const randomColor = colorStore.randomColor;
 class optionListItem {
     title = "Unknown";
     icon = "";
+    iconRate = 0.13;
     tips = "Nothing wrote in here, just a text for testing";
     key = "Unknown";
 
-    constructor(title, icon, tips, key) {
+    constructor(title, icon, iconRate, tips, key) {
         this.title = title;
         this.icon = icon;
+        this.iconRate = iconRate;
         this.tips = tips;
         this.key = key;
     }
 }
 
 const optionList = [
-    new optionListItem("Unknown", R0n, "Nothing wrote in here, just a text for testing", "Test1"),
-    new optionListItem("Unknown", R0n, "Nothing wrote in here, just a text for testing", "Test2"),
-    new optionListItem("Unknown", R0n, "Nothing wrote in here, just a text for testing", "Test3"),
-    new optionListItem("Unknown", R0n, "Nothing wrote in here, just a text for testing", "Test4"),
+    new optionListItem("Blog", book, 0.2, "Some dispensable personal creations", "Blog"),
+    new optionListItem("Thinking", thinking, 0.3, "The seat of this wandering soul", "Thinking"),
+    new optionListItem("What's R0", R0n, 0.13, "What a creature r0 is...", "WhosR0"),
+    new optionListItem("More", coffee_cat, 0.20, "Other features of this site", "More"),
 ];
 
 function PinkCookie({width, height, midOffset}) {
-    const [ids, setId] = useState();
-    let cookieDiameter = width * 11 / 33;
-    if (width <= height + 200) {
-        // 如果是窄型屏幕
-        cookieDiameter = height / 2.5;
-    }
-    const ringWidth = (cookieDiameter / 2) * 0.87;
-    const percentageX = midOffset.x / (cookieDiameter / 2);
-    const percentageY = midOffset.y / (cookieDiameter / 2);
+    const [ids, setId] = useState("");
+    const [pinkCookieCanvas, setPinkCookieCanvas] = useState(null);
+    const [showList, setShowList] = useState(false);
 
-    let offsetX = 0;
-    let offsetY = 0;
-    const threshold = 0.4; // 发生粉饼偏移的下限
-    if (Math.abs(percentageX) > threshold) {
-        offsetX = -(percentageX > 0 ? (percentageX - threshold): (percentageX + threshold)) * 17;
-    }
-    if (Math.abs(percentageY) > threshold) {
-        offsetY = -(percentageY > 0 ? (percentageY - threshold): (percentageY + threshold)) * 23;
-    }
+    const cookieDiameter = useMemo(() => {
+        let cookieDiameter = width * 11 / 33;
+        if (width <= height + 200) {
+            // 如果是窄型屏幕
+            cookieDiameter = height / 2.5;
+        }
+        return cookieDiameter;
+    }, [width, height]);
+
+    const ringWidth = useMemo(() => (cookieDiameter / 2) * 0.87, [cookieDiameter]);
+    const percent = useMemo(() => {
+        return {
+            X: midOffset.x / (cookieDiameter / 2),
+            Y: midOffset.y / (cookieDiameter / 2)
+        };
+    }, [cookieDiameter, midOffset]);
+    const offset = useMemo(() => {
+        const offset = {
+            X: 0,
+            Y: 0
+        };
+        const threshold = 0.4; // 发生粉饼偏移的下限
+        if (Math.abs(percent.X) > threshold) {
+            offset.X = -(percent.X > 0 ? (percent.X - threshold) : (percent.X + threshold)) * 17;
+        }
+        if (Math.abs(percent.Y) > threshold) {
+            offset.Y = -(percent.Y > 0 ? (percent.Y - threshold) : (percent.Y + threshold)) * 23;
+        }
+        return offset;
+    }, [percent]);
+
     useEffect(() => {
         let id = "PinkCookie" + ("_" + Math.random()).replace(".", "_");
         setId(id);
     }, []);
 
-    const [pinkCookieCanvas, setPinkCookieCanvas] = useState(null);
+
     useEffect(() => {
         if (cookieDiameter > 0 && pinkCookieCanvas) {
             randomIsoscelesTriangles(pinkCookieCanvas, cookieDiameter, cookieDiameter, randomColor.list);
@@ -73,101 +98,74 @@ function PinkCookie({width, height, midOffset}) {
             volume: 0.1,
         }
     );
-    return (
-        <>
-            <PinkCookieSideList
-                height={cookieDiameter} color={randomColor}
-                show={true} optionList={optionList} style={{
-                top: `${offsetY + (height - cookieDiameter) / 2}px`,
-                left: `${offsetX + width / 2}px`,
-                height: `${cookieDiameter}px`,
-                width: `${cookieDiameter * 1.15}px`,
-            }}/>
-            <div className={pinkCookie.pinkCookie} style={{
-                height: `${cookieDiameter}px`,
-                width: `${cookieDiameter}px`,
-                top: `${offsetY + (height - cookieDiameter) / 2}px`,
-                left: `${offsetX + (width - cookieDiameter) / 2}px`,
-            }} id={ids} onMouseEnter={() => playBasi()} onMouseLeave={() => stop()}>
-                <div className={pinkCookie.cookieDynamic}>
-                    <canvas
-                        id={pinkCookieCanvasId}
-                        width={cookieDiameter ? cookieDiameter - 20: 150}
-                        height={cookieDiameter ? cookieDiameter - 20: 150} style={{
-                        backgroundColor: `${randomColor.background}`
-                    }}/>
-                    <div className={pinkCookie.ringDynamic} style={{
-                        mask: `radial-gradient(transparent ${ringWidth}px, #000 ${ringWidth}px)`,
-                        WebkitMask: `radial-gradient(transparent ${ringWidth}px, #000 ${ringWidth}px)`,
-                    }}/>
-                    <div className={pinkCookie.ringDynamicInsideShadow} style={{
-                        width: `${ringWidth * 2}px`,
-                        height: `${ringWidth * 2}px`,
-                        boxShadow: `inset 0 0 5px 0 ${randomColor.hard_color}`
-                    }}/>
-                    <div className={pinkCookie.bigR0Box}>
-                        <img src={R0n} alt="" className={pinkCookie.R0Dynamic}/>
-                    </div>
-                </div>
-                <div className={pinkCookie.ringFixed} style={{
+    const [playBennn] = useSound(
+        bennn,
+        {
+            volume: 0.7,
+        }
+    );
+    const [playBunnnnn] = useSound(
+        bunnnnn,
+        {
+            volume: 0.5,
+        }
+    );
+    const onClickHandler = useCallback(() => {
+        if (!showList) {
+            playBennn();
+        } else {
+            playBunnnnn();
+        }
+        setShowList(!showList);
+    }, [showList]);
+
+    return <>
+        <PinkCookieSideList
+            height={cookieDiameter} width={cookieDiameter * 1.15} color={randomColor}
+            show={showList} optionList={optionList}
+            style={{
+                top: `${offset.Y + (height - cookieDiameter) / 2}px`,
+                left: `${offset.X + width / 2 - (showList ? cookieDiameter / 3 : 0)}px`,
+            }}
+        />
+        <div className={pinkCookie.pinkCookie} style={{
+            height: `${cookieDiameter}px`,
+            width: `${cookieDiameter}px`,
+            top: `${offset.Y + (height - cookieDiameter) / 2}px`,
+            left: `${offset.X + (width - cookieDiameter) / 2 - (showList ? cookieDiameter / 3 : 0)}px`,
+        }} id={ids} onMouseEnter={() => playBasi()} onMouseLeave={() => stop()} onClick={onClickHandler}>
+            <div className={pinkCookie.cookieDynamic}>
+                <canvas
+                    id={pinkCookieCanvasId}
+                    width={cookieDiameter ? cookieDiameter - 20 : 150}
+                    height={cookieDiameter ? cookieDiameter - 20 : 150} style={{
+                    backgroundColor: `${randomColor.background}`
+                }}/>
+                <div className={pinkCookie.ringDynamic} style={{
                     mask: `radial-gradient(transparent ${ringWidth}px, #000 ${ringWidth}px)`,
                     WebkitMask: `radial-gradient(transparent ${ringWidth}px, #000 ${ringWidth}px)`,
-                    width: `${cookieDiameter}px`,
-                    height: `${cookieDiameter}px`,
+                }}/>
+                <div className={pinkCookie.ringDynamicInsideShadow} style={{
+                    width: `${ringWidth * 2}px`,
+                    height: `${ringWidth * 2}px`,
+                    boxShadow: `inset 0 0 5px 0 ${randomColor.hard_color}`
                 }}/>
                 <div className={pinkCookie.bigR0Box}>
-                    <img src={R0n} alt="" className={pinkCookie.R0Fixed}/>
+                    <img src={R0n} alt="" className={pinkCookie.R0Dynamic}/>
                 </div>
-                <div className={pinkCookie.ringDynamicFineLight}/>
             </div>
-
-        </>
-    );
-}
-
-function randomIsoscelesTriangles(canvas, width, height, color_arr) {
-    const ctx = canvas.getContext("2d");
-    ctx.lineWidth = 0;
-    const limit = Math.min(width, height) / 10;
-    for (let i = color_arr.length - 1; i >= 0; --i) {
-        for (let j = 0; j < limit; ++j) {
-            randomIsoscelesTriangle(
-                ctx,
-                0, 0,
-                width, height,
-                color_arr[i], i, color_arr, 60 * i + 10, limit
-            );
-        }
-    }
-}
-
-function randomIsoscelesTriangle(
-    ctx, minWidth, minHeight, maxWidth, maxHeight, fillStyle, index, arr, threshold, limit,
-) {
-    // 注意，这里是故意不检查边界是否越界的！
-    let startX = Math.random() * (maxWidth - minWidth) + minWidth;
-    let endX = startX + Math.random() * (10 + threshold) + threshold;
-    let startY = Math.random() * (maxHeight - minHeight) + minHeight;
-    let endY = startY;
-    let triangleHeight = 1.7320508 / 2 * (endX - startX);
-    let pX1 = endX - (endX - startX) / 2;
-    let pY1 = endY - triangleHeight;
-    ctx.beginPath();
-    ctx.moveTo(startX, startY);
-    ctx.lineTo(pX1, pY1);
-    ctx.lineTo(endX, endY);
-    ctx.fillStyle = fillStyle;
-    ctx.fill();
-    ctx.closePath();
-    for (let i = 0; i < index; ++i) {
-        // 如果是靠后的颜色，说明是深色，在这之上再生成一个浅色的三角形
-        randomIsoscelesTriangle(
-            ctx,
-            startX - limit, pY1 - limit,
-            endX + limit, endY + limit,
-            arr[index - 1], index - 1, arr, threshold / 1.5
-        );
-    }
+            <div className={pinkCookie.ringFixed} style={{
+                mask: `radial-gradient(transparent ${ringWidth}px, #000 ${ringWidth}px)`,
+                WebkitMask: `radial-gradient(transparent ${ringWidth}px, #000 ${ringWidth}px)`,
+                width: `${cookieDiameter}px`,
+                height: `${cookieDiameter}px`,
+            }}/>
+            <div className={pinkCookie.bigR0Box}>
+                <img src={R0n} alt="" className={pinkCookie.R0Fixed}/>
+            </div>
+            <div className={pinkCookie.ringDynamicFineLight}/>
+        </div>
+    </>;
 }
 
 export default PinkCookie;

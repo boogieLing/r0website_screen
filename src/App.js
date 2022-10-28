@@ -1,7 +1,7 @@
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import {isMobile, isMobileSafari, isSafari} from "react-device-detect";
-import Test from "./screens/Test";
-import Home from "./screens/Home";
+import Test from "@/screens/Test";
+import Home from "@/screens/Home";
 import {useEffect} from "react";
 import osuStore from "@/stores/osuStore";
 import globalStore from "@/stores/globalStore";
@@ -11,13 +11,12 @@ import Cursor from "@/components/cursor/cursor";
 import {useWindowSize} from "@/hooks/windowSize";
 import appStyle from "./App.module.less";
 import useLocalStorage from "@/hooks/localStorage";
+import Blog from "@/screens/Blog";
 
 function App() {
     const [mouseTail, setMouseTail] = useLocalStorage("printMouseTail", false)
     const [, setIsSafari] = useLocalStorage("isSafari", false)
     useEffect(() => {
-        osuStore.getRandomBeatmap().then(_ => {
-        });
         if (isSafari || isMobile || isMobileSafari) {
             setMouseTail(false);
             setIsSafari(true);
@@ -38,6 +37,7 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Home/>}/>
                     <Route path="/test" element={<Test/>}/>
+                    <Route path="/blog" element={<Blog/>}/>
                 </Routes>
             </div>
         </BrowserRouter>

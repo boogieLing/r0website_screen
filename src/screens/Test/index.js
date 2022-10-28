@@ -4,6 +4,7 @@ import useNodeBoundingRect from "@/hooks/useNodeBoundingRect";
 import {useEffect, useState} from "react";
 
 const Test = () => {
+    console.log("render");
     const [rect, rectRef] = useNodeBoundingRect();
     // 实时页面大小
     const [topActionsWidth, setTopActionsWidth] = useState(
