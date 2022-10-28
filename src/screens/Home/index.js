@@ -35,7 +35,7 @@ const Home = () => {
     useEffect(() => {
         osuStore.getRandomBeatmap().then(_ => {
         });
-    }, []);
+    }, []);``
     useEffect(() => {
         if (rect && rect.width) {
             // 实际上的高度为：react.width + padding + border-width

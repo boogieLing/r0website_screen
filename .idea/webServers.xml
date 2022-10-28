@@ -2,8 +2,8 @@
 <project version="4">
   <component name="WebServers">
     <option name="servers">
-      <webServer id="0ac4dfe9-8b78-4ec0-a589-2f4ad286e305" name="tencent cloud">
-        <fileTransfer rootFolder="/www/wwwroot" accessType="SFTP" host="101.33.218.37" port="22" sshConfigId="6d9dc948-f9d4-49fa-b0a6-f7e38c54fc21" sshConfig="root@101.33.218.37:22 password">
+      <webServer id="1635d789-6cd2-43b1-a722-a2876ddd1ff0" name="tencent cloud">
+        <fileTransfer rootFolder="/www/wwwroot" accessType="SFTP" host="101.33.218.37" port="22" sshConfigId="65a22109-c9ff-4d58-bf49-9a1d93b551af" sshConfig="root@101.33.218.37:22 password">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>
