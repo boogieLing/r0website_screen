@@ -3,6 +3,7 @@ import useMousePosition from "./useMousePosition";
 import {CursorContext} from "./cursorContextProvider";
 import cursorStyle from "./cursor.module.less";
 import globalStore from "@/stores/globalStore";
+import cursorTipsStore from "@/stores/cursorTipsStore";
 import useLocalStorage from "@/hooks/localStorage";
 // Follow: https://medium.com/@jaredloson/custom-javascript-cursor-in-react-d7ffefb2db38
 const Cursor = () => {
@@ -14,7 +15,8 @@ const Cursor = () => {
         const handleMouseEnter = () => setIsVisible(true);
         const handleMouseLeave = () => {
             setIsVisible(false);
-            globalStore.appCanvasCtx.clearRect(0, 0, globalStore.appCanvasDom.width, globalStore.appCanvasDom.height);
+            // TODO 需要浏览器性能。。。。。
+            // globalStore.appCanvasCtx.clearRect(0, 0, globalStore.appCanvasDom.width, globalStore.appCanvasDom.height);
         };
         const handleMouseDown = () => setIsDown(true);
         const handleMouseUp = () => setIsDown(false);
@@ -63,7 +65,24 @@ const Cursor = () => {
                 top: clientY,
                 transform: `translate(-50%, -50%) scale(${cursor.active ? 2.5 : 1})`,
                 opacity: isVisible && clientX > 1 ? 1 : 0,
-            }}/>
+            }}>
+                <div className={cursorStyle.cursorTipsUl}>
+                {
+
+                        cursorTipsStore.mouseTips.map((tip, index)=>{
+                        return  <div className={cursorStyle.cursorTipsLi} key={index}>
+                            <div className={cursorStyle.cursorTipsIcon}>
+                                <i className={cursorStyle.iconfont}>&#xe748;</i>
+                                <i className={cursorStyle.iconText}>{tip.iconText}</i>
+                            </div>
+                            <span className={cursorStyle.cursorTips}>
+                                {tip.spanText}
+                            </span>
+                        </div>
+                    })
+                }
+                </div>
+            </div>
         </div>
     );
 };

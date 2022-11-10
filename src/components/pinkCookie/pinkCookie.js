@@ -24,18 +24,20 @@ class optionListItem {
     iconRate = 0.13;
     tips = "Nothing wrote in here, just a text for testing";
     key = "Unknown";
+    navigatePath = ""
 
-    constructor(title, icon, iconRate, tips, key) {
+    constructor(title, icon, iconRate, tips, key, navigatePath) {
         this.title = title;
         this.icon = icon;
         this.iconRate = iconRate;
         this.tips = tips;
         this.key = key;
+        this.navigatePath = navigatePath
     }
 }
 
 const optionList = [
-    new optionListItem("Blog", book, 0.2, "Some dispensable personal creations", "Blog"),
+    new optionListItem("Blog", book, 0.2, "Some dispensable personal creations", "Blog", "/blog/"),
     new optionListItem("Thinking", thinking, 0.3, "The seat of this wandering soul", "Thinking"),
     new optionListItem("What's R0", R0n, 0.13, "What a creature r0 is...", "WhosR0"),
     new optionListItem("More", coffee_cat, 0.20, "Other features of this site", "More"),

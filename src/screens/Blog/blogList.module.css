@@ -1,0 +1,216 @@
+@import "../../static/css/iconfont.css";
+.blogTopBox {
+  position: absolute;
+  top: 0;
+  left: 0;
+  box-sizing: border-box;
+  width: 100%;
+  height: 175px;
+  background: transparent;
+}
+.blogTopBox .borderLeftBottom {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 8px;
+  width: 450px;
+  border-radius: 0 0 5px 0 / 0 0 8px 0;
+  border-right: 3px solid #00cec9;
+  border-bottom: 3px solid #00cec9;
+  z-index: 10;
+}
+.blogTopBox .borderRightBack {
+  position: absolute;
+  left: 450px;
+  top: 0;
+  right: 0;
+  height: 170px;
+  width: 150px;
+  box-sizing: border-box;
+  clip-path: path('M 0 0 L 150 0 L 150 95 A 150 80 0 0 0 0,170 z');
+  background: rgba(0, 0, 0, 0.8);
+  box-shadow: 0 0 20px black;
+}
+.blogTopBox .borderRight {
+  position: absolute;
+  top: 95px;
+  right: 0;
+  height: 75px;
+  width: calc(100% - 450px);
+  box-sizing: border-box;
+  border-radius: 150px 0 0 0 / 80px 0 0 0;
+  border-left: 3px solid #00cec9;
+  border-top: 3px solid #00cec9;
+  z-index: 10;
+  user-select: none;
+  pointer-events: none;
+}
+.blogTopBox .borderClone {
+  border-width: 5px;
+  border-color: #00cec9;
+  filter: blur(6px);
+  user-select: none;
+  pointer-events: none;
+}
+.blogTopBox .borderClone.borderLeftBottom {
+  filter: blur(3px);
+  border-image: linear-gradient(to right, #e17055, #fdcb6e, #00cec9) 2 2 2 2;
+}
+.blogTopBox .backLeft {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 175px;
+  width: 450px;
+  background: rgba(0, 0, 0, 0.8);
+  box-sizing: border-box;
+}
+.blogTopBox .backRight {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 95px;
+  width: calc(100% - 450px - 150px);
+  background: rgba(0, 0, 0, 0.8);
+}
+.blogBottomBox {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 120px;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 20;
+}
+.iconfont {
+  font-family: "iconfont", serif !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.blogListBox {
+  position: absolute;
+  top: 100px;
+  right: 0;
+  height: calc(100% - 120px - 100px);
+  width: 600px;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-end;
+  box-sizing: border-box;
+}
+.blogListBox .item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 80%;
+  padding-top: 5px;
+  padding-left: 130px;
+  background: rgba(226, 79, 157, 0.8);
+  margin-top: 15px;
+  box-sizing: border-box;
+  color: white;
+  transition: 0.2s;
+  border-radius: 5px 0 0 5px;
+}
+.blogListBox .item .thumbnailBox {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 120px;
+  height: 100%;
+  user-select: none;
+  pointer-events: none;
+  opacity: 0.8;
+}
+.blogListBox .item .thumbnailBox img {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  object-fit: cover;
+  border-radius: 5px 0 0 5px;
+}
+.blogListBox .item .normalTextBox {
+  position: relative;
+  width: 100%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  margin-bottom: 5px;
+}
+.blogListBox .item .normalTextBox .iconfont {
+  font-size: 1.2rem;
+  margin-right: 5px;
+}
+.blogListBox .item .normalTextBox .textSpan {
+  position: relative;
+  letter-spacing: 1.3px;
+}
+.blogListBox .item .normalTextBox.titleBox {
+  font-size: 1.2rem;
+  letter-spacing: 0.7px;
+}
+.blogListBox .item .ulBox {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 5px;
+  box-sizing: border-box;
+}
+.blogListBox .item .ulBox .liBox {
+  position: relative;
+  margin-right: 10px;
+  font-size: 0.8rem;
+  font-weight: 900;
+  display: flex;
+}
+.blogListBox .item .ulBox .liBox .iconfont {
+  margin-right: 5px;
+}
+.blogListBox .item .ulBox .liBox a {
+  color: white;
+  text-decoration: none;
+}
+.blogListBox .item:hover {
+  background: rgba(255, 255, 255, 0.8);
+  color: #2d3436;
+  width: 95%;
+  margin-bottom: 25px;
+  box-shadow: 0 0 10px rgba(226, 79, 157, 0.6), 0 0 15px white;
+}
+.blogListBox .item:hover .thumbnailBox {
+  opacity: 1;
+}
+.blogListBox .item:hover .titleBox {
+  font-weight: 900;
+}
+.blogListBox .item:hover .ulBox .liBox a {
+  color: #2d3436;
+  text-decoration: none;
+}
+.blogListBox .itemHover {
+  background: rgba(255, 255, 255, 0.8);
+  color: #2d3436;
+  width: 95%;
+  margin-bottom: 25px;
+  box-shadow: 0 0 10px rgba(226, 79, 157, 0.6), 0 0 15px white;
+}
+.blogListBox .itemHover .thumbnailBox {
+  opacity: 1;
+}
+.blogListBox .itemHover .titleBox {
+  font-weight: 900;
+}
+.blogListBox .itemHover .ulBox .liBox a {
+  color: #2d3436;
+  text-decoration: none;
+}
+/*# sourceMappingURL=blogList.module.css.map */

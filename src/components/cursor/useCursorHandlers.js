@@ -1,5 +1,6 @@
 import {useContext, useCallback} from "react";
 import {CursorContext} from "./cursorContextProvider";
+import cursor from "@/components/cursor/cursor";
 
 const useCursorHandlers = (options = {}) => {
     const [, setCursor] = useContext(CursorContext);
@@ -41,7 +42,6 @@ const useCursorHandlers = (options = {}) => {
         }
         toggleCursorDown();
     }, []);
-
     return {onMouseEnter, onMouseLeave, onMouseDown, onMouseUp};
 };
 export default useCursorHandlers;
