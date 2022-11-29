@@ -241,8 +241,12 @@
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
+  z-index: 100;
   transform: translateX(-15px);
-  z-index: 9999;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 
   &:hover {
     .backIcon {

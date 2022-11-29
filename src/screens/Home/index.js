@@ -14,6 +14,7 @@ import ReactDocumentTitle from "@/utils/title";
 import signImg from "@/static/pic/sign_line.png" ;
 import biui from "@/static/mp3/bi-ui-bi-ui.wav";
 import buiun from "@/static/mp3/bu-iun.wav";
+import {FilingInfo} from "@/components/filingInfo/filingInfo";
 
 const Home = () => {
     const [rect, topActions] = useNodeBoundingRect();
@@ -32,7 +33,10 @@ const Home = () => {
     const [offsetFlag, setOffsetFlag] = useState(false);
     const [isLeave, setIsLeave] = useState(false);
     const [personalInfoHover, setPersonalInfoHover] = useState(false);
-
+    useEffect(() => {
+        osuStore.getRandomBeatmap().then(_ => {
+        });
+    }, []);
     useEffect(() => {
         if (rect && rect.width) {
             // 实际上的高度为：react.width + padding + border-width
@@ -129,6 +133,10 @@ const Home = () => {
                      onMouseLeave={personalInfoLeave} onMouseEnter={personalInfoEnter}>
                     <img src={signImg} alt="" className={home.sign}/>
                     <div className={home.description + " " + (personalInfoHover ? home.descriptionRunning : "")}>
+                        <FilingInfo style={{
+                            position:"relative",
+                            marginBottom:"10px"
+                        }}/>
                         <div
                             className={home.descriptionItem + " " + home.descriptionItemEmp}
                             style={{
@@ -145,6 +153,7 @@ const Home = () => {
                         >
                             www.r0r0.pink
                         </div>
+
                     </div>
                 </div>
             </div>

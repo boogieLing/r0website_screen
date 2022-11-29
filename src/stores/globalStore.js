@@ -1,6 +1,4 @@
-import {computed} from "mobx";
-
-const {makeAutoObservable} = require("mobx");
+import {computed, makeAutoObservable} from "mobx";
 
 class GlobalStore {
     _webSiteTitle = "R0!";
@@ -11,6 +9,7 @@ class GlobalStore {
     _appCanvasCtx = null;
     _cursorDrawing = false;
     _mouseTrack = [];
+    _mouseTips = "";
 
     constructor() {
         makeAutoObservable(this, {
@@ -22,6 +21,7 @@ class GlobalStore {
             appCanvasDom: computed,
             appCanvasPos: computed,
             appCanvasCtx: computed,
+            mouseTips:computed
         });  // 响应式处理
     }
 
@@ -71,7 +71,15 @@ class GlobalStore {
     get appCanvasCtx() {
         return this._appCanvasCtx;
     }
-
+    get mouseTips() {
+        return this._mouseTips;
+    }
+    setMouseTips = (tips) => {
+        this._mouseTips = tips;
+    }
+    setMouseTipsEmpty = () => {
+        this._mouseTips = "";
+    }
     setAppCanvasDom = (item) => {
         this._appCanvasDom = item;
     };

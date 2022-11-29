@@ -28,7 +28,7 @@ function PinkCookieSideList({width, height, show, optionList, style}) {
                     const key = value.key;
                     return <PinkCookieSideListItem
                         itemBackColor={itemBackColor} isEnter={isEnter} height={height} width={width}
-                        value={value} key={key} id={key}
+                        value={value} key={key} id={key} navigatePath={value.navigatePath}
                     />;
                 })
             }

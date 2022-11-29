@@ -8,11 +8,13 @@ import colorStore from "@/stores/colorStore";
 
 import buiu from "@/static/mp3/bu-iu.wav";
 import bunnnnn from "@/static/mp3/bunnnnn.wav";
+import {useNavigate} from "react-router-dom";
 
 const pinkCookieListItemCanvasId = "pinkCookieListItemCanvasId";
 const pinkColor = colorStore.pink;
 
-function PinkCookieSideListItem({height, width, value, id}) {
+function PinkCookieSideListItem({height, width, value, id, navigatePath}) {
+    const navigate = useNavigate();
     const [playBuiu] = useSound(buiu, {volume: 0.3});
     const [playBunnnnn] = useSound(bunnnnn, {volume: 0.3});
 
@@ -37,12 +39,16 @@ function PinkCookieSideListItem({height, width, value, id}) {
             setPinkCookieCanvas(document.querySelector("#" + pinkCookieListItemCanvasId + id));
         }
     }, [height, width, pinkCookieListItemCanvas, isCheck, id]);
-
+    const goTo = useCallback(() => {
+        if (navigatePath) {
+            navigate(navigatePath);
+        }
+    }, [navigatePath]);
     return <div className={listStyle.PinkCookieSideListItem} key={value.key} style={{
         height: `${height * 0.15}px`,
         backgroundColor: `rgba(9, 132, 227, 1.0)`,
         opacity: isCheck ? "1" : "0.7"
-    }} onMouseEnter={mouseEnterHandler} onMouseLeave={mouseLeaveHandler}>
+    }} onMouseEnter={mouseEnterHandler} onMouseLeave={mouseLeaveHandler} onClick={goTo}>
         <canvas
             id={pinkCookieListItemCanvasId + id}
             height={height * 0.15}

@@ -9,8 +9,11 @@ RUN npm install --legacy-peer-deps
 COPY . .
 RUN npm run build
 
-CMD ["npm","start", "y"]
+# CMD ["npm","start", "y"]
+RUN npm i -g serve
 
+#RUN serve -s ./build
+CMD ["serve","-s", "./build"]
 EXPOSE 3000
 
 # docker build -f Dockerfile -t r0website-screen .

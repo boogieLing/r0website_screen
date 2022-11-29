@@ -16,6 +16,7 @@ class Beatmap {
 class OsuStore {
     beatmapSet = []; // 定义数据
     curBeatmap = null;
+    // baseUrl = "https://www.r0r0.pink/osu";
     baseUrl = "http://101.33.218.37:11312";
     imageRoute = "image";
     defaultImage = "968171-MIMI_feat._Hatsune_Miku-Mizuoto_to_Curtain/qt-miku.jpg";
@@ -35,12 +36,12 @@ class OsuStore {
     };
 
     get curImageUrl() {
-        if (osuStore.curBeatmap && osuStore.curBeatmap.images.length > 0) {
+        if (this.curBeatmap && this.curBeatmap.images.length > 0) {
             return [
-                osuStore.baseUrl,
-                osuStore.imageRoute,
-                osuStore.curBeatmap.name,
-                osuStore.curBeatmap.images[0]
+                this.baseUrl,
+                this.imageRoute,
+                this.curBeatmap.name,
+                this.curBeatmap.images[0]
             ].join("/");
         } else {
             return this.getDefaultImageUrl();

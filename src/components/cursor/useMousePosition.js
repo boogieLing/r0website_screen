@@ -46,14 +46,12 @@ const useMousePosition = () => {
                 });
                 startDraw(ctx, canvasDom);
             }
-
         }
     };
 
     useEffect(() => {
         document.addEventListener("mousemove", updatePosition, false);
         document.addEventListener("mouseenter", updatePosition, false);
-
         return () => {
             document.removeEventListener("mousemove", updatePosition);
             document.removeEventListener("mouseenter", updatePosition);

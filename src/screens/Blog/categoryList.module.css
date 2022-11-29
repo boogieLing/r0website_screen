@@ -1,0 +1,36 @@
+.cateGoryList {
+  width: 100%;
+  box-sizing: border-box;
+}
+.mainListBox {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-end;
+  padding: 0 20px;
+}
+.mainListBox .itemBox {
+  position: relative;
+  color: white;
+  background: #ed3398;
+  padding: 5px 10px;
+  border-radius: 8px 8px 0 0 ;
+  letter-spacing: 0.7px;
+  font-weight: 900;
+  transition: 0.25s cubic-bezier(0.235, -0.31, 0.31, 2.3);
+  margin-right: -10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+  font-size: 0.8rem;
+  user-select: none;
+  text-decoration: none;
+}
+.mainListBox .itemBox:hover {
+  background: #770543;
+  padding-bottom: 15px;
+  text-shadow: 0 0 10px #e1a3bd;
+  margin-right: 0;
+}
+/*# sourceMappingURL=categoryList.module.css.map */
