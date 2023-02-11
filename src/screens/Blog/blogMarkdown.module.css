@@ -238,6 +238,9 @@
   background: rgba(0, 0, 0, 0.7);
   z-index: 20;
 }
+.blogBottomBox .extraButtonList {
+  position: relative;
+}
 .iconfont {
   font-family: "iconfont", serif !important;
   font-size: 16px;

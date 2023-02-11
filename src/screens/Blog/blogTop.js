@@ -1,9 +1,11 @@
 import S from "./blogTop.module.less";
-import React, {useCallback} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import cursorTipsStore from "@/stores/cursorTipsStore";
 import {SortController} from "@/components/sortController/sortController";
+import {addPraise} from "@/request/blogApi";
 
-export const BlogTop = ({post}) => {
+export const BlogTop = ({post, setComputed}) => {
+    const [curPraise, setCurPraise] = useState(0);
     const getDate = useCallback((dateStr) => {
         if (!dateStr) {
             return "";
@@ -16,6 +18,15 @@ export const BlogTop = ({post}) => {
             iconText: "!!!",
         });
     }, []);
+    const clickPraise  = useCallback(()=>{
+        addPraise(post._id, ()=>{});
+        setCurPraise(curPraise+1);
+    }, [post,curPraise]);
+    useEffect(()=>{
+        if (post.praise_number) {
+            setCurPraise(post.praise_number);
+        }
+    }, [post]);
     return <div className={S.blogTopBox}>
         <div className={S.borderLeftBottom + " " + S.borderClone}/>
         <div className={S.borderRight + " " + S.borderClone}/>
@@ -28,7 +39,7 @@ export const BlogTop = ({post}) => {
                 position: "absolute",
                 right: "0",
                 bottom: "0",
-            }}/>
+            }} setComputed={setComputed}/>
         </div>
         <div className={S.contentLeft}>
             <div className={S.normalTips + " " + S.titleBox}>
@@ -65,12 +76,13 @@ export const BlogTop = ({post}) => {
                 <i className={S.iconfont + " " + S.tinyIconfont}>&#xe65f;</i>
                 <span className={S.tipsBox}>{post.reads_number} footprints,</span>
                 <span className={S.tipsBox}>
-                    {post.praise_number} people say <span className={S.keyTips}>WoW</span>
+                    {curPraise} people say <span className={S.keyTips}>WoW</span>
                 </span>
                 <div
                     className={S.praiseIcon}
                     onMouseEnter={addTinyTips}
                     onMouseLeave={cursorTipsStore.popTips}
+                    onClick={clickPraise}
                 >
                     <i className={S.iconfont}>&#xe641;</i>
                 </div>

@@ -4,7 +4,7 @@ import axiosRetry from "axios-retry";
 
 const serverClient = axios.create({
     // baseURL: "https://www.r0r0.pink/server/",
-    baseURL: "http://101.33.218.37:8202/",
+    baseURL: "https://www.shyr0.com/server/",
     timeout: 10000 //请求的超时时间
 });
 serverClient.defaults.headers.post["Content-Type"] = "application/json";
@@ -55,6 +55,21 @@ export const post = (url, data, config = {}) => {
     return new Promise((resolve, reject) => {
         serverClient({
             method: 'post',
+            url,
+            data,
+            ...config
+        }).then(response => {
+            resolve(response)
+        }).catch(error => {
+            reject(error)
+        })
+    })
+}
+/* 统一封装put请求  */
+export const put= (url, data, config = {}) => {
+    return new Promise((resolve, reject) => {
+        serverClient({
+            method: 'put',
             url,
             data,
             ...config

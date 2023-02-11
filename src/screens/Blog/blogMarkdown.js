@@ -5,13 +5,13 @@ import {coldarkDark} from 'react-syntax-highlighter/dist/esm/styles/prism';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import copy from 'copy-to-clipboard';
-import {useCallback, useEffect} from "react";
+import {memo, useCallback, useEffect} from "react";
 import cursorTipsStore from "@/stores/cursorTipsStore";
 import curPostStore from "@/stores/curPostStore";
 import PlainLeftScrollBars from "@/components/ScrollBars/PlainLeftScrollBars";
 
 
-export const BlogMarkdown = ({post}) => {
+export const BlogMarkdown = memo(({post}) => {
     console.log("markdown")
     const copyCode = useCallback((code) => {
         cursorTipsStore.addTips({
@@ -117,4 +117,4 @@ export const BlogMarkdown = ({post}) => {
                 }}/>
         </div>
     </PlainLeftScrollBars>
-};
+});

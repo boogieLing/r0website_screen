@@ -22,6 +22,9 @@ export const BlogBottom = ({props, children}) => {
                 <img src={backIconImg} alt=""/>
             </div>
             <div className={sideLoginStyle.backText}/>
+            <div>
+                
+            </div>
         </div>
         {children}
     </div>
