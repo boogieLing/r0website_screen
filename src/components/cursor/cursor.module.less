@@ -93,15 +93,17 @@
     background-position: center center;
     background-size: cover;
     display: block;
-    .cursorTipsUl{
+
+    .cursorTipsUl {
       position: absolute;
-      left: 25px;
-      bottom: 25px;
+      right: 0px;
+      bottom: 20px;
       display: flex;
       flex-direction: column-reverse;
       justify-content: flex-start;
-      align-items: flex-start;
+      align-items: flex-end;
     }
+
     .cursorTipsLi {
       position: relative;
       white-space: nowrap;
@@ -109,12 +111,13 @@
       letter-spacing: 0.7px;
       display: flex;
       margin-bottom: 5px;
+
       .cursorTips {
         position: relative;
         padding: 5px 15px !important;
         color: white;
         display: block;
-        text-shadow: 0 0 10px rgba(0,0,0,0.5);
+        text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 
         &::after {
           content: "";
@@ -146,12 +149,14 @@
         align-items: center;
         color: white;
         box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+
         .iconfont {
           font-size: 1.2rem;
           font-weight: 300;
-          text-shadow: 0 0 10px rgba(0,0,0,0.5);
+          text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
-        .iconText{
+
+        .iconText {
           position: absolute;
           top: -10px;
           right: 0;
@@ -162,6 +167,68 @@
         }
       }
     }
+
+    .cursorTipsLi:nth-child(1n) {
+      @childBackColor: #ee827c;
+
+      .cursorTips::after {
+        background: @childBackColor;
+      }
+
+      .cursorTipsIcon {
+        background: @childBackColor;
+      }
+    }
+
+    .cursorTipsLi:nth-child(2n) {
+      @childBackColor: #f09199;
+
+      .cursorTips::after {
+        background: @childBackColor;
+      }
+
+      .cursorTipsIcon {
+        background: @childBackColor;
+      }
+    }
+
+    .cursorTipsLi:nth-child(3n) {
+      @childBackColor: #e17055;
+
+      .cursorTips::after {
+        background: @childBackColor;
+      }
+
+      .cursorTipsIcon {
+        background: @childBackColor;
+      }
+    }
+
+    .cursorTipsLi:nth-child(4sn) {
+      @childBackColor: #f9ac52;
+
+      .cursorTips::after {
+        background: @childBackColor;
+      }
+
+      .cursorTipsIcon {
+        background: @childBackColor;
+      }
+    }
+
+
+    .cursorTipsLi:nth-child(5n) {
+      @childBackColor: #0984e3;
+
+      .cursorTips::after {
+        background: @childBackColor;
+      }
+
+      .cursorTipsIcon {
+        background: @childBackColor;
+      }
+    }
+
   }
 }
 

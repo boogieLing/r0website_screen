@@ -45,7 +45,7 @@ export const BlogListItem = observer(({post, clickHandler}) => {
                 <span className={blogListStyle.textSpan}>{post.title}</span>
             </div>
             <div className={blogListStyle.normalTextBox}>
-                <i className={blogListStyle.iconfont}>&#xe842;</i>
+                <i className={blogListStyle.iconfont}>&#xe621;</i>
                 <span className={blogListStyle.textSpan}>{post.author}</span>
             </div>
             <ul className={blogListStyle.ulBox}>
@@ -85,17 +85,21 @@ export const BlogListItem = observer(({post, clickHandler}) => {
                     <span>{post.praise_number}</span>
                 </div>
                 <div className={blogListStyle.liBox}>
-                    <i className={blogListStyle.iconfont}>&#xe667;</i>
+                    <i className={blogListStyle.iconfont}>&#xe65f;</i>
                     <span>{post.reads_number}</span>
                 </div>
             </ul>
         </div>
-        {curPostStore.id === post._id && curPostStore.heads.map && <div className={blogListStyle.headBox}>
+        {curPostStore.id === post._id && curPostStore.heads.length>=1 && <div className={blogListStyle.headBox}>
             {curPostStore.heads.map((id, index) => {
-                return <div key={id + index} onClick={() => goToHead(id)} className={blogListStyle.head}>
-                    <i className={blogListStyle.iconfont}>&#xe6b1;</i>
-                    {id}
-                </div>;
+                return <div
+                    key={id + index} onClick={() => goToHead(id)}
+                    className={blogListStyle.head + (id === curPostStore.curTitle ? " " + blogListStyle.headHere : "")}
+                >
+                    {/*<i className={blogListStyle.iconfont}>&#xe6b1;</i>*/}
+                    <span className={blogListStyle.indexSpan}>{index + 1}</span>
+                    <span className={blogListStyle.titleSpan}>{id}</span>
+                </div>
             })}
         </div>}
     </div>

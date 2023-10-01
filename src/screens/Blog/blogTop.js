@@ -18,12 +18,13 @@ export const BlogTop = ({post, setComputed}) => {
             iconText: "!!!",
         });
     }, []);
-    const clickPraise  = useCallback(()=>{
-        addPraise(post._id, ()=>{});
-        setCurPraise(curPraise+1);
-    }, [post,curPraise]);
-    useEffect(()=>{
-        if (post.praise_number) {
+    const clickPraise = useCallback(() => {
+        addPraise(post._id, () => {
+        });
+        setCurPraise(curPraise + 1);
+    }, [post, curPraise]);
+    useEffect(() => {
+        if (post.praise_number !== undefined) {
             setCurPraise(post.praise_number);
         }
     }, [post]);

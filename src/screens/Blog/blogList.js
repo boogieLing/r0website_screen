@@ -1,8 +1,9 @@
 import blogListStyle from "./blogList.module.less";
 import {BlogListItem} from "@/screens/Blog/blogListItem";
-import ColoredScrollbars from "@/components/ScrollBars/ColorScrollBars";
+import ColoredScrollbars from "@/components/scrollBars/ColorScrollBars";
+import {Bubbling} from "@/components/button/bubbling";
 
-export const BlogList = ({posts, clickHandler}) => {
+export const BlogList = ({posts, clickHandler, nextPage}) => {
     return <ColoredScrollbars
         style={{
             position: "absolute",
@@ -17,6 +18,7 @@ export const BlogList = ({posts, clickHandler}) => {
                     post={post} key={post._id} clickHandler={clickHandler}
                 />
             })}
+            <Bubbling text="MORE" nextPage={nextPage}/>
         </div>
     </ColoredScrollbars>
 };

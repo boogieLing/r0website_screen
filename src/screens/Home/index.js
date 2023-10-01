@@ -15,6 +15,7 @@ import signImg from "@/static/pic/sign_line.png" ;
 import biui from "@/static/mp3/bi-ui-bi-ui.wav";
 import buiun from "@/static/mp3/bu-iun.wav";
 import {FilingInfo} from "@/components/filingInfo/filingInfo";
+import Cursor from "@/components/cursor/cursor";
 
 const Home = () => {
     const [rect, topActions] = useNodeBoundingRect();
@@ -34,7 +35,7 @@ const Home = () => {
     const [isLeave, setIsLeave] = useState(false);
     const [personalInfoHover, setPersonalInfoHover] = useState(false);
     useEffect(() => {
-        osuStore.getRandomBeatmap().then(_ => {
+        osuStore.getRandomPicFromTCloud().then(_ => {
         });
     }, []);
     useEffect(() => {
@@ -116,10 +117,13 @@ const Home = () => {
     }, []);
     const textSize = useMemo(() => topActionsWidth / 140, [topActionsWidth]);
 
+    const [displayCustomCursor, setDisplayCustomCursor] = useState(false);
     return <ReactDocumentTitle title={globalStore.webSiteTitle + " - Home"}>
         <div
-            className={home.homePage} id={globalStore.homeId} ref={topActions}
+            className={home.homePage + " " + (displayCustomCursor ? home.hiddenCursor : home.staticCursor)}
+            id={globalStore.homeId} ref={topActions}
             onMouseLeave={handleMouseLeave} onMouseEnter={handleMouseEnter} onMouseMove={handleMouseMove}>
+            <Cursor display={displayCustomCursor}/>
             <PinkCookie
                 width={topActionsWidth} height={topActionsHeight}
                 midOffset={midOffset}
@@ -134,8 +138,8 @@ const Home = () => {
                     <img src={signImg} alt="" className={home.sign}/>
                     <div className={home.description + " " + (personalInfoHover ? home.descriptionRunning : "")}>
                         <FilingInfo style={{
-                            position:"relative",
-                            marginBottom:"10px"
+                            position: "relative",
+                            marginBottom: "10px"
                         }}/>
                         <div
                             className={home.descriptionItem + " " + home.descriptionItemEmp}

@@ -1,7 +1,7 @@
 export const randomIsoscelesTriangles = (canvas, width, height, color_arr) => {
     const ctx = canvas.getContext("2d");
     ctx.lineWidth = 0;
-    const limit = Math.min(width, height) / 10;
+    const limit = Math.min(width, height) / 5;
     for (let i = color_arr.length - 1; i >= 0; --i) {
         for (let j = 0; j < limit; ++j) {
             randomIsoscelesTriangle(

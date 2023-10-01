@@ -1,6 +1,5 @@
 import {useContext, useCallback} from "react";
 import {CursorContext} from "./cursorContextProvider";
-import cursor from "@/components/cursor/cursor";
 
 const useCursorHandlers = (options = {}) => {
     const [, setCursor] = useContext(CursorContext);

@@ -40,7 +40,7 @@ const optionList = [
     new optionListItem("Blog", book, 0.2, "Some dispensable personal creations", "Blog", "/blog/"),
     new optionListItem("Thinking", thinking, 0.3, "The seat of this wandering soul", "Thinking"),
     new optionListItem("What's R0", R0n, 0.13, "What a creature r0 is...", "WhosR0"),
-    new optionListItem("More", coffee_cat, 0.20, "Other features of this site", "More"),
+    new optionListItem("More", coffee_cat, 0.20, "Other features of this site", "More","/more/"),
 ];
 
 function PinkCookie({width, height, midOffset}) {

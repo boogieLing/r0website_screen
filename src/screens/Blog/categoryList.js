@@ -19,7 +19,7 @@ export const CategoryList = ({style}) => {
             {categories.map((category) => {
                 return <a className={categoryListStyle.itemBox} key={category.Id}
                           href={"/category/"+category.name} target="_blank">
-                    {category.name}
+                    {category.name}({category.count})
                 </a>
             })}
         </div>

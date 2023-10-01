@@ -2,11 +2,10 @@ import React, {useContext, useEffect, useState} from "react";
 import useMousePosition from "./useMousePosition";
 import {CursorContext} from "./cursorContextProvider";
 import cursorStyle from "./cursor.module.less";
-import globalStore from "@/stores/globalStore";
 import cursorTipsStore from "@/stores/cursorTipsStore";
 import useLocalStorage from "@/hooks/localStorage";
 // Follow: https://medium.com/@jaredloson/custom-javascript-cursor-in-react-d7ffefb2db38
-const Cursor = () => {
+const Cursor = ({display = false}) => {
     const {clientX, clientY} = useMousePosition();
     const [cursor] = useContext(CursorContext);
     const [isVisible, setIsVisible] = useState(false);
@@ -40,7 +39,7 @@ const Cursor = () => {
             left: clientX,
             top: clientY,
             zIndex: 9999,
-            pointerEvents: "none"
+            pointerEvents: "none",
         }} className={cursorStyle.cursor}>
             <div style={{
                 width: `${cursorDiameter}px`,
@@ -49,6 +48,7 @@ const Cursor = () => {
                 transform: `translate(-50%, -50%)`,
                 opacity: isVisible && clientX > 1 ? 1 : 0,
                 borderColor: borderColor,
+                display: display?"default":"none",
             }} className={cursorStyle.lightCircle}>
                 <div className={cursorStyle.lightShadow}/>
                 <div className={cursorStyle.lightArcBox}>

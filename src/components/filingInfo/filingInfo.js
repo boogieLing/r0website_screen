@@ -1,7 +1,9 @@
+
+
 export const FilingInfo = ({style}) => {
     return <div style={{
         position: "fixed",
-        zIndex: "9999",
+        zIndex: "20",
         ...style
     }}>
         <svg
@@ -28,7 +30,7 @@ export const FilingInfo = ({style}) => {
             letterSpacing: "0.7px",
             textShadow: "0 0 10px rgba(0,0,0,0.3)"
         }}>
-            粤ICP备2022146661号
+            粤ICP备2022146661号: www.shyr0.com
         </a>
     </div>
 }

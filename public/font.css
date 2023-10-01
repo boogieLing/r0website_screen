@@ -2,3 +2,15 @@
   font-family: "sourceCodeProRegular";
   src: url(./SourceCodePro-Regular.otf);
 }
+@font-face {
+  font-family: "oswaldRegular";
+  src:url(./Oswald-Regular.otf);
+}
+@font-face {
+  font-family: "oswaldLight";
+  src:url(./Oswald-Light.otf);
+}
+* {
+  font-family: "oswaldRegular", serif;
+  letter-spacing: 1px;
+}

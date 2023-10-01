@@ -1,6 +1,5 @@
 import {computed, makeAutoObservable} from "mobx";
-import axios from "axios";
-import {GetDefaultBeatMap, GetImageUrl, GetRandomMap} from "@/request/osuApi";
+import {GetDefaultBeatMap, GetRandomMap, GetRandomPicFromTCloud} from "@/request/osuApi";
 
 class Beatmap {
     name = "";
@@ -17,6 +16,8 @@ class Beatmap {
 class OsuStore {
     beatmapSet = []; // 定义数据
     curBeatmap = null;
+    curOsuPicFromTCloud = "";
+
     // baseUrl = "https://www.r0r0.pink/osu";
 
     constructor() {
@@ -34,11 +35,22 @@ class OsuStore {
         })
     };
 
+    getRandomPicFromTCloud = async () => {
+        GetRandomPicFromTCloud((r) => {
+            this.setCurPicFromTCloud(r.data.data + "");
+        })
+    }
+
     get curImageUrl() {
-        if (this.curBeatmap && this.curBeatmap.images.length > 0) {
-            return GetImageUrl(this.curBeatmap.name, this.curBeatmap.images[0]);
-        } else {
+        // if (this.curBeatmap && this.curBeatmap.images.length > 0) {
+        //     return GetImageUrl(this.curBeatmap.name, this.curBeatmap.images[0]);
+        // } else {
+        //     return this.getDefaultImageUrl();
+        // }
+        if (this.curOsuPicFromTCloud === "" || Math.round(Math.random()) === 0) {
             return this.getDefaultImageUrl();
+        } else {
+            return this.curOsuPicFromTCloud;
         }
     };
 
@@ -56,6 +68,9 @@ class OsuStore {
     setCurBeatmap = (name, images, songs) => {
         this.curBeatmap = new Beatmap(name, images, songs);
     };
+    setCurPicFromTCloud = (url) => {
+        this.curOsuPicFromTCloud = url;
+    }
 }
 
 const osuStore = new OsuStore();

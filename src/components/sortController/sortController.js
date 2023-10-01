@@ -5,7 +5,7 @@ export const SortController = memo(({style, params, setComputed}) => {
     const [checkedText, setCheckedText] = useState(params ? params[0].text : "");
     const [showTextOption, setShowTextOption] = useState(false);
     const [isDescending, setIsDescending] = useState(true);
-    const [computedParams, setComputedParams] = useState({});
+    const [computedParams, setComputedParams] = useState(null);
     const toggleDescending = useCallback(() => {
         setIsDescending(!isDescending);
     }, [isDescending]);
@@ -22,7 +22,7 @@ export const SortController = memo(({style, params, setComputed}) => {
         });
     }, [isDescending]);
     useEffect(() => {
-        if (setComputed) {
+        if (setComputed && computedParams) {
             setComputed(computedParams);
         }
     }, [computedParams]);

@@ -1,0 +1,54 @@
+.more {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+.hiddenCursor {
+  cursor: none !important;
+}
+.staticCursor * {
+  cursor: url("../../static/cursor/default.cur"), auto !important;
+}
+.staticCursor div {
+  cursor: url("../../static/cursor/default.cur"), auto !important;
+}
+.staticCursor p {
+  cursor: url("../../static/cursor/text.cur"), text !important;
+}
+.staticCursor a {
+  cursor: url("../../static/cursor/pointer.cur"), pointer !important;
+}
+.staticCursor button {
+  cursor: url("../../static/cursor/help.cur"), pointer !important;
+}
+.staticCursor img {
+  cursor: url("../../static/cursor/person.cur"), auto !important;
+}
+.more .main {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding-top: 30px;
+}
+.more .main h1 {
+  color: #dfe6e9;
+}
+.main .headBox {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+.main .toolsBox {
+  position: relative;
+  width: 100%;
+}
+/*# sourceMappingURL=more.module.css.map */

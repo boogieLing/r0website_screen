@@ -73,6 +73,8 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  cursor: url("../../static/cursor/help.cur"), pointer !important;
+  pointer-events: auto;
 }
 .pinkCookie:hover {
   transition: 0.3s;

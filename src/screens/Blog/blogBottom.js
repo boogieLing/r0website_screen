@@ -1,19 +1,14 @@
-import blogBottomStyle from "./blogBottom.module.less";
+import S from "./blogBottom.module.less";
 import sideLoginStyle from "@/components/sideLogin/sideLogin.module.less";
 import backIconImg from "@/components/sideLogin/backIcon.png";
-import buiu from "@/static/mp3/bu-iu.wav";
-import bunnnnn from "@/static/mp3/bunnnnn.wav";
-import useSound from "use-sound";
+import thinking from "@/static/pic/thinking.png";
+import coffee_cat from "@/static/pic/coffee_cat.png";
+import {ShowR0} from "@/components/r0/showR0";
 
 export const BlogBottom = ({props, children}) => {
-    const [playBuiu] = useSound(buiu, {volume: 0.3});
-    const [playBunnnnn] = useSound(bunnnnn, {volume: 0.3});
-
-    return <div className={blogBottomStyle.blogBottomBox}>
+    return <div className={S.blogBottomBox}>
         <div
             className={sideLoginStyle.backBtn}
-            onMouseEnter={() => playBuiu()}
-            onClick={() => playBunnnnn()}
             style={{
                 bottom: "50px"
             }}
@@ -22,10 +17,23 @@ export const BlogBottom = ({props, children}) => {
                 <img src={backIconImg} alt=""/>
             </div>
             <div className={sideLoginStyle.backText}/>
-            <div>
-                
-            </div>
         </div>
+        <ul className={S.navigationBar}>
+            <li className={S.navigation}>
+                <div className={S.nIconBox}><img src={thinking} alt=""/></div>
+                <span className={S.nTitle}>Thinking</span>
+            </li>
+            <li className={S.navigation}>
+                <div className={S.nIconBox}><img src={coffee_cat} alt="" className={S.longImg}/></div>
+                <span className={S.nTitle}>More</span>
+            </li>
+            <ShowR0 style={{
+                position: "absolute",
+                left: "120%",
+                bottom: "3px",
+                marginRight:"30px",
+            }}/>
+        </ul>
         {children}
     </div>
 }

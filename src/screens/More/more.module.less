@@ -1,0 +1,69 @@
+.more {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.hiddenCursor {
+  cursor: none !important;
+}
+
+.staticCursor {
+  * {
+    cursor: url("../../static/cursor/default.cur"), auto !important;
+  }
+
+  div {
+    cursor: url("../../static/cursor/default.cur"), auto !important;
+  }
+
+  p {
+    cursor: url("../../static/cursor/text.cur"), text !important;
+  }
+
+  a {
+    cursor: url("../../static/cursor/pointer.cur"), pointer !important;
+  }
+
+  button {
+    cursor: url("../../static/cursor/help.cur"), pointer !important;
+  }
+
+  img {
+    cursor: url("../../static/cursor/person.cur"), auto !important;
+  }
+}
+
+.more {
+  .main {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding-top: 30px;
+    h1 {
+      color: #dfe6e9;
+    }
+  }
+}
+
+.main {
+  .headBox {
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .toolsBox {
+    position: relative;
+    width: 100%;
+  }
+}

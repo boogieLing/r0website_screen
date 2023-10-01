@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Scrollbars} from 'react-custom-scrollbars';
+import curPostStore from "@/stores/curPostStore";
 
 
 export default class PlainLeftScrollBars extends React.PureComponent {
@@ -8,6 +9,7 @@ export default class PlainLeftScrollBars extends React.PureComponent {
         this.renderTrackVertical = this.renderTrackVertical.bind(this);
         this.renderThumbVertical = this.renderThumbVertical.bind(this);
     }
+
 
     renderTrackVertical({style, ...props}) {
         const finalStyle = {
@@ -34,6 +36,19 @@ export default class PlainLeftScrollBars extends React.PureComponent {
         );
     }
 
+    handleUpdate = () => {
+        const topHeight = 100;
+        const h2List = document.querySelectorAll('h2');
+        const totalHeight = document.documentElement.clientHeight || document.body.clientHeight;
+        for (let h2Item of h2List) {
+            const ans = h2Item.getBoundingClientRect().top;
+            if (ans < totalHeight - 300 && ans > 50) {
+                curPostStore.setCurTitle(h2Item.innerText);
+                break; // 一个小优化
+            }
+        }
+    }
+
     render() {
         return (
             <Scrollbars
@@ -44,6 +59,7 @@ export default class PlainLeftScrollBars extends React.PureComponent {
                 autoHideDuration={200}
                 renderTrackVertical={this.renderTrackVertical}
                 renderThumbVertical={this.renderThumbVertical}
+                onUpdate={this.handleUpdate}
                 {...this.props}
             />
         );

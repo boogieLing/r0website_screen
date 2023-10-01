@@ -7,7 +7,6 @@ import {clearTriangles, randomIsoscelesTriangles} from "@/utils/randomTriangles"
 import colorStore from "@/stores/colorStore";
 
 import buiu from "@/static/mp3/bu-iu.wav";
-import bunnnnn from "@/static/mp3/bunnnnn.wav";
 import {useNavigate} from "react-router-dom";
 
 const pinkCookieListItemCanvasId = "pinkCookieListItemCanvasId";
@@ -16,8 +15,6 @@ const pinkColor = colorStore.pink;
 function PinkCookieSideListItem({height, width, value, id, navigatePath}) {
     const navigate = useNavigate();
     const [playBuiu] = useSound(buiu, {volume: 0.3});
-    const [playBunnnnn] = useSound(bunnnnn, {volume: 0.3});
-
     const [isCheck, setIsCheck] = useState(false);
     const [pinkCookieListItemCanvas, setPinkCookieCanvas] = useState(null);
 
@@ -41,12 +38,12 @@ function PinkCookieSideListItem({height, width, value, id, navigatePath}) {
     }, [height, width, pinkCookieListItemCanvas, isCheck, id]);
     const goTo = useCallback(() => {
         if (navigatePath) {
-            navigate(navigatePath);
+            // navigate(navigatePath);
+            window.open(navigatePath,"_blank")
         }
     }, [navigatePath]);
     return <div className={listStyle.PinkCookieSideListItem} key={value.key} style={{
         height: `${height * 0.15}px`,
-        backgroundColor: `rgba(9, 132, 227, 1.0)`,
         opacity: isCheck ? "1" : "0.7"
     }} onMouseEnter={mouseEnterHandler} onMouseLeave={mouseLeaveHandler} onClick={goTo}>
         <canvas
@@ -71,11 +68,7 @@ function PinkCookieSideListItem({height, width, value, id, navigatePath}) {
             }}>
                 {value.title}
             </span>
-            <span className={listStyle.tips} style={{
-                fontSize: `${height / 50}px`,
-                WebkitTransformOrigin: "0 0", //兼容chrome的小字体
-                WebkitTransform: "scale(0.9)",
-            }}>
+            <span className={listStyle.tips} >
                 {value.tips}
             </span>
         </div>

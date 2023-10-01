@@ -1,8 +1,15 @@
 import home from "./index.module.less";
+import {memo, useEffect, useMemo, useState} from "react";
 
-function DynamicBackground({width, height, midOffset, curImageUrl}) {
-    const offsetX = -midOffset.x * 0.04;
-    const offsetY = -midOffset.y * 0.04;
+const DynamicBackground = memo(({width, height, midOffset, curImageUrl}) => {
+    const [offsetX, setOffsetX] = useState(0);
+    const [offsetY, setOffsetY] = useState(0);
+    useEffect(()=>{
+        if (midOffset) {
+            setOffsetY(-midOffset.y * 0.04);
+            setOffsetX(-midOffset.x * 0.04);
+        }
+    }, [midOffset]);
     return <div className={home.backGroundImgBox}>
         <div className={home.backGroundImgMask}/>
         <img src={curImageUrl} className={home.backGroundImg}
@@ -10,6 +17,6 @@ function DynamicBackground({width, height, midOffset, curImageUrl}) {
             transform: `translate(${offsetX}px,${offsetY}px)`
         }}/>
     </div>;
-}
+});
 
 export default DynamicBackground;

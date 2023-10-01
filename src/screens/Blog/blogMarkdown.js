@@ -8,11 +8,9 @@ import copy from 'copy-to-clipboard';
 import {memo, useCallback, useEffect} from "react";
 import cursorTipsStore from "@/stores/cursorTipsStore";
 import curPostStore from "@/stores/curPostStore";
-import PlainLeftScrollBars from "@/components/ScrollBars/PlainLeftScrollBars";
-
+import PlainLeftScrollBars from "@/components/scrollBars/PlainLeftScrollBars";
 
 export const BlogMarkdown = memo(({post}) => {
-    console.log("markdown")
     const copyCode = useCallback((code) => {
         cursorTipsStore.addTips({
             spanText: "Copy successfully！",
@@ -40,11 +38,12 @@ export const BlogMarkdown = memo(({post}) => {
     }, []);
     useEffect(() => {
         if (post.markdown && post.markdown !== "") {
-            let titles = post.markdown.match(/\n## ([\s\S]*?)\n/g);
-            if (!titles) {
-                titles = [];
+            // 只匹配二级标题
+            let h2Titles = post.markdown.match(/\n## ([\s\S]*?)\n/g);
+            if (!h2Titles) {
+                h2Titles = [];
             }
-            curPostStore.setHead(titles.map((str) => {
+            curPostStore.setHead(h2Titles.map((str) => {
                 return str.toString()
                     .replace(/\n## /g, '')
                     .replace(/\n/g, '');
@@ -56,9 +55,13 @@ export const BlogMarkdown = memo(({post}) => {
         style={{
             position: "absolute",
             top: "100px",
-            left: 0,
-            width: "calc(100% - 450px)",
+            right: "530px",
+            // left: "450px",
+            width: "calc(100% - 530px)",
+            maxWidth: "1370px",
             height: "calc(100% - 220px)", //TODO 丑陋的写法，实际上高度需要根据less变量计算得出
+            overflow: "clip",
+            boxSizing: "border-box",
         }}>
         <div
             className={markdownStyle.blogMarkdownBox}>
@@ -112,7 +115,7 @@ export const BlogMarkdown = memo(({post}) => {
                         </del>
                     },
                     h2({node, inline, className, children, ...props}) {
-                        return <h2 id={children}>{children}</h2>
+                        return <h2 id={children} data-name={children}>{children}</h2>
                     },
                 }}/>
         </div>

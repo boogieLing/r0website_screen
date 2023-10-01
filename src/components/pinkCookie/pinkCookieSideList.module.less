@@ -12,6 +12,7 @@
   z-index: 0;
   transition: 0.3s;
   transform-origin: left;
+  font-family: "oswaldRegular", serif;
 }
 
 .PinkCookieSideListMove {
@@ -51,10 +52,12 @@
   // transition: 0.25s cubic-bezier(0.235, -0.310, 0.310, 3.00);
   transition: 0.25s;
   background: #2a4073;
+  font-family: "oswaldRegular", serif;
 
   &:hover {
     // transform: translateY(-10px);
     z-index: 100;
+    background: white;
     // background: #de5b95;
     .infoBox {
       .tips {
@@ -83,9 +86,10 @@
       display: block;
       box-sizing: border-box;
       color: white;
-      font-family: "sourceCodeProRegular", serif;
+      font-family: "oswaldRegular", serif;
       transform: scaleY(1.05);
       text-shadow: 0 0 5px rgba(0, 0, 0, 1);
+      letter-spacing: 0.9px;
     }
 
     .title {
@@ -94,6 +98,8 @@
 
     .tips {
       opacity: 0;
+      color: #f7fcfe;
+      //text-shadow: 0  0 5px white;
     }
   }
 
