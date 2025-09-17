@@ -3,6 +3,37 @@
   margin: 0;
 }
 
+
+.hiddenCursor {
+  cursor: none !important;
+}
+
+.staticCursor {
+  * {
+    cursor: url("../../static/cursor/default.cur"), auto !important;
+  }
+
+  div {
+    cursor: url("../../static/cursor/default.cur"), auto !important;
+  }
+
+  p {
+    cursor: url("../../static/cursor/text.cur"), text !important;
+  }
+
+  a {
+    cursor: url("../../static/cursor/pointer.cur"), pointer !important;
+  }
+
+  button {
+    cursor: url("../../static/cursor/help.cur"), pointer !important;
+  }
+
+  img {
+    cursor: url("../../static/cursor/person.cur"), auto !important;
+  }
+}
+
 .homePage {
   position: fixed;
   left: 0;
@@ -15,14 +46,15 @@
   align-items: center;
   flex-direction: column;
   background-color: gray;
+  cursor: url("../../static/cursor/person.cur"), auto !important;
 }
 
 .backGroundImgBox {
   position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
+  left: -5%;
+  top: -5%;
+  width: 110%;
+  height: 110%;
   z-index: -1;
   display: flex;
   flex-direction: column;
@@ -75,6 +107,7 @@
     flex-direction: row;
     justify-content: flex-start;
     align-items: flex-end;
+    font-family: "oswaldRegular", serif;
 
     &:hover {
       .description .descriptionItem {
@@ -119,8 +152,8 @@
         color: rgba(255, 255, 255, 0.7);
         font-size: 10px;
         letter-spacing: 0.7px;
-        font-family: "sourceCodeProRegular", serif;
         transition: 0.5s;
+        margin-bottom: 5px;
       }
 
       .descriptionItemEmp {
@@ -137,6 +170,7 @@
   top: 0;
   padding: 4px;
   height: 11vh;
+  font-family: "oswaldRegular", serif;
 
   .loginBox {
     position: relative;
@@ -182,14 +216,14 @@
       width: auto;
       margin-left: 10px;
       color: white;
-      font-family: "sourceCodeProRegular", serif;
-      font-size: 1rem;
+      font-size: 1.3rem;
+      font-family: "oswaldRegular", serif;
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
       align-items: flex-start;
-      letter-spacing: 0.3px;
-      padding-right: 50px;
+      letter-spacing: 1.9px;
+      padding-right: 200px;
       text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
 
       .loginInfoName {
@@ -197,7 +231,7 @@
       }
 
       .loginTips {
-        font-size: 0.7rem;
+        font-size: 1rem;
       }
     }
   }

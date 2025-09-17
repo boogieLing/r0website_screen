@@ -14,6 +14,7 @@
   overflow: hidden;
   white-space: nowrap !important;
   transform: translateX(0%) !important;
+  z-index: 100;
 }
 .mainHidden {
   transform: translateX(-100%) !important;
@@ -102,7 +103,6 @@
   position: relative;
   display: inline-block;
   box-sizing: border-box;
-  font-size: 0.8rem;
   font-weight: 900;
   letter-spacing: 0.7px;
   transform: scaleY(1.2);
@@ -124,7 +124,7 @@
 .signInBox .signInItems .inputItem .inputTips {
   position: relative;
   font-size: 1rem;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.9px;
   flex: 1;
 }
 .signInBox .signInItems .inputItem input {
@@ -180,7 +180,6 @@
 }
 .signInBox .signInItems .optionItem .optionTips {
   position: relative;
-  font-size: 0.8rem;
   letter-spacing: 1px;
   flex: 1;
   transform: scaleY(1.05);
@@ -197,6 +196,8 @@
   width: 100%;
   padding: 10px 0;
   text-align: center;
+  font-size: 1.2rem;
+  letter-spacing: 1.2px;
   background: #2297b9;
   box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
   box-sizing: border-box;
@@ -212,8 +213,12 @@
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
+  z-index: 100;
   transform: translateX(-15px);
-  z-index: 9999;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 .backBtn:hover .backIcon {
   background: #bb1177;
@@ -242,7 +247,6 @@
   height: 100%;
   width: 60px;
   transform: skewX(-15deg);
-  font-family: "sourceCodeProRegular", serif;
   background: #ed3398;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
@@ -251,7 +255,7 @@
   position: absolute;
   width: 100%;
   height: 100%;
-  top: 10px;
+  top: 7px;
   left: 36px;
   display: inline-block;
   font-size: 1rem;

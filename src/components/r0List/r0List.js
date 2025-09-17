@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from "react";
-import SayMyPosition from "@/components/r0List/sayMyPosition";
 import listStyle from "./r0List.module.less";
+import React, {useCallback, useEffect, useMemo, useState} from "react";
+import SayMyPosition from "@/components/r0List/sayMyPosition";
 import {useNodeBoundingPositionSize} from "@/hooks/useNodeBoundingPositionSize";
 
 const R0List = ({children, style, classNameO, option}) => {
@@ -8,9 +8,13 @@ const R0List = ({children, style, classNameO, option}) => {
     const [fatherPosition, fatherPositionRef] = useNodeBoundingPositionSize();
     const [backPosition, setBackPosition] = useState({left: 0, top: 0, width: 0, height: 0});
     const [isLeave, setIsLeave] = useState(false);
-    const _option = option ? option : {};
-    _option.widthOffset = _option.widthOffset ? _option.widthOffset : 15;
-    _option.lights = _option.lights ? _option.lights : [];
+    const _option = useMemo(() => {
+        const _option = option ? option : {};
+        _option.widthOffset = _option.widthOffset ? _option.widthOffset : 15;
+        _option.lights = _option.lights ? _option.lights : [];
+        return _option;
+    }, []);
+
     useEffect(() => {
         setBackPosition({
             width: currentCheck.width + _option.widthOffset,
@@ -19,12 +23,12 @@ const R0List = ({children, style, classNameO, option}) => {
             left: currentCheck.left - fatherPosition.left
         });
     }, [currentCheck, isLeave]);
-    const onMouseEnterHandler = () => {
+    const onMouseEnterHandler = useCallback(() => {
         setIsLeave(false);
-    }
-    const onMouseLeaveHandler = () => {
+    }, []);
+    const onMouseLeaveHandler = useCallback(() => {
         setIsLeave(true);
-    };
+    }, []);
     return <div
         style={style ? style : {}} className={listStyle.r0List + (classNameO ? "" + classNameO : "")}
         ref={fatherPositionRef}

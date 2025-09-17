@@ -1,0 +1,284 @@
+@height: 175px;
+@border: 3px solid rgba(0, 206, 201, 1.0);
+@borderBoxBackColor: rgba(0, 0, 0, 0.8);
+@borderLeftBottomBoxHeight: 8px;
+@borderLeftBoxWidth: 450px;
+@borderRightBoxHeight: 75px;
+@borderRightRadiusX: 150px;
+
+.iconfont {
+  font-family: "iconfont", serif !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: transparent;
+}
+
+.blogTopShrink {
+  transform: translateY(-100%);
+}
+
+.blogTopBox {
+  position: absolute;
+  top: 0;
+  left: 0;
+  box-sizing: border-box;
+  width: 100%;
+  height: @height;
+  background: transparent;
+  transition: 0.3s;
+
+  .borderLeftBottom {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: @borderLeftBottomBoxHeight;
+    width: @borderLeftBoxWidth;
+    border-radius: 0 0 5px 0 / 0 0 8px 0;
+    border-right: @border;
+    border-bottom: @border;
+    z-index: 10;
+  }
+
+  .borderRightBack {
+    position: absolute;
+    left: @borderLeftBoxWidth;
+    top: 0;
+    right: 0;
+    height: @height - 5px;
+    width: 150px;
+    box-sizing: border-box;
+    clip-path: path('M 0 0 L 150 0 L 150 95 A 150 80 0 0 0 0,170 z');
+    background: @borderBoxBackColor;
+    box-shadow: 0 0 20px black;
+  }
+
+  .borderRight {
+    position: absolute;
+    top: @height - @borderRightBoxHeight - 5px;
+    right: 0;
+    height: @borderRightBoxHeight;
+    width: calc(100% ~"-" @borderLeftBoxWidth);
+    box-sizing: border-box;
+    border-radius: @borderRightRadiusX 0 0 0 / (@borderRightBoxHeight + 5px) 0 0 0;
+    border-left: @border;
+    border-top: @border;
+    z-index: 10;
+    user-select: none;
+    pointer-events: none;
+  }
+
+  .borderClone {
+    border-width: 5px;
+    border-color: rgba(0, 206, 201, 1.0);
+    filter: blur(6px);
+    user-select: none;
+    pointer-events: none;
+
+    &.borderLeftBottom {
+      filter: blur(3px);
+      border-image: linear-gradient(to right, rgba(225, 112, 85, 1.0), rgba(253, 203, 110, 1.0), rgba(0, 206, 201, 1.0)) 2 2 2 2;
+    }
+  }
+
+  .backLeft {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: @height;
+    width: @borderLeftBoxWidth;
+    background: @borderBoxBackColor;
+    box-sizing: border-box;
+  }
+
+  .backRight {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: @height - @borderRightBoxHeight - 5px;
+    width: calc(100% ~"-" @borderLeftBoxWidth ~"-" @borderRightRadiusX);
+    background: @borderBoxBackColor;
+  }
+
+  .contentLeft {
+    position: absolute;
+    height: @height;
+    width: @borderRightRadiusX+@borderLeftBoxWidth;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    color: #dfe6e9;
+    padding: 15px 20px;
+    box-sizing: border-box;
+
+    .normalTips {
+      position: relative;
+      margin-bottom: 15px;
+
+      .iconfont {
+        position: relative;
+        margin-right: 5px;
+        font-size: 1.5rem;
+      }
+
+      .tipsBox {
+        position: relative;
+        letter-spacing: 0.3px;
+        margin-right: 5px;
+
+        .keyTips {
+          position: relative;
+          display: inline-block;
+          @color: rgba(250, 177, 160, 0.9);
+
+          &::before {
+            content: "";
+            position: absolute;
+            height: 2px;
+            width: 100%;
+            bottom: -2px;
+            left: 0;
+            background: @color;
+            border-radius: 2px;
+          }
+
+          &::after {
+            content: "”";
+            position: absolute;
+            left: 90%;
+            top: -17px;
+            box-sizing: border-box;
+            width: 25px;
+            height: 25px;
+            font-size: 2.5rem;
+            text-align: center;
+            color: @color;
+          }
+        }
+      }
+    }
+
+    .tinyTips {
+      font-size: 0.8rem;
+    }
+
+    .inlineTips {
+      display: inline-block !important;
+    }
+
+    .tinyIconfont {
+      font-size: 1rem !important;
+    }
+
+    .praiseBox {
+      box-sizing: border-box;
+
+
+      .praiseIcon {
+        position: absolute;
+        display: inline-block;
+        bottom: 0;
+        user-select: none;
+
+        animation: WobbleZ 0.5s linear 0.2s infinite alternate paused;
+
+        .iconfont {
+          display: inline-block;
+          margin-left: 5px;
+          transition: 0.2s;
+          color: #00cec9;
+          font-weight: 900;
+          font-size: 1.3rem !important;
+          text-shadow: 0 0 5px #00cec9, 0 0 7px white;
+        }
+      }
+
+      &:hover {
+        .praiseIcon {
+          animation-play-state: running;
+
+          .iconfont {
+            font-size: 2rem !important;
+          }
+        }
+      }
+    }
+
+    .titleBox {
+      font-size: 1.5rem;
+      letter-spacing: 1.3px;
+      font-weight: 900;
+      margin-bottom: 5px;
+    }
+
+    .tinyUl {
+      position: relative;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+      flex-wrap: nowrap;
+      box-sizing: border-box;
+      margin-bottom: 15px;
+
+      .tinyLi {
+        position: relative;
+        display: inline-block;
+        font-size: 0.8rem;
+        box-sizing: border-box;
+        margin-right: 5px;
+        border-radius: 3px;
+        border: 1px solid rgba(223, 230, 233, 0.15);
+        padding: 3px 10px;
+        overflow: hidden;
+        white-space: nowrap;
+        transition: 0.2s ease-in-out;
+
+        &::after {
+          content: "";
+          position: absolute;
+          left: 0;
+          top: 0;
+          height: 110%;
+          width: 200px;
+          background-image: linear-gradient(0deg,
+          rgba(0, 0, 0, 0),
+          rgba(255, 255, 255, 0.3),
+          rgba(0, 0, 0, 0));
+          transform: rotateZ(45deg) translate(-80px, 80px);
+        }
+
+        &:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+          border-color: transparent;
+
+          &::after {
+            transition: 1s ease-in-out;
+            transform: rotateZ(45deg) translate(100px, -100px);
+          }
+        }
+      }
+    }
+
+    .title {
+      position: relative;
+    }
+  }
+}
+
+@keyframes WobbleZ {
+  0% {
+    transform: rotateZ(0);
+  }
+
+  25% {
+    transform: rotateZ(20deg);
+  }
+
+  100% {
+    transform: rotateZ(-20deg);
+  }
+}

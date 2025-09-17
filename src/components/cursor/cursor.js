@@ -2,10 +2,10 @@ import React, {useContext, useEffect, useState} from "react";
 import useMousePosition from "./useMousePosition";
 import {CursorContext} from "./cursorContextProvider";
 import cursorStyle from "./cursor.module.less";
-import globalStore from "@/stores/globalStore";
+import cursorTipsStore from "@/stores/cursorTipsStore";
 import useLocalStorage from "@/hooks/localStorage";
 // Follow: https://medium.com/@jaredloson/custom-javascript-cursor-in-react-d7ffefb2db38
-const Cursor = () => {
+const Cursor = ({display = false}) => {
     const {clientX, clientY} = useMousePosition();
     const [cursor] = useContext(CursorContext);
     const [isVisible, setIsVisible] = useState(false);
@@ -14,7 +14,8 @@ const Cursor = () => {
         const handleMouseEnter = () => setIsVisible(true);
         const handleMouseLeave = () => {
             setIsVisible(false);
-            globalStore.appCanvasCtx.clearRect(0, 0, globalStore.appCanvasDom.width, globalStore.appCanvasDom.height);
+            // TODO 需要浏览器性能。。。。。
+            // globalStore.appCanvasCtx.clearRect(0, 0, globalStore.appCanvasDom.width, globalStore.appCanvasDom.height);
         };
         const handleMouseDown = () => setIsDown(true);
         const handleMouseUp = () => setIsDown(false);
@@ -35,22 +36,19 @@ const Cursor = () => {
     return (
         <div style={{
             position: "fixed",
-            top: 0,
-            bottom: 0,
-            left: 0,
-            right: 0,
+            left: clientX,
+            top: clientY,
             zIndex: 9999,
-            pointerEvents: "none"
+            pointerEvents: "none",
         }} className={cursorStyle.cursor}>
             <div style={{
-                left: clientX,
-                top: clientY,
                 width: `${cursorDiameter}px`,
                 height: `${cursorDiameter}px`,
                 borderWidth: `${cursorDiameter / 10}px`,
                 transform: `translate(-50%, -50%)`,
                 opacity: isVisible && clientX > 1 ? 1 : 0,
                 borderColor: borderColor,
+                display: display?"default":"none",
             }} className={cursorStyle.lightCircle}>
                 <div className={cursorStyle.lightShadow}/>
                 <div className={cursorStyle.lightArcBox}>
@@ -59,11 +57,26 @@ const Cursor = () => {
                 </div>
             </div>
             <div className={cursorStyle.cursorImg} style={{
-                left: clientX,
-                top: clientY,
                 transform: `translate(-50%, -50%) scale(${cursor.active ? 2.5 : 1})`,
                 opacity: isVisible && clientX > 1 ? 1 : 0,
-            }}/>
+            }}>
+                <div className={cursorStyle.cursorTipsUl}>
+                    {
+
+                        cursorTipsStore.mouseTips.map((tip, index) => {
+                            return <div className={cursorStyle.cursorTipsLi} key={index}>
+                                <div className={cursorStyle.cursorTipsIcon}>
+                                    <i className={cursorStyle.iconfont}>&#xe748;</i>
+                                    <i className={cursorStyle.iconText}>{tip.iconText}</i>
+                                </div>
+                                <span className={cursorStyle.cursorTips}>
+                                {tip.spanText}
+                            </span>
+                            </div>
+                        })
+                    }
+                </div>
+            </div>
         </div>
     );
 };

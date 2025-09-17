@@ -41,7 +41,6 @@ const useCursorHandlers = (options = {}) => {
         }
         toggleCursorDown();
     }, []);
-
     return {onMouseEnter, onMouseLeave, onMouseDown, onMouseUp};
 };
 export default useCursorHandlers;

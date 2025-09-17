@@ -14,4 +14,4 @@ CMD ["npm","start", "y"]
 EXPOSE 3000
 
 # docker build -f screen.Dockerfile -t r0website-screen .
-# docker run -d -p 3000:3001 --name r0website-screen r0website-screen
+# docker run -d -p 3001:3000 --name r0website-screen r0website-screen

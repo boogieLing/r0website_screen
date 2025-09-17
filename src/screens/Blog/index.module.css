@@ -1,0 +1,83 @@
+.hiddenCursor {
+  cursor: none !important;
+}
+.staticCursor * {
+  cursor: url("../../static/cursor/default.cur"), auto !important;
+}
+.staticCursor div {
+  cursor: url("../../static/cursor/default.cur"), auto !important;
+}
+.staticCursor p {
+  cursor: url("../../static/cursor/text.cur"), text !important;
+}
+.staticCursor a {
+  cursor: url("../../static/cursor/pointer.cur"), pointer !important;
+}
+.staticCursor button {
+  cursor: url("../../static/cursor/help.cur"), pointer !important;
+}
+.staticCursor img {
+  cursor: url("../../static/cursor/person.cur"), auto !important;
+}
+.coverFather {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: block;
+}
+.blogMain {
+  position: relative;
+  display: block;
+  width: 100vw;
+  height: 100vh;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+.blogBackgroundBox {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: block;
+  pointer-events: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  z-index: -1;
+}
+.blogBackgroundBox .backGroundColor {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: block;
+}
+.blogBackgroundBox .backGroundImg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: block;
+  z-index: -1;
+}
+.blogBackgroundBox .backGroundImg::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+}
+.blogBackgroundBox .backGroundImg .backGroundImg {
+  position: absolute;
+  display: inline-block;
+  z-index: -1;
+  object-fit: cover;
+  opacity: 0.3;
+  object-position: center;
+  filter: blur(10px);
+}
+/*# sourceMappingURL=index.module.css.map */

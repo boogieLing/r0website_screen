@@ -1,5 +1,5 @@
 import {computed, makeAutoObservable} from "mobx";
-import axios from "axios";
+import {GetDefaultBeatMap, GetRandomMap, GetRandomPicFromTCloud} from "@/request/osuApi";
 
 class Beatmap {
     name = "";
@@ -16,9 +16,9 @@ class Beatmap {
 class OsuStore {
     beatmapSet = []; // 定义数据
     curBeatmap = null;
-    baseUrl = "http://101.33.218.37:11312";
-    imageRoute = "image";
-    defaultImage = "968171-MIMI_feat._Hatsune_Miku-Mizuoto_to_Curtain/qt-miku.jpg";
+    curOsuPicFromTCloud = "";
+
+    // baseUrl = "https://www.r0r0.pink/osu";
 
     constructor() {
         makeAutoObservable(this, {
@@ -29,21 +29,28 @@ class OsuStore {
 
     // 只要调用这个方法 就可以从后端拿到数据并且存入channelList
     getRandomBeatmap = async () => {
-        const res = await axios.get(this.baseUrl + "/random_beatmap");
-        this.setCurBeatmap(res.data.name, res.data.data.images, res.data.data.songs);
-        this.beatmapSet.push(this.curBeatmap);
+        GetRandomMap((r) => {
+            this.setCurBeatmap(r.data.name, r.data.data.images, r.data.data.songs);
+            this.beatmapSet.push(this.curBeatmap);
+        })
     };
 
+    getRandomPicFromTCloud = async () => {
+        GetRandomPicFromTCloud((r) => {
+            this.setCurPicFromTCloud(r.data.data + "");
+        })
+    }
+
     get curImageUrl() {
-        if (osuStore.curBeatmap && osuStore.curBeatmap.images.length > 0) {
-            return [
-                osuStore.baseUrl,
-                osuStore.imageRoute,
-                osuStore.curBeatmap.name,
-                osuStore.curBeatmap.images[0]
-            ].join("/");
-        } else {
+        // if (this.curBeatmap && this.curBeatmap.images.length > 0) {
+        //     return GetImageUrl(this.curBeatmap.name, this.curBeatmap.images[0]);
+        // } else {
+        //     return this.getDefaultImageUrl();
+        // }
+        if (this.curOsuPicFromTCloud === "" || Math.round(Math.random()) === 0) {
             return this.getDefaultImageUrl();
+        } else {
+            return this.curOsuPicFromTCloud;
         }
     };
 
@@ -56,15 +63,14 @@ class OsuStore {
     };
 
     getDefaultImageUrl = () => {
-        return [
-            this.baseUrl,
-            this.imageRoute,
-            this.defaultImage,
-        ].join("/");
+        return GetDefaultBeatMap();
     };
     setCurBeatmap = (name, images, songs) => {
-        this.curBeatmap = new Beatmap(name, images,songs);
+        this.curBeatmap = new Beatmap(name, images, songs);
     };
+    setCurPicFromTCloud = (url) => {
+        this.curOsuPicFromTCloud = url;
+    }
 }
 
 const osuStore = new OsuStore();

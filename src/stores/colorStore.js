@@ -57,6 +57,7 @@ class ColorStore {
     constructor() {
         makeAutoObservable(this, {
             randomColor: computed,
+            pink: computed
         });  // 响应式处理
     }
 
@@ -66,14 +67,10 @@ class ColorStore {
         return this.colors[index];
     }
 
-    color(name) {
-        this.colors.forEach(function (color) {
-            if (color.color_name === name) {
-                return color;
-            }
-        });
+    get pink() {
         return this.colors[0];
     }
+
 }
 
 const colorStore = new ColorStore();
