@@ -1,0 +1,175 @@
+// 优雅骨架图样式 | Elegant Skeleton Styles
+// 低饱和度渐变纹理，符合rinkokawauchi.com极简美学
+
+.skeletonContainer {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f8f8f8 0%, #f5f5f5 50%, #f0f0f0 100%);
+    border-radius: 1px;
+    transition: opacity 0.3s ease;
+
+    &.rounded {
+        border-radius: 8px;
+    }
+
+    &.animated {
+        animation: skeletonFadeIn 0.6s ease forwards;
+    }
+}
+
+.skeletonBackground {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+}
+
+.gradientLayer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        135deg,
+        rgba(245, 245, 245, 0.8) 0%,
+        rgba(240, 240, 240, 0.6) 25%,
+        rgba(235, 235, 235, 0.4) 50%,
+        rgba(240, 240, 240, 0.6) 75%,
+        rgba(245, 245, 245, 0.8) 100%
+    );
+    filter: blur(1px);
+}
+
+.textureLayer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.3;
+    background-image:
+        radial-gradient(circle at 1px 1px, rgba(0,0,0,0.05) 1px, transparent 0),
+        radial-gradient(circle at 15px 15px, rgba(255,255,255,0.1) 1px, transparent 0);
+    background-size: 20px 20px, 30px 30px;
+    background-position: 0 0, 10px 10px;
+}
+
+.shimmerLayer {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    right: -50%;
+    bottom: -50%;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.2) 25%,
+        rgba(255, 255, 255, 0.4) 50%,
+        rgba(255, 255, 255, 0.2) 75%,
+        transparent 100%
+    );
+    transform: rotate(15deg);
+    animation: shimmerAnimation 2s ease-in-out infinite;
+}
+
+.skeletonContent {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.6;
+}
+
+.iconPlaceholder {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #e8e8e8 0%, #ddd 100%);
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 12px;
+        height: 12px;
+        background: linear-gradient(135deg, #d0d0d0 0%, #c0c0c0 100%);
+        border-radius: 2px;
+    }
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 6px;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 1px;
+    }
+}
+
+// 动画效果
+@keyframes skeletonFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes shimmerAnimation {
+    0% {
+        transform: translateX(-100%) rotate(15deg);
+    }
+    100% {
+        transform: translateX(200%) rotate(15deg);
+    }
+}
+
+// 不同尺寸的变体
+.skeletonSmall {
+    .iconPlaceholder {
+        width: 16px;
+        height: 16px;
+
+        &::before {
+            width: 8px;
+            height: 8px;
+        }
+
+        &::after {
+            width: 4px;
+            height: 4px;
+        }
+    }
+}
+
+.skeletonLarge {
+    .iconPlaceholder {
+        width: 32px;
+        height: 32px;
+
+        &::before {
+            width: 16px;
+            height: 16px;
+        }
+
+        &::after {
+            width: 8px;
+            height: 8px;
+        }
+    }
+}

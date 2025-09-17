@@ -1,0 +1,81 @@
+.gracefulImageContainer {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+}
+.skeletonWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+}
+.errorWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+}
+.actualImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  z-index: 3;
+  position: relative;
+}
+.loadingIndicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 4;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(5px);
+}
+.loadingSpinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #f0f0f0;
+  border-top: 2px solid #999;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+.size-small .loadingIndicator {
+  width: 30px;
+  height: 30px;
+}
+.size-small .loadingSpinner {
+  width: 14px;
+  height: 14px;
+  border-width: 1.5px;
+}
+.size-large .loadingIndicator {
+  width: 50px;
+  height: 50px;
+}
+.size-large .loadingSpinner {
+  width: 26px;
+  height: 26px;
+  border-width: 3px;
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+/*# sourceMappingURL=GracefulImage.module.css.map */

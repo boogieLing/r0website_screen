@@ -28,6 +28,10 @@ class GlobalStore {
     get webSiteTitle() {
         return this._webSiteTitle;
     }
+    // setWebSiteTitle 设置网站标题
+    setWebSiteTitle(newTitle) {
+        this._webSiteTitle = newTitle;
+    }
 
     get homeId() {
         return this._homeId;

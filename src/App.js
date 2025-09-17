@@ -13,6 +13,7 @@ import globalStore from "@/stores/globalStore";
 import {useWindowSize} from "@/hooks/windowSize";
 import {More} from "@/screens/More";
 import {PicBed} from "@/screens/PicBed";
+import {SomniumNexus} from "@/screens/SomniumNexus";
 
 function App() {
     // TODO 需要浏览器性能。。。。。
@@ -50,6 +51,7 @@ function App() {
                     <Route exact path="/more" element={<More/>}/>
                     <Route exact path="/colorful" element={<PicBed/>}/>
                     <Route exact path="/colorful/:categoryName" element={<PicBed/>}/>
+                    <Route exact path="/somnium/nexus" element={<SomniumNexus/>}/>
                 </Routes>
             </div>
         </BrowserRouter>
