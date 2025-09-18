@@ -108,8 +108,8 @@ const InfiniteGallery = observer(({
                         className={styles.galleryItem}
                         style={{
                             animationDelay: `${index * 0.1}s`,
-                            flex: `0 0 calc(${100 / columns}% - ${gap}px)`,
-                            maxWidth: `calc(${100 / columns}% - ${gap}px)`,
+                            flex: `0 0 ${100 / columns}%`,
+                            maxWidth: `${100 / columns}%`,
                             '--aspect-ratio': '4:3'
                         }}
                         onClick={() => onImageClick?.(image)}
@@ -120,9 +120,8 @@ const InfiniteGallery = observer(({
                                 alt={image.title}
                                 className={styles.galleryImage}
                                 aspectRatio="4:3"
-                                skeletonSize="medium"
-                                showRetry={true}
-                                errorMessage="图片加载失败"
+                                skeletonSize="none"
+                                showRetry={false}
                             />
                             <div className={styles.imageOverlay}>
                                 <h3 className={styles.imageTitle}>{image.title}</h3>
@@ -134,26 +133,11 @@ const InfiniteGallery = observer(({
             </div>
 
             {hasMore && (
-                <div className={styles.loadMoreTrigger} data-loadmore="true">
-                    {isLoading ? (
-                        <div className={styles.loadingSpinner} />
-                    ) : (
-                        <div className={styles.loadMoreHint}>
-                            <span className={styles.hintText}>继续浏览</span>
-                            <span className={styles.hintSubtext}>Scroll for more</span>
-                        </div>
-                    )}
-                </div>
+                <div data-loadmore="true" style={{height: '1px'}} />
             )}
 
             {displayImages.length === 0 && (
-                <div className={styles.emptyGallery}>
-                    <div className={styles.emptyPlaceholder}>
-                        <div className={styles.emptyIcon} />
-                        <p className={styles.emptyText}>QwQ</p>
-                        <p className={styles.emptySubtext}>No works available</p>
-                    </div>
-                </div>
+                <div /> // 空状态不显示任何内容
             )}
         </div>
     );

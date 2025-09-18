@@ -1,5 +1,5 @@
 // 无限滚动图集样式 | Infinite Gallery Styles
-// 绚丽渐变与慵懒留白的反差美感
+// 简洁拼接式设计 - 无间隙无圆角
 
 .galleryContainer {
     position: relative;
@@ -7,8 +7,8 @@
     height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 40px 60px;
-    background: linear-gradient(135deg, #fefefe 0%, #f8f8f8 100%);
+    padding: 0;
+    background: #000;
 
     // 自定义滚动条
     &::-webkit-scrollbar {
@@ -30,19 +30,19 @@
     }
 
     @media (max-width: 1200px) {
-        padding: 30px 40px;
+        padding: 0;
     }
 
     @media (max-width: 768px) {
-        padding: 20px 30px;
+        padding: 0;
     }
 
     @media (max-width: 480px) {
-        padding: 15px 20px;
+        padding: 0;
     }
 }
 
-// Flex布局 - 从左到右，从上到下无限延伸
+// Flex布局 - 完全拼接，无间隙
 .galleryFlex {
     display: flex;
     flex-wrap: wrap;
@@ -52,418 +52,140 @@
     box-sizing: border-box;
     padding: 0;
     margin: 0;
-
-    // 响应式布局：确保在不同屏幕尺寸下都能良好显示
-    @media (max-width: 768px) {
-        justify-content: center; // 在小屏幕上居中显示
-    }
+    gap: 0; // 确保无间隙
 }
 
-// 图片包装器
+// 图片包装器 - 简洁无圆角
 .imageWrapper {
     position: relative;
-    border-radius: 12px;
+    border-radius: 0; // 移除圆角
     overflow: hidden;
-    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
-    transition: all 0.5s ease;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    background: #111; // 简洁背景色
+    transition: none; // 移除过渡效果
+    box-shadow: none; // 移除阴影
     cursor: pointer;
 
-    // 内层阴影增加深度
-    &::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(
-            135deg,
-            rgba(255, 255, 255, 0.1) 0%,
-            rgba(255, 255, 255, 0.05) 50%,
-            transparent 100%
-        );
-        pointer-events: none;
-    }
+    // 移除所有装饰性效果
 }
 
-// 图片本身
+// 图片本身 - 简洁无效果
 .galleryImage {
     width: 100%;
     height: auto;
     display: block;
-    transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: none; // 移除过渡效果
     object-fit: cover;
     aspect-ratio: 4 / 3;
 }
 
-// 图片信息覆盖层 - 绚丽渐变
+// 图片信息覆盖层 - 简洁设计
 .imageOverlay {
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
-    background: linear-gradient(
-        to top,
-        rgba(0, 0, 0, 0.85) 0%,
-        rgba(0, 0, 0, 0.6) 40%,
-        rgba(0, 0, 0, 0.3) 70%,
-        transparent 100%
-    );
+    background: rgba(0, 0, 0, 0.7); // 简洁半透明背景
     color: white;
-    padding: 30px 25px 25px;
+    padding: 10px 15px;
     opacity: 0;
-    transform: translateY(30px);
-    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    backdrop-filter: blur(8px);
-    border-radius: 0 0 12px 12px;
-
-    // 绚丽的发光边框
-    &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: linear-gradient(90deg,
-            transparent,
-            rgba(255, 255, 255, 0.6),
-            transparent);
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    .galleryItem:hover & {
-        &::before {
-            opacity: 1;
-        }
-    }
+    transition: opacity 0.2s ease;
 }
 
 .imageTitle {
-    font-size: 1.1rem;
-    font-weight: 300;
-    margin: 0 0 6px 0;
-    letter-spacing: 0.03em;
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    font-size: 0.9rem;
+    font-weight: 400;
+    margin: 0 0 4px 0;
+    letter-spacing: 0.02em;
+    font-family: system-ui, -apple-system, sans-serif;
 }
 
 .imageYear {
-    font-size: 0.9rem;
-    font-weight: 300;
-    opacity: 0.9;
+    font-size: 0.8rem;
+    font-weight: 400;
+    opacity: 0.8;
     margin: 0;
-    letter-spacing: 0.02em;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    letter-spacing: 0.01em;
 }
 
-// 图集项目 - 绚丽的悬停效果
+// 图集项目 - 简洁无效果
 .galleryItem {
     position: relative;
-    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    animation: fadeInUp 0.8s ease forwards;
-    opacity: 0;
-    padding: 0; // 移除内边距，使用gap属性控制间距
+    transition: none; // 移除过渡效果
+    animation: none; // 移除动画
+    opacity: 1; // 直接显示
+    padding: 0;
     box-sizing: border-box;
 
     &:hover {
-        transform: translateY(-12px) scale(1.02);
-        z-index: 10;
-
-        .imageWrapper {
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
-        }
-
-        .galleryImage {
-            transform: scale(1.08);
-        }
-
         .imageOverlay {
-            opacity: 1;
-            transform: translateY(0);
+            opacity: 1; // 只保留悬停显示信息
         }
-
-        // 绚丽渐变边框效果
-        &::before {
-            opacity: 1;
-            transform: scale(1);
-        }
-    }
-
-    // 绚丽渐变边框
-    &::before {
-        content: '';
-        position: absolute;
-        top: -2px;
-        left: -2px;
-        right: -2px;
-        bottom: -2px;
-        background: linear-gradient(45deg,
-            #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7, #dfe6e9, #ff6b6b);
-        background-size: 400% 400%;
-        border-radius: 14px;
-        opacity: 0;
-        transform: scale(0.95);
-        transition: all 0.4s ease;
-        z-index: -1;
-        animation: gradientShift 3s ease infinite;
     }
 }
 
-// 图片包装器
+// 图片包装器 - 简洁无圆角
 .imageWrapper {
     position: relative;
-    border-radius: 12px;
+    border-radius: 0; // 移除圆角
     overflow: hidden;
-    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
-    transition: all 0.5s ease;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    background: #111; // 简洁背景色
+    transition: none; // 移除过渡效果
+    box-shadow: none; // 移除阴影
     cursor: pointer;
 
-    // 内层阴影增加深度
-    &::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(
-            135deg,
-            rgba(255, 255, 255, 0.1) 0%,
-            rgba(255, 255, 255, 0.05) 50%,
-            transparent 100%
-        );
-        pointer-events: none;
-    }
+    // 移除所有装饰性效果
 }
 
-// 图片本身
+// 图片本身 - 简洁无效果
 .galleryImage {
     width: 100%;
     height: auto;
     display: block;
-    transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: none; // 移除过渡效果
     object-fit: cover;
     aspect-ratio: 4 / 3;
 }
 
-// 图片信息覆盖层 - 绚丽渐变
+// 图片信息覆盖层 - 简洁设计
 .imageOverlay {
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
-    background: linear-gradient(
-        to top,
-        rgba(0, 0, 0, 0.85) 0%,
-        rgba(0, 0, 0, 0.6) 40%,
-        rgba(0, 0, 0, 0.3) 70%,
-        transparent 100%
-    );
+    background: rgba(0, 0, 0, 0.7); // 简洁半透明背景
     color: white;
-    padding: 30px 25px 25px;
+    padding: 10px 15px;
     opacity: 0;
-    transform: translateY(30px);
-    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    backdrop-filter: blur(8px);
-    border-radius: 0 0 12px 12px;
-
-    // 绚丽的发光边框
-    &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: linear-gradient(90deg,
-            transparent,
-            rgba(255, 255, 255, 0.6),
-            transparent);
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    .galleryItem:hover & {
-        &::before {
-            opacity: 1;
-        }
-    }
+    transition: opacity 0.2s ease;
 }
 
 .imageTitle {
-    font-size: 1.1rem;
-    font-weight: 300;
-    margin: 0 0 6px 0;
-    letter-spacing: 0.03em;
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    font-size: 0.9rem;
+    font-weight: 400;
+    margin: 0 0 4px 0;
+    letter-spacing: 0.02em;
+    font-family: system-ui, -apple-system, sans-serif;
 }
 
 .imageYear {
-    font-size: 0.9rem;
-    font-weight: 300;
-    opacity: 0.9;
-    margin: 0;
-    letter-spacing: 0.02em;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-// 加载更多触发器
-.loadMoreTrigger {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 60px 20px;
-    margin-top: 40px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-
-    &:hover {
-        .hintText {
-            color: #333;
-        }
-
-        .hintSubtext {
-            opacity: 0.8;
-        }
-    }
-}
-
-.loadMoreHint {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    padding: 20px 40px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 248, 248, 0.9) 100%);
-    border-radius: 50px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-
-    &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
-    }
-}
-
-.hintText {
-    font-size: 0.95rem;
-    font-weight: 300;
-    color: #666;
-    letter-spacing: 0.02em;
-    transition: color 0.3s ease;
-}
-
-.hintSubtext {
     font-size: 0.8rem;
-    color: #999;
-    opacity: 0.7;
-    letter-spacing: 0.01em;
-    transition: opacity 0.3s ease;
-}
-
-// 加载动画
-.loadingSpinner {
-    width: 24px;
-    height: 24px;
-    border: 2px solid #f0f0f0;
-    border-top: 2px solid #4ecdc4;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-// 空状态
-.emptyGallery {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 60vh;
-    padding: 40px;
-}
-
-.emptyPlaceholder {
-    text-align: center;
-    padding: 60px 40px;
-    opacity: 0.6;
-    background: linear-gradient(135deg, #f9f9f9 0%, #f5f5f5 100%);
-    border-radius: 16px;
-    max-width: 400px;
-    width: 100%;
-}
-
-.emptyIcon {
-    width: 80px;
-    height: 60px;
-    margin: 0 auto 30px;
-    background: linear-gradient(135deg, #e8e8e8 0%, #ddd 100%);
-    border-radius: 8px;
-    position: relative;
-    overflow: hidden;
-
-    &::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 40px;
-        height: 30px;
-        background: linear-gradient(45deg, transparent 45%, #ccc 45%, #ccc 55%, transparent 55%);
-    }
-
-    &::after {
-        content: '';
-        position: absolute;
-        top: 12px;
-        right: 12px;
-        width: 16px;
-        height: 16px;
-        background: #d0d0d0;
-        border-radius: 3px;
-    }
-}
-
-.emptyText {
-    font-size: 1.1rem;
-    font-weight: 300;
-    color: #999;
-    margin: 0 0 8px 0;
-    letter-spacing: 0.02em;
-}
-
-.emptySubtext {
-    font-size: 0.9rem;
-    font-weight: 300;
-    color: #bbb;
+    font-weight: 400;
+    opacity: 0.8;
     margin: 0;
     letter-spacing: 0.01em;
 }
 
-// 动画定义
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+// 加载更多触发器 - 极简设计
+.loadMoreTrigger {
+    display: none; // 完全隐藏加载更多区域
 }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+// 加载动画 - 极简设计
+.loadingSpinner {
+    display: none; // 完全隐藏加载动画
 }
 
-@keyframes gradientShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+// 空状态 - 极简设计
+.emptyGallery {
+    display: none; // 完全隐藏空状态显示
 }
