@@ -22,12 +22,12 @@ class SomniumNexusStore {
                 {key: "space", title: "留白"}
             ],
             images: [
-                {id: 1, title: "晨雾", year: "2024", src: "/static/images/stillness-01.jpg", category: "stillness"},
-                {id: 2, title: "倒影", year: "2024", src: "/static/images/stillness-02.jpg", category: "stillness"},
-                {id: 3, title: "静默", year: "2024", src: "/static/images/stillness-03.jpg", category: "stillness"},
-                {id: 4, title: "留白", year: "2024", src: "/static/images/stillness-04.jpg", category: "stillness"},
-                {id: 5, title: "光影", year: "2024", src: "/static/images/stillness-05.jpg", category: "stillness"},
-                {id: 6, title: "禅意", year: "2024", src: "/static/images/stillness-06.jpg", category: "stillness"}
+                {id: 1, title: "晨雾", year: "2024", src: "/static/images/stillness-01.jpg", category: "stillness", subCategory: "morning"},
+                {id: 2, title: "倒影", year: "2024", src: "/static/images/stillness-02.jpg", category: "stillness", subCategory: "reflection"},
+                {id: 3, title: "静默", year: "2024", src: "/static/images/stillness-03.jpg", category: "stillness", subCategory: "silence"},
+                {id: 4, title: "留白", year: "2024", src: "/static/images/stillness-04.jpg", category: "stillness", subCategory: "space"},
+                {id: 5, title: "光影", year: "2024", src: "/static/images/stillness-05.jpg", category: "stillness", subCategory: "morning"},
+                {id: 6, title: "禅意", year: "2024", src: "/static/images/stillness-06.jpg", category: "stillness", subCategory: "silence"}
             ]
         },
         "interlude": {
@@ -53,12 +53,12 @@ class SomniumNexusStore {
                 {key: "heart", title: "心象"}
             ],
             images: [
-                {id: 13, title: "回响", year: "2024", src: "/static/images/echoes-01.jpg", category: "echoes"},
-                {id: 14, title: "记忆", year: "2024", src: "/static/images/echoes-02.jpg", category: "echoes"},
-                {id: 15, title: "梦境", year: "2024", src: "/static/images/echoes-03.jpg", category: "echoes"},
-                {id: 16, title: "心象", year: "2024", src: "/static/images/echoes-04.jpg", category: "echoes"},
-                {id: 17, title: "感悟", year: "2024", src: "/static/images/echoes-05.jpg", category: "echoes"},
-                {id: 18, title: "诗意", year: "2024", src: "/static/images/echoes-06.jpg", category: "echoes"}
+                {id: 13, title: "回响", year: "2024", src: "/static/images/echoes-01.jpg", category: "echoes", subCategory: "memory"},
+                {id: 14, title: "记忆", year: "2024", src: "/static/images/echoes-02.jpg", category: "echoes", subCategory: "memory"},
+                {id: 15, title: "梦境", year: "2024", src: "/static/images/echoes-03.jpg", category: "echoes", subCategory: "dream"},
+                {id: 16, title: "心象", year: "2024", src: "/static/images/echoes-04.jpg", category: "echoes", subCategory: "heart"},
+                {id: 17, title: "感悟", year: "2024", src: "/static/images/echoes-05.jpg", category: "echoes", subCategory: "heart"},
+                {id: 18, title: "诗意", year: "2024", src: "/static/images/echoes-06.jpg", category: "echoes", subCategory: "dream"}
             ]
         },
         "fragments": {
@@ -84,12 +84,12 @@ class SomniumNexusStore {
                 {key: "texture", title: "质感"}
             ],
             images: [
-                {id: 25, title: "透明", year: "2024", src: "/static/images/transparency-01.jpg", category: "transparency"},
-                {id: 26, title: "层次", year: "2024", src: "/static/images/transparency-02.jpg", category: "transparency"},
-                {id: 27, title: "光影", year: "2024", src: "/static/images/transparency-03.jpg", category: "transparency"},
-                {id: 28, title: "质感", year: "2024", src: "/static/images/transparency-04.jpg", category: "transparency"},
-                {id: 29, title: "纯净", year: "2024", src: "/static/images/transparency-05.jpg", category: "transparency"},
-                {id: 30, title: "澄澈", year: "2024", src: "/static/images/transparency-06.jpg", category: "transparency"}
+                {id: 25, title: "透明", year: "2024", src: "/static/images/transparency-01.jpg", category: "transparency", subCategory: "layer"},
+                {id: 26, title: "层次", year: "2024", src: "/static/images/transparency-02.jpg", category: "transparency", subCategory: "layer"},
+                {id: 27, title: "光影", year: "2024", src: "/static/images/transparency-03.jpg", category: "transparency", subCategory: "light"},
+                {id: 28, title: "质感", year: "2024", src: "/static/images/transparency-04.jpg", category: "transparency", subCategory: "texture"},
+                {id: 29, title: "纯净", year: "2024", src: "/static/images/transparency-05.jpg", category: "transparency", subCategory: "texture"},
+                {id: 30, title: "澄澈", year: "2024", src: "/static/images/transparency-06.jpg", category: "transparency", subCategory: "light"}
             ]
         },
         "threshold": {
@@ -165,7 +165,19 @@ class SomniumNexusStore {
     }
 
     get currentCategoryImages() {
-        return this.currentCategory?.images || [];
+        const category = this.currentCategory;
+        if (!category) return [];
+
+        // 如果有子菜单且选择了子分类，只显示匹配的子分类图片
+        if (this._selectedSubCategory && category.hasSubMenu) {
+            return category.images.filter(image =>
+                image.subCategory === this._selectedSubCategory ||
+                image.category === this._selectedSubCategory
+            );
+        }
+
+        // 否则显示该分类下的所有图片
+        return category.images || [];
     }
 
     // 操作方法 | Action methods

@@ -28,6 +28,16 @@ const SomniumNexus = observer(() => {
         // 如果有URL参数，设置选中分类 | If URL param exists, set selected category
         if (category && somniumNexusStore.galleryCategories[category]) {
             somniumNexusStore.setSelectedCategory(category);
+            setHasSelected(true);
+
+            // 清除子分类选择，显示所有图片
+            somniumNexusStore.clearSelectedSubCategory();
+
+            // 如果有子菜单，不自动展开侧边栏，但标记次级菜单可用
+            if (somniumNexusStore.galleryCategories[category].hasSubMenu) {
+                setSidebarExpanded(false); // 不自动展开侧边栏
+                setShowSecondFlow(true); // 但次级菜单可用
+            }
         }
     }, [category]);
 
@@ -35,27 +45,32 @@ const SomniumNexus = observer(() => {
         // 标记用户已选择项目
         setHasSelected(true);
 
-        // 检查是否选中了新的项目
+        // 检查是否选中了新的项目（在更新store之前判断）
         const isNewSelection = somniumNexusStore.selectedCategory !== projectKey;
+        const hasSubMenu = somniumNexusStore.galleryCategories[projectKey].hasSubMenu;
 
+        // 先更新store状态
         somniumNexusStore.setSelectedCategory(projectKey);
 
-        // 如果选中有子菜单的项目，显示第二个flow
-        if (somniumNexusStore.galleryCategories[projectKey].hasSubMenu) {
-            if (isNewSelection) {
-                // 新项目选择，展开侧栏并显示第二个flow
-                setSidebarExpanded(true);
-                setShowSecondFlow(false);
+        // 清除子分类选择，显示项目的所有图片
+        somniumNexusStore.clearSelectedSubCategory();
 
-                // 延迟显示第二个flow，创建弹出动画效果
-                setTimeout(() => {
-                    setShowSecondFlow(true);
-                }, 200);
+        // 如果选中有子菜单的项目
+        if (hasSubMenu) {
+            if (isNewSelection) {
+                // 新项目选择：收缩侧边栏，但标记需要显示次级菜单
+                setSidebarExpanded(false);
+                setShowSecondFlow(true); // 保持次级菜单状态为可用
             } else {
-                // 同一个项目重复点击，切换显示状态并相应调整侧栏
+                // 同一个项目重复点击，切换侧边栏状态
                 const newExpandedState = !sidebarExpanded;
                 setSidebarExpanded(newExpandedState);
-                setShowSecondFlow(newExpandedState);
+                // 当展开时显示次级菜单，收缩时隐藏
+                if (newExpandedState) {
+                    setShowSecondFlow(true);
+                } else {
+                    setShowSecondFlow(false);
+                }
             }
         } else {
             // 没有子菜单的项目，收缩侧栏并隐藏第二个flow
@@ -67,10 +82,8 @@ const SomniumNexus = observer(() => {
     const handleSubCategoryClick = useCallback((subCategoryKey) => {
         somniumNexusStore.setSelectedSubCategory(subCategoryKey);
 
-        // 选择子项目后自动收缩侧边栏
-        console.log('选择子项目，准备自动收缩侧边栏');
+        // 选择子分类后自动收缩侧边栏，让用户专注于内容
         setTimeout(() => {
-            console.log('执行侧边栏收缩');
             setSidebarExpanded(false);
         }, 200); // 稍微延迟，让用户看到选择反馈
     }, []);
@@ -88,7 +101,17 @@ const SomniumNexus = observer(() => {
         setHasSelected(true);
         // 可以选择第一个项目作为默认展示
         if (categories.length > 0) {
-            handleProjectClick(categories[0]);
+            const firstCategory = categories[0];
+            somniumNexusStore.setSelectedCategory(firstCategory);
+
+            // 清除子分类选择，显示所有图片
+            somniumNexusStore.clearSelectedSubCategory();
+
+            // 如果第一个项目有子菜单，不自动展开侧边栏，但标记次级菜单可用
+            if (somniumNexusStore.galleryCategories[firstCategory].hasSubMenu) {
+                setSidebarExpanded(false); // 不自动展开侧边栏
+                setShowSecondFlow(true); // 但次级菜单可用
+            }
         }
     };
 
@@ -97,7 +120,23 @@ const SomniumNexus = observer(() => {
         if (isAnimating) return; // 防止动画期间重复点击
 
         setIsAnimating(true);
-        setSidebarExpanded(prev => !prev);
+
+        setSidebarExpanded(prev => {
+            const newExpandedState = !prev;
+
+            // 当收缩侧边栏时，同时隐藏次级菜单
+            if (!newExpandedState) {
+                setShowSecondFlow(false);
+            } else {
+                // 当展开侧边栏时，如果当前选中的项目有子菜单，则显示次级菜单
+                const currentCategory = somniumNexusStore.selectedCategory;
+                if (currentCategory && somniumNexusStore.galleryCategories[currentCategory]?.hasSubMenu) {
+                    setShowSecondFlow(true);
+                }
+            }
+
+            return newExpandedState;
+        });
 
         // 动画完成后重置状态
         setTimeout(() => {
