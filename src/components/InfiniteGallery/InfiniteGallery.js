@@ -108,8 +108,8 @@ const InfiniteGallery = observer(({
                         className={styles.galleryItem}
                         style={{
                             animationDelay: `${index * 0.1}s`,
-                            flex: `0 0 ${100 / columns}%`,
-                            maxWidth: `${100 / columns}%`,
+                            flex: `0 0 calc(${100 / columns}% - ${gap}px)`,
+                            maxWidth: `calc(${100 / columns}% - ${gap}px)`,
                             '--aspect-ratio': '4:3'
                         }}
                         onClick={() => onImageClick?.(image)}
