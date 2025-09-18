@@ -1,0 +1,420 @@
+// 二级菜单侧边栏样式 | Submenu Sidebar Styles
+// 复用主侧栏样式，保持一致性
+
+.subMenuSidebar {
+    position: fixed;
+    top: 0;
+    left: 360px; // 主侧栏宽度
+    width: 280px; // 二级侧栏宽度
+    height: 100vh;
+    background-color: #fefefe;
+    border-right: 1px solid #f5f5f5;
+    z-index: 99; // 低于主侧栏的100
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+
+    // 隐藏状态
+    &:not(.visible) {
+        transform: translateX(-100%);
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    // 显示状态
+    &.visible {
+        transform: translateX(0);
+        opacity: 1;
+        pointer-events: auto;
+    }
+}
+
+.subMenuContainer {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 80px 40px 60px; // 复用主侧栏的内边距
+    box-sizing: border-box;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    // 自定义滚动条 - 复用主侧栏样式
+    &::-webkit-scrollbar {
+        width: 2px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 0;
+    }
+}
+
+// 复用主侧栏的头部样式
+.sidebarHeader {
+    margin-bottom: 32px;
+    flex-shrink: 0;
+}
+
+.mainTitle {
+    font-size: 1.6rem;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    margin: 0 0 12px 0;
+    color: #2a2a2a;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.2;
+}
+
+.subtitle {
+    font-size: 0.75rem;
+    font-weight: 350;
+    color: #999;
+    margin: 0;
+    letter-spacing: 0.05em;
+    opacity: 0.8;
+    line-height: 1.4;
+}
+
+// 复用主侧栏的项目标签页样式
+.projectTabs {
+    flex: 1;
+    padding: 20px 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.tabsFlow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px 0;
+    align-items: center;
+    line-height: 1.3;
+    overflow-y: auto;
+    padding: 0 2px;
+    max-height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+
+    // 自定义滚动条
+    &::-webkit-scrollbar {
+        width: 2px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 0;
+    }
+}
+
+// 复用主侧栏的tab样式 - 保持完全一致
+.projectTab {
+    background: none;
+    border: none;
+    padding: 4px 8px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    position: relative;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 300;
+    letter-spacing: 0.02em;
+    border-radius: 0;
+    margin: 2px 0;
+    display: inline-block;
+    user-select: none;
+    outline: none;
+    min-height: 28px;
+    line-height: 1.2;
+    vertical-align: middle;
+    overflow: hidden;
+    white-space: nowrap;
+
+    // 键盘焦点样式
+    &:focus-visible {
+        outline: 1px solid rgba(0, 0, 0, 0.1);
+        outline-offset: 1px;
+    }
+
+    // 未选中状态 - 简洁文字
+    .tabText {
+        font-size: 0.8rem;
+        color: #999;
+        transition: color 0.3s ease;
+        position: relative;
+        z-index: 2;
+        font-weight: 300;
+        letter-spacing: 0.01em;
+        line-height: 1.2;
+    }
+
+    // Hover状态 - 仅非选中状态展现与文本一致的渐变边框动画
+    &:hover:not(.active) {
+        cursor: pointer;
+
+        // 左上角33度渐变边框动画（从左上角向右下角，与文本一致的灰色渐变到透明）
+        &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 25%;
+            height: 25%;
+            background: linear-gradient(33deg, #777 0%, #999 70%, transparent 100%);
+            clip-path: polygon(
+                0 0,
+                100% 0,
+                100% 1px,
+                1px 1px,
+                1px 100%,
+                0 100%
+            );
+            z-index: 1;
+            transform: scale(0);
+            animation: borderAppearTopLeft 0.3s ease forwards;
+        }
+
+        // 右下角22度渐变边框动画（从右下角向左上角，与文本一致的灰色渐变，更长）
+        &::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 35%;
+            height: 35%;
+            background: linear-gradient(22deg, #777 0%, #999 70%, transparent 100%);
+            clip-path: polygon(
+                0 100%,
+                0 calc(100% - 1px),
+                calc(100% - 1px) calc(100% - 1px),
+                calc(100% - 1px) 0,
+                100% 0,
+                100% 100%
+            );
+            z-index: 1;
+            transform: scale(0);
+            animation: borderAppearBottomRight 0.3s ease forwards;
+        }
+
+        .tabText {
+            color: #777;
+            font-weight: 350;
+        }
+    }
+
+    // 选中状态 - 使用百分比长度和渐变效果
+    &.active {
+        // 左上角33度渐变边框（从左上角向右下角，粉黄到透明）
+        &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 25%;
+            height: 25%;
+            background: linear-gradient(33deg, #ff6b6b 0%, #ffd93d 70%, transparent 100%);
+            clip-path: polygon(
+                0 0,
+                100% 0,
+                100% 1px,
+                1px 1px,
+                1px 100%,
+                0 100%
+            );
+            z-index: 1;
+            transform: scale(1);
+        }
+
+        // 右下角22度渐变边框（从右下角向左上角，蓝绿到透明）
+        &::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 35%;
+            height: 35%;
+            background: linear-gradient(22deg, #4ecdc4 0%, #44a08d 70%, transparent 100%);
+            clip-path: polygon(
+                0 100%,
+                0 calc(100% - 1px),
+                calc(100% - 1px) calc(100% - 1px),
+                calc(100% - 1px) 0,
+                100% 0,
+                100% 100%
+            );
+            z-index: 1;
+            transform: scale(1);
+        }
+
+        // 选中状态文字样式 - 加深字体颜色
+        .tabText {
+            color: #333;
+            font-weight: 400;
+            position: relative;
+            z-index: 2;
+        }
+    }
+
+    // Hover时的背景保持朴素（选中时背景不变）
+    &:hover:not(.active) {
+        background: transparent;
+        .tabText {
+            // 文字颜色渐变效果
+            background: linear-gradient(45deg, #888, #666, #444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    }
+
+    // 选中状态下的hover - 保持选中样式不变
+    &.active:hover::before {
+        // 保持与选中状态相同的左上角边框
+        background: linear-gradient(33deg, #ff6b6b 0%, #ffd93d 70%, transparent 100%);
+    }
+
+    &.active:hover::after {
+        // 保持与选中状态相同的右下角边框
+        background: linear-gradient(22deg, #4ecdc4 0%, #44a08d 70%, transparent 100%);
+    }
+}
+
+.tabText {
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+// 分隔符 - 复用主侧栏样式
+tabSeparator {
+    font-size: 0.65rem;
+    font-weight: 300;
+    margin: 0 4px;
+    opacity: 0.3;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    color: #ddd;
+}
+
+// 关闭按钮
+.closeButton {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    color: #666;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+    z-index: 10;
+
+    &:hover {
+        background: rgba(255, 255, 255, 1);
+        color: #333;
+        transform: scale(1.1);
+    }
+
+    &:active {
+        transform: scale(0.95);
+    }
+}
+
+// 响应式调整 - 复用主侧栏的响应式逻辑
+@media (max-width: 768px) {
+    .subMenuSidebar {
+        width: 240px;
+        left: 280px; // 主侧栏平板宽度
+    }
+
+    .subMenuContainer {
+        padding: 60px 30px 40px;
+    }
+
+    .projectTab {
+        padding: 4px 6px;
+        min-height: 24px;
+        margin: 1px 0;
+    }
+
+    .tabText {
+        font-size: 0.75rem;
+        line-height: 1.2;
+    }
+
+    tabSeparator {
+        font-size: 0.6rem;
+        margin: 0 3px;
+        opacity: 0.25;
+    }
+
+    .closeButton {
+        width: 28px;
+        height: 28px;
+        font-size: 1.2rem;
+        top: 15px;
+        right: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .subMenuSidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        z-index: 200; // 移动端提高层级
+        transform: translateX(100%); // 默认隐藏状态
+
+        &.visible {
+            transform: translateX(0);
+        }
+    }
+
+    .subMenuContainer {
+        padding: 40px 20px 30px;
+    }
+
+    .projectTab {
+        padding: 3px 6px;
+        font-size: 0.7rem;
+        min-height: 22px;
+        margin: 1px 0;
+    }
+
+    .tabText {
+        font-size: 0.7rem;
+        line-height: 1.1;
+    }
+
+    tabSeparator {
+        font-size: 0.55rem;
+        margin: 1px 3px;
+        opacity: 0.2;
+    }
+
+    .closeButton {
+        width: 24px;
+        height: 24px;
+        font-size: 1rem;
+        top: 10px;
+        right: 10px;
+    }
+}

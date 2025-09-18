@@ -9,7 +9,11 @@ import styles from "./index.module.less";
 
 const SomniumNexus = observer(() => {
     const {category} = useParams();
-    const [selectedProject, setSelectedProject] = useState("stillness");
+    // eslint-disable-next-line
+    const [, setSelectedProject] = useState("stillness");
+    const [showSecondFlow, setShowSecondFlow] = useState(false);
+    const [isAnimating, setIsAnimating] = useState(false);
+    const [sidebarExpanded, setSidebarExpanded] = useState(false);
 
     const currentCategory = somniumNexusStore.currentCategory;
     const categories = somniumNexusStore.categories;
@@ -22,13 +26,43 @@ const SomniumNexus = observer(() => {
         // 如果有URL参数，设置选中分类 | If URL param exists, set selected category
         if (category && somniumNexusStore.galleryCategories[category]) {
             somniumNexusStore.setSelectedCategory(category);
-            setSelectedProject(category);
         }
     }, [category]);
 
     const handleProjectClick = useCallback((projectKey) => {
+        // 检查是否选中了新的项目
+        const isNewSelection = somniumNexusStore.selectedCategory !== projectKey;
+
         somniumNexusStore.setSelectedCategory(projectKey);
-        setSelectedProject(projectKey);
+
+        // 如果选中有子菜单的项目，显示第二个flow
+        if (somniumNexusStore.galleryCategories[projectKey].hasSubMenu) {
+            if (isNewSelection) {
+                // 新项目选择，展开侧栏并显示第二个flow
+                setSidebarExpanded(true);
+                setShowSecondFlow(false);
+                setIsAnimating(true);
+
+                // 延迟显示第二个flow，创建弹出动画效果
+                setTimeout(() => {
+                    setShowSecondFlow(true);
+                    setIsAnimating(false);
+                }, 200);
+            } else {
+                // 同一个项目重复点击，切换显示状态并相应调整侧栏
+                const newExpandedState = !sidebarExpanded;
+                setSidebarExpanded(newExpandedState);
+                setShowSecondFlow(newExpandedState);
+            }
+        } else {
+            // 没有子菜单的项目，收缩侧栏并隐藏第二个flow
+            setShowSecondFlow(false);
+            setSidebarExpanded(false);
+        }
+    }, [showSecondFlow, sidebarExpanded]);
+
+    const handleSubCategoryClick = useCallback((subCategoryKey) => {
+        somniumNexusStore.setSelectedSubCategory(subCategoryKey);
     }, []);
 
     const handleImageClick = useCallback((image) => {
@@ -42,37 +76,79 @@ const SomniumNexus = observer(() => {
     return (
         <div className={styles.somniumNexusContainer}>
             {/* 左侧导航栏 | Left Sidebar */}
-            <aside className={styles.sidebar}>
+            <aside className={`${styles.sidebar} ${sidebarExpanded ? styles.expanded : styles.collapsed}`}>
                 <div className={styles.sidebarHeader}>
                     <h1 className={styles.mainTitle}>Somnium Nexus</h1>
                     <p className={styles.subtitle}>图集项目 | Image Collection</p>
                 </div>
 
                 <div className={styles.projectTabs}>
-                    <div className={styles.tabsFlow}>
-                        {categories.map((categoryKey, index) => (
-                            <React.Fragment key={categoryKey}>
-                                <button
-                                    className={`${styles.projectTab} ${
-                                        somniumNexusStore.selectedCategory === categoryKey ? styles.active : ''
-                                    }`}
-                                    onClick={() => handleProjectClick(categoryKey)}
-                                >
-                                    <span className={styles.tabText}
-                                        data-active={somniumNexusStore.selectedCategory === categoryKey}
+                    <div className={`${styles.tabsContainer} ${sidebarExpanded ? styles.expanded : styles.collapsed}`}>
+                        {/* 左侧主tabsFlow */}
+                        <div className={styles.tabsFlowLeft}>
+                            {categories.map((categoryKey, index) => {
+                                const hasSubMenu = somniumNexusStore.galleryCategories[categoryKey].hasSubMenu;
+                                return (
+                                    <div key={categoryKey} className={styles.tabWrapper}>
+                                        <div
+                                            className={`${styles.projectTab} ${
+                                                somniumNexusStore.selectedCategory === categoryKey ? styles.active : ''
+                                            }`}
+                                            onClick={() => handleProjectClick(categoryKey)}
+                                            role="button"
+                                            tabIndex={0}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter' || e.key === ' ') {
+                                                    e.preventDefault();
+                                                    handleProjectClick(categoryKey);
+                                                }
+                                            }}
+                                        >
+                                            <span className={styles.tabText}
+                                                data-active={somniumNexusStore.selectedCategory === categoryKey}
+                                            >
+                                                {somniumNexusStore.galleryCategories[categoryKey].title}
+                                            </span>
+                                            {hasSubMenu && (
+                                                <div className={`${styles.subMenuIndicator} ${
+                                                    somniumNexusStore.selectedCategory === categoryKey ? styles.active : ''
+                                                }`}>
+                                                    ›
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        {/* 右侧子菜单tabsFlow */}
+                        <div className={styles.tabsFlowRight}>
+                            {somniumNexusStore.hasSubMenu && showSecondFlow && somniumNexusStore.subCategories.map((subCategory) => (
+                                <div key={subCategory.key} className={styles.tabWrapper}>
+                                    <div
+                                        className={`${styles.projectTab} ${
+                                            somniumNexusStore.selectedSubCategory === subCategory.key ? styles.active : ''
+                                        }`}
+                                        onClick={() => handleSubCategoryClick(subCategory.key)}
+                                        role="button"
+                                        tabIndex={0}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' || e.key === ' ') {
+                                                e.preventDefault();
+                                                handleSubCategoryClick(subCategory.key);
+                                            }
+                                        }}
                                     >
-                                        {somniumNexusStore.galleryCategories[categoryKey].title}
-                                    </span>
-                                </button>
-                                <span className={styles.tabSeparator}
-                                    style={{
-                                        color: index < categories.length - 1 ? '#ccc' : 'transparent'
-                                    }}
-                                >
-                                    {index % 2 === 0 ? ' / ' : ' // '}
-                                </span>
-                            </React.Fragment>
-                        ))}
+                                        <span className={styles.tabText}
+                                            data-active={somniumNexusStore.selectedSubCategory === subCategory.key}
+                                        >
+                                            {subCategory.title}
+                                        </span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
 
@@ -87,7 +163,7 @@ const SomniumNexus = observer(() => {
             </aside>
 
             {/* 右侧主内容区 | Right Main Content */}
-            <main className={styles.mainContent}>
+            <main className={`${styles.mainContent} ${sidebarExpanded ? styles.expanded : styles.collapsed}`}>
                 <div className={styles.galleryHeader}>
                     <h2 className={styles.projectTitle}>{currentCategory.title}</h2>
                     <p className={styles.projectDesc}>{currentCategory.description}</p>

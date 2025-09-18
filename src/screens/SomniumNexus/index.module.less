@@ -3,6 +3,7 @@
 
 * {
     box-sizing: border-box;
+     font-family: 'Adobe Garamond W01', "游明朝体", "Yu Mincho", YuMincho, "ヒラギノ明朝 Pro", "Hiragino Mincho Pro", "MS P明朝", "MS PMincho", serif !important;
 }
 
 .somniumNexusContainer {
@@ -15,160 +16,378 @@
     line-height: 1.6;
 }
 
-// 摄影项目标签页 - 固定尺寸防溢出设计
+// 摄影项目标签页 - 双tabsFlow布局设计
 .projectTabs {
-    flex: 1;
-    padding: 30px 0;
-    overflow: hidden; // 防止溢出
+    flex: 1; // 占满剩余空间
     display: flex;
     flex-direction: column;
-    max-height: 300px; // 固定最大高度
+    overflow: hidden; // 防止溢出影响布局
+    width: 100%; // 占满侧栏宽度
+    padding: 0; // 移除padding，由tabsContainer控制
+    min-height: 0; // 防止flex项目被内容撑开
 }
 
-// 流式布局 - 简洁分隔符形式
-tabsFlow {
+// 双tabsFlow容器 - 均分空间设计
+.tabsContainer {
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px 0; // 增加垂直间距，水平间距为0
-    align-items: center;
-    line-height: 1.8;
-    max-height: 200px; // 限制tab区域高度
-    overflow-y: auto;  // 超出时滚动
-    padding-right: 10px; // 为滚动条预留空间
+    flex: 1;
+    width: 100%;
+    overflow: hidden; // 防止溢出
 
-    // 自定义滚动条
+    // 动态布局动画
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+    // 收缩状态 - 只有第一个flow可见
+    &.collapsed {
+        .tabsFlowLeft {
+            flex: 1; // 占满整个容器
+            width: 100%;
+        }
+
+        .tabsFlowRight {
+            flex: 0; // 完全收缩
+            width: 0;
+            opacity: 0;
+            visibility: hidden;
+            padding: 0; // 移除内边距
+        }
+    }
+
+    // 展开状态 - 两个flow均分空间
+    &.expanded {
+        .tabsFlowLeft {
+            flex: 1; // 均分空间
+        }
+
+        .tabsFlowRight {
+            flex: 1; // 均分空间
+            width: auto;
+            opacity: 1;
+            visibility: visible;
+            padding: 16px 10px; // 恢复内边距
+        }
+    }
+}
+
+// 删除tabsBackground样式，改为每个tab独立背景块
+
+// 左侧主tabsFlow - 日系美学，融为一体
+.tabsFlowLeft {
+    flex: 1; // 均分空间
+    display: flex;
+    flex-direction: column; // 垂直布局，一行一个
+    overflow-y: auto; // 超出时滚动
+    overflow-x: hidden;
+    padding: 16px 10px; // 统一留白，左右对称
+    min-height: 0; // 防止flex项目被内容撑开
+    background-color: transparent; // 透明背景，融为一体
+
+    // 自定义滚动条 - 日系极简
     &::-webkit-scrollbar {
-        width: 4px;
+        width: 2px; // 更细的滚动条
     }
 
     &::-webkit-scrollbar-track {
-        background: rgba(0, 0, 0, 0.05);
-        border-radius: 2px;
+        background: transparent;
+        border-radius: 0; // 直角设计
     }
 
     &::-webkit-scrollbar-thumb {
-        background: rgba(0, 0, 0, 0.2);
-        border-radius: 2px;
+        background: rgba(0, 0, 0, 0.06); // 更淡的滚动条
+        border-radius: 0; // 直角设计
+
+        &:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
     }
 }
 
-// 项目Tab - 无边框简洁设计
-projectTab {
-    background: none;
-    border: none;
-    padding: 8px 12px;
-    cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    position: relative;
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    font-weight: 300;
-    letter-spacing: 0.02em;
-    border-radius: 0; // 移除圆角
-    margin: 4px 0; // 增加垂直间距
+// 右侧子菜单tabsFlow - 日系美学，融为一体
+.tabsFlowRight {
+    flex: 1; // 均分空间
+    display: flex;
+    flex-direction: column; // 垂直布局，一行一个
+    overflow-y: auto; // 超出时滚动
+    overflow-x: hidden;
+    padding: 16px 10px; // 统一留白，左右对称
+    min-height: 0; // 防止flex项目被内容撑开
+    background-color: transparent; // 移除背景区分，融为一体
 
-    // 未选中状态 - 低调文字颜色
+    // 动画相关样式 - 通过容器控制
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+    // 自定义滚动条 - 日系极简
+    &::-webkit-scrollbar {
+        width: 2px; // 更细的滚动条
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+        border-radius: 0; // 直角设计
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.06); // 更淡的滚动条
+        border-radius: 0; // 直角设计
+
+        &:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+    }
+}
+
+// tab包装器 - 垂直布局，一行一个
+.tabWrapper {
+    display: block; // 改为block，垂直布局，一行一个
+    margin: 2px 0; // 垂直间距，一行一个
+    padding: 0; // 无内边距
+    width: 100%; // 占满父容器宽度
+    box-sizing: border-box;
+}
+
+// tabs容器 - 流式布局，从左到右，从上到下排列
+.tabsFlow {
+    flex: 1; // 占满父容器剩余空间
+    display: block; // 改为block，支持流式布局
+    width: 100%; // 占满侧栏宽度
+    overflow-y: auto; // 超出时滚动
+    overflow-x: hidden; // 隐藏横向滚动条
+    padding: 16px 20px; // 整体留白，留白美学
+    min-height: 0; // 防止flex项目被内容撑开
+    line-height: 1.5; // 行高
+   margin-top: 3vh;
+
+    // 自定义滚动条 - 直角设计
+    &::-webkit-scrollbar {
+        width: 3px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+        border-radius: 0; // 直角设计
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 0; // 直角设计
+
+        &:hover {
+            background: rgba(0, 0, 0, 0.15);
+        }
+    }
+}
+
+// 项目Tab - 基于伪元素的直角L型边框设计
+.projectTab {
+    background: none; // 无背景色，极简设计
+    border: none;
+    padding: 4px 20px; // 调整内边距为边框预留空间
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    font-family: 'Helvetica Neue', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+    font-weight: 350;
+    letter-spacing: 0.02em;
+    border-radius: 0;
+    margin: 0;
+    display: block;
+    width: 100%;
+    //min-height: 42px;
+    text-align: left;
+    color: #4a5568;
+    overflow: hidden; // 为伪元素裁切做准备
+
+    // 未选中状态 - 文本样式
     .tabText {
-        font-size: 0.9rem;
-        color: #999; // 低调的灰色
+        font-size: 0.8rem;
+        color: #4a5568;
         transition: all 0.3s ease;
         position: relative;
+        z-index: 2;
+        font-weight: 350;
+        opacity: 0.95;
+        line-height: 1.4;
+        letter-spacing: 0.02em;
+    }
+
+    // 为分级指示器预留空间
+    &.hasSubMenu {
+        position: relative;
+        padding-right: 32px; // 为分级指示器预留空间
+    }
+
+    // 更细的纯伪元素L型边框 - 左上角使用clip-path
+    &::before {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: 10px;
+        width: 10px;
+        height: 20px;
+        background: linear-gradient(33deg, transparent 0%, transparent 100%);
+        clip-path: polygon(0 0, 100% 0, 100% 10%, 10% 10%, 10% 100%, 0 100%);
+        transition: all 0.3s ease;
         z-index: 1;
     }
 
-    // Hover状态 - 文字颜色渐变，背景不变
+    // 更细的纯伪元素L型边框 - 右下角使用clip-path
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: 6px;
+        right: 6px;
+        width: 40px;
+        height: 10px;
+        background: linear-gradient(22deg, transparent 0%, transparent 100%);
+        clip-path: polygon(90% 100%, 100% 100%, 100% 0, 90% 0, 90% 90%, 0 90%, 0 100%);
+        transition: all 0.3s ease;
+        z-index: 1;
+      opacity: 0; // TODO：暂时隐藏
+    }
+
+    // Hover状态 - 纯边框focus动画（无背景色）
     &:hover {
-        .tabText {
-            background: linear-gradient(45deg, #777, #555, #333);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-weight: 400;
-        }
-    }
+        background: none; // 确保没有背景色
 
-    // 选中状态 - 炫酷渐变背景动画，文字颜色变化（非渐变）
-    &.active {
-        // 背景渐变动画（持续性）
-        background: linear-gradient(45deg,
-            #ff6b6b 0%,
-            #4ecdc4 25%,
-            #45b7d1 50%,
-            #96ceb4 75%,
-            #ffeaa7 100%);
-        background-size: 300% 300%;
-        animation: gradientShift 2s ease infinite;
-
-        // 文字颜色变化（非渐变）
         .tabText {
-            color: #fff; // 纯白色，非渐变
-            font-weight: 500;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-            -webkit-text-fill-color: #fff; // 重置渐变文字填充
+            color: #2d3748;
+            opacity: 1;
         }
 
-        // 微妙的发光效果，无边框
+        // 左上角L型边框动画 - 更细的渐变色
         &::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg,
-                transparent 0%,
-                rgba(255, 255, 255, 0.1) 50%,
-                transparent 100%);
-            animation: shimmer 2s ease-in-out infinite;
-            z-index: 0;
+            background: linear-gradient(33deg, #a0aec0 0%, #a0aec0 60%, transparent 100%);
+            width: 14px;
+            height: 14px;
+        }
+
+        // 右下角L型边框动画 - 更细的渐变色
+        &::after {
+            background: linear-gradient(22deg, transparent 0%, #a0aec0 40%, #a0aec0 100%);
+            width: 14px;
+            height: 14px;
         }
     }
 
-    // Hover时的背景保持朴素（选中时背景不变）
-    &:hover:not(.active) {
-        background: transparent; // 背景保持朴素
+    // 选中状态 - 常亮边框与渐变效果
+    &.active {
+        // 重置背景
+        background: none;
+
         .tabText {
-            // 文字颜色渐变效果
-            background: linear-gradient(45deg, #888, #666, #444);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: #2d3748;
+            font-weight: 500;
+        }
+
+        // 使用纯背景创建L型渐变边框 - 左上角
+        &::before {
+            background: linear-gradient(33deg, #fed7d7 0%, #e17055 70%, transparent 100%);
+        }
+
+        // 使用纯背景创建L型渐变边框 - 右下角
+        &::after {
+            background: linear-gradient(22deg, transparent 0%, #00cec9 40%, #00b894 100%);
+        }
+    }
+
+    // 移除了hover背景色效果，仅保留边框动画
+
+    // 右侧子菜单tab的特殊样式
+    .tabsFlowRight & {
+        padding-left: 24px;
+        font-size: 0.75rem;
+        color: #718096;
+
+        .tabText {
+            color: #718096;
+        }
+
+        &::before {
+            left: 14px;
+        }
+
+        &::after {
+            right: 8px;
+        }
+
+        // Hover状态
+        &:hover {
+            .tabText {
+                color: #4a5568;
+            }
+
+            &::before {
+                background: linear-gradient(33deg, #cbd5e0 0%, #cbd5e0 60%, transparent 100%);
+                width: 14px;
+                height: 14px;
+            }
+
+            &::after {
+                background: linear-gradient(22deg, transparent 0%, #cbd5e0 40%, #cbd5e0 100%);
+                width: 14px;
+                height: 14px;
+            }
+        }
+
+        &.active {
+            background: none;
+
+            .tabText {
+                color: #4a5568;
+            }
+
+            &::before {
+                background: linear-gradient(33deg, #fed7d7 0%, #fbb6b6 70%, transparent 100%);
+            }
+
+            &::after {
+                background: linear-gradient(22deg, transparent 0%, #63b3ed 30%, #4299e1 100%);
+            }
         }
     }
 }
 
-tabText {
+.tabText {
     font-size: 0.9rem;
     transition: all 0.3s ease;
     position: relative;
     z-index: 1;
 }
 
-// 分隔符 - 增强区分度
-tabSeparator {
-    font-size: 0.9rem;
+// 分隔符 - 流式布局下的直角设计
+.tabSeparator {
+    font-size: 0.7rem; // 合适的字号
     font-weight: 300;
-    margin: 0 6px;
-    opacity: 0.6;
-    transition: all 0.3s ease;
+    margin: 0; // 水平间距，用于流式布局
+    opacity: 0.7; // 适中的不透明度
+    transition: all 0.2s ease;
     font-family: 'Helvetica Neue', Arial, sans-serif;
+    display: inline; // 行内元素，跟随tab排列
+    color: #322727; // 淡色分隔
+    line-height: 1; // 标准行高
+    padding: 0; // 无padding
+}
 
-    // 不同分隔符的视觉区分
-    &:nth-child(4n+1) { // / 分隔符
-        color: #bbb;
-        font-weight: 400;
-    }
+// 空子菜单状态 - 日系极简
+.emptySubMenu {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 40px 20px;
+    text-align: center;
+    background-color: transparent; // 透明背景，融为一体
+}
 
-    &:nth-child(4n+3) { // // 分隔符
-        color: #999;
-        font-weight: 500;
-        letter-spacing: -0.5px;
-    }
-
-    // Hover效果
-    .projectTab:hover + & {
-        opacity: 0.8;
-        transform: scale(1.1);
-    }
+.emptyText {
+    font-size: 0.8rem;
+    color: #a0aec0; // 日系浅灰色
+    opacity: 0.6; // 更低的透明度，更微妙
+    font-weight: 300;
+    letter-spacing: 0.03em; // 稍大的字间距
+    font-family: 'Helvetica Neue', 'Hiragino Sans', 'Yu Gothic', sans-serif; // 日系字体
+    text-align: center;
+    line-height: 1.6; // 舒适的行高
 }
 
 // 响应式调整
@@ -184,8 +403,9 @@ tabSeparator {
     }
 
     .projectTab {
-        padding: 6px 10px;
-        font-size: 0.8rem;
+        padding: 5px 8px; // 移动端更小的内边距
+        font-size: 0.75rem; // 移动端更小的字号
+        margin: 2px 0; // 移动端更小的间距
     }
 
     .tabText {
@@ -212,73 +432,186 @@ tabSeparator {
     }
 
     .projectTab {
-        padding: 5px 8px;
-        font-size: 0.75rem;
-        width: 100%;
+        padding: 4px 6px; // 移动端更小的内边距
+        font-size: 0.7rem; // 移动端更小的字号
+        margin: 1px 0; // 移动端更小的间距
+        width: auto; // 移除100%宽度，让内容决定宽度
         text-align: left;
+        min-height: 32px; // 移动端更小的高度
+
+        // 移动端调整L型边框大小
+        &::before {
+            top: 2px;
+            left: 2px;
+            width: 10px;
+            height: 10px;
+        }
+
+        &::after {
+            bottom: 2px;
+            right: 2px;
+            width: 10px;
+            height: 10px;
+        }
+
+        // 移动端hover效果
+        &:hover {
+            &::before,
+            &::after {
+                width: 12px;
+                height: 12px;
+            }
+        }
+
+        // 移动端选中效果
+        &.active {
+            &::before,
+            &::after {
+                width: 12px;
+                height: 12px;
+            }
+        }
     }
 
     .tabSeparator {
         display: none; // 移动端隐藏分隔符
     }
+
+    // 移动端双tabsFlow调整
+    .tabsContainer {
+        flex-direction: column; // 垂直堆叠
+    }
+
+    .tabsFlowLeft,
+    .tabsFlowRight {
+        flex: none; // 移除均分，按内容高度
+        max-height: 200px; // 限制最大高度
+        border-right: none; // 移除分隔线
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05); // 改为底部分隔线
+        padding: 12px 16px; // 减少留白
+    }
+
+    .tabsFlowRight {
+        background-color: transparent; // 移除背景区分
+        // 移动端动画调整
+        opacity: 1;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+        visibility: visible;
+
+        // 移动端通过容器类控制显示/隐藏
+        .tabsContainer.collapsed & {
+            flex: 0;
+            width: 0;
+            opacity: 0;
+            visibility: hidden;
+            padding: 0;
+        }
+
+        .tabsContainer.expanded & {
+            flex: 1;
+            width: auto;
+            opacity: 1;
+            visibility: visible;
+            padding: 12px 16px;
+            transform: translateY(0);
+        }
+    }
+
+    .emptySubMenu {
+        padding: 20px 16px; // 减少留白
+    }
 }
 
-// 左侧导航栏 | Left Sidebar
+// 左侧导航栏 | Left Sidebar - 日系美学设计
 .sidebar {
-    width: 240px;
-    background-color: #fafafa;
+    background-color: #fefefe; // 日系纯白色背景
     height: 100vh;
+
+  min-width: 240px;
     position: fixed;
     left: 0;
     top: 0;
     display: flex;
     flex-direction: column;
-    padding: 60px 30px 40px;
-    border-right: 1px solid #f0f0f0;
+    padding: 0; // 移除padding，由各个部分控制
+    border-right: 1px solid rgba(0, 0, 0, 0.05); // 日系极细分隔线
     z-index: 100;
-    overflow-y: auto;
+    overflow-y: hidden; // 改为hidden，由内部元素控制滚动
 
-    @media (max-width: 768px) {
-        width: 200px;
-        padding: 40px 20px 30px;
+    // 动态宽度动画
+    transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+    // 收缩状态 - 只有第一个flow
+    &.collapsed {
+        width: 202px; // 单flow宽度（404px的一半）
+
+        @media (max-width: 768px) {
+            width: 130px; // 平板端单flow宽度（260px的一半）
+        }
+    }
+
+    // 展开状态 - 双flow
+    &.expanded {
+        width: 404px; // 双flow完整宽度
+
+        @media (max-width: 768px) {
+            width: 260px; // 平板端双flow完整宽度
+        }
     }
 
     @media (max-width: 480px) {
         width: 100%;
         height: auto;
         position: relative;
-        padding: 30px 20px 20px;
+
+        &.collapsed,
+        &.expanded {
+            width: 100%; // 移动端始终全宽
+        }
     }
 }
 
 .sidebarHeader {
-    margin-bottom: 60px;
-
+    padding: 30px 30px 0; // 上留白，左右留白，下无留白
+    margin-bottom: 0; // 移除margin，使用flex布局控制间距
+    flex-shrink: 0; // 防止被压缩
+    pointer-events: none;
+    user-select: none;
+  height: 15vh
+;
     @media (max-width: 768px) {
-        margin-bottom: 40px;
+        padding: 40px 20px 0; // 平板端减少留白
+    }
+
+    @media (max-width: 480px) {
+        padding: 30px 20px 0; // 移动端减少留白
     }
 }
 
 .mainTitle {
-    font-size: 1.8rem;
-    font-weight: 350;
-    letter-spacing: 0.05em;
-    margin: 0 0 8px 0;
-    color: #1a1a1a;
-    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 1.4rem; // 稍小的标题，日系克制
+    font-weight: 400; // 正常字重，日系平衡
+    letter-spacing: 0.01em; // 轻微字间距
+    margin: 0 0 6px 0; // 更小的间距
+    color: #2d3748; // 日系深灰色
+    font-family: 'Helvetica Neue', 'Hiragino Sans', 'Yu Gothic', sans-serif; // 日系字体
+    line-height: 1.3; // 更紧凑的行高
 
     @media (max-width: 768px) {
-        font-size: 1.5rem;
+        font-size: 1.4rem;
     }
 }
 
 .subtitle {
-    font-size: 0.85rem;
-    font-weight: 300;
-    color: #888;
+    font-size: 0.85rem; // 稍小的副标题
+    font-weight: 350; // 较轻字重
+    color: #718096; // 日系中灰色
     margin: 0;
-    letter-spacing: 0.02em;
-    opacity: 0.9;
+    letter-spacing: 0.03em; // 稍大字母间距
+    opacity: 0.9; // 较高的透明度
+    font-family: 'Helvetica Neue', 'Hiragino Sans', 'Yu Gothic', sans-serif; // 日系字体
+    line-height: 1.4; // 舒适的行高
 }
 
 .sidebarNav {
@@ -328,8 +661,40 @@ tabSeparator {
 }
 
 .sidebarFooter {
+    padding: 20px 30px 40px; // 上留白增加，给细线预留空间
+    margin-top: auto; // 自动推到最底部
+    flex-shrink: 0; // 防止被压缩
+    position: relative; // 为细线定位
+
+    // 日系细线分隔 - 顶部细线
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 20px;
+        right: 20px;
+        height: 1px;
+        background-color: rgba(0, 0, 0, 0.08); // 日系极细线，微妙分隔
+        opacity: 0.6;
+    }
+
+    @media (max-width: 768px) {
+        padding: 16px 20px 30px; // 平板端减少留白
+
+        &::before {
+            left: 15px;
+            right: 15px;
+        }
+    }
+
     @media (max-width: 480px) {
         display: none; // 移动端隐藏底部信息
+        padding: 12px 20px 20px; // 移动端减少留白
+
+        &::before {
+            left: 10px;
+            right: 10px;
+        }
     }
 }
 
@@ -378,25 +743,41 @@ tabSeparator {
 
 // 右侧主内容区 | Right Main Content
 .mainContent {
-    margin-left: 240px;
     flex: 1;
     min-height: 100vh;
     padding: 0;
     background-color: #fefefe;
     overflow-y: auto;
 
-    @media (max-width: 768px) {
-        margin-left: 200px;
+    // 动态边距动画
+    transition: margin-left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+    // 收缩状态边距 - 单flow
+    &.collapsed {
+        margin-left: 202px; // 对应收缩侧栏宽度
+
+        @media (max-width: 768px) {
+            margin-left: 130px; // 平板端单flow边距
+        }
+    }
+
+    // 展开状态边距 - 双flow
+    &.expanded {
+        margin-left: 404px; // 对应展开侧栏宽度
+
+        @media (max-width: 768px) {
+            margin-left: 260px; // 平板端双flow边距
+        }
     }
 
     @media (max-width: 480px) {
-        margin-left: 0;
+        margin-left: 0 !important;
         padding: 20px;
     }
 }
 
 // 画廊容器 | Gallery Container
-galleryContainer {
+.galleryContainer {
     padding: 80px 60px;
     min-height: 100vh;
     display: flex;
@@ -420,7 +801,7 @@ galleryContainer {
 }
 
 // 画廊网格 | Gallery Grid
-galleryGrid {
+.galleryGrid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
     gap: 60px;
@@ -447,7 +828,7 @@ galleryGrid {
     }
 }
 
-galleryItem {
+.galleryItem {
     position: relative;
     transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
@@ -465,7 +846,7 @@ galleryItem {
     }
 }
 
-galleryImageWrapper {
+.galleryImageWrapper {
     position: relative;
     border-radius: 12px;
     overflow: hidden;
@@ -480,7 +861,7 @@ galleryImageWrapper {
     }
 }
 
-galleryImage {
+.galleryImage {
     width: 100%;
     height: auto;
     display: block;
@@ -492,7 +873,7 @@ galleryImage {
     }
 }
 
-galleryImageInfo {
+.galleryImageInfo {
     position: absolute;
     bottom: 0;
     left: 0;
@@ -506,7 +887,7 @@ galleryImageInfo {
     backdrop-filter: blur(2px);
 }
 
-galleryImageTitle {
+.galleryImageTitle {
     font-size: 1.1rem;
     font-weight: 300;
     margin: 0 0 6px 0;
@@ -514,7 +895,7 @@ galleryImageTitle {
     font-family: 'Helvetica Neue', Arial, sans-serif;
 }
 
-galleryImageYear {
+.galleryImageYear {
     font-size: 0.9rem;
     font-weight: 300;
     opacity: 0.9;
@@ -523,7 +904,7 @@ galleryImageYear {
 }
 
 // 项目描述 | Project Description
-projectDescription {
+.projectDescription {
     text-align: center;
     max-width: 600px;
     margin: 0 auto;
@@ -535,7 +916,7 @@ projectDescription {
     }
 }
 
-projectTitle {
+.projectTitle {
     font-size: 1.8rem;
     font-weight: 350;
     letter-spacing: 0.05em;
@@ -548,7 +929,7 @@ projectTitle {
     }
 }
 
-projectDesc {
+.projectDesc {
     font-size: 1rem;
     font-weight: 300;
     color: #666;
@@ -562,7 +943,7 @@ projectDesc {
 }
 
 // 空画廊状态 | Empty Gallery State
-emptyGallery {
+.emptyGallery {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -570,7 +951,7 @@ emptyGallery {
     padding: 40px;
 }
 
-emptyGalleryPlaceholder {
+.emptyGalleryPlaceholder {
     text-align: center;
     padding: 60px 40px;
     opacity: 0.7;
@@ -580,7 +961,7 @@ emptyGalleryPlaceholder {
     width: 100%;
 }
 
-emptyGalleryIcon {
+.emptyGalleryIcon {
     width: 80px;
     height: 60px;
     margin: 0 auto 30px;
@@ -612,7 +993,7 @@ emptyGalleryIcon {
     }
 }
 
-emptyGalleryText {
+.emptyGalleryText {
     font-size: 1.1rem;
     font-weight: 300;
     color: #999;
@@ -620,7 +1001,7 @@ emptyGalleryText {
     letter-spacing: 0.02em;
 }
 
-emptyGallerySubtext {
+.emptyGallerySubtext {
     font-size: 0.9rem;
     font-weight: 300;
     color: #bbb;
@@ -898,7 +1279,7 @@ emptyGallerySubtext {
 }
 
 // 图集头部 | Gallery Header
-galleryHeader {
+.galleryHeader {
     padding: 60px 60px 40px;
     text-align: center;
     background: linear-gradient(135deg, #fefefe 0%, #f8f8f8 100%);
@@ -918,7 +1299,7 @@ galleryHeader {
 }
 
 // 图集包装器 - 无限滚动区域
-galleryWrapper {
+.galleryWrapper {
     height: calc(100vh - 200px); // 减去头部高度
     overflow: hidden;
     position: relative;
@@ -1063,5 +1444,65 @@ galleryWrapper {
         > div {
             border-radius: 4px;
         }
+    }
+}
+
+// 独立的分级指示器样式
+.subMenuIndicator {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1rem;
+    color: #74b9ff;
+    transition: all 0.25s ease;
+    font-weight: 400;
+    opacity: 0.8;
+    line-height: 1;
+    padding: 2px 4px;
+    border-radius: 2px;
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 16px;
+    height: 16px;
+}
+
+.subMenuIndicator.active {
+    color:#00cec9;
+    transform: translateY(-50%) rotate(90deg);
+    font-size: 0.9rem;
+    opacity: 1;
+    //background: rgba(254, 215, 215, 0.1);
+}
+
+.subMenuIndicator:hover {
+    color: #a0aec0;
+    opacity: 1;
+    transform: translateY(-50%) scale(1.1);
+    background: rgba(160, 174, 192, 0.1);
+}
+
+// 响应式调整
+@media (max-width: 768px) {
+    .subMenuIndicator {
+        font-size: 0.7rem;
+        right: 8px;
+        min-width: 14px;
+        height: 14px;
+    }
+
+    .subMenuIndicator.active {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .subMenuIndicator {
+        font-size: 0.6rem;
+        right: 6px;
+        min-width: 12px;
+        height: 12px;
     }
 }

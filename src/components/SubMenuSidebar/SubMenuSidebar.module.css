@@ -1,0 +1,319 @@
+.subMenuSidebar {
+  position: fixed;
+  top: 0;
+  left: 360px;
+  width: 280px;
+  height: 100vh;
+  background-color: #fefefe;
+  border-right: 1px solid #f5f5f5;
+  z-index: 99;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+.subMenuSidebar:not(.visible) {
+  transform: translateX(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+.subMenuSidebar.visible {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+.subMenuContainer {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 80px 40px 60px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.subMenuContainer::-webkit-scrollbar {
+  width: 2px;
+}
+.subMenuContainer::-webkit-scrollbar-track {
+  background: transparent;
+}
+.subMenuContainer::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 0;
+}
+.sidebarHeader {
+  margin-bottom: 32px;
+  flex-shrink: 0;
+}
+.mainTitle {
+  font-size: 1.6rem;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  margin: 0 0 12px 0;
+  color: #2a2a2a;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.2;
+}
+.subtitle {
+  font-size: 0.75rem;
+  font-weight: 350;
+  color: #999;
+  margin: 0;
+  letter-spacing: 0.05em;
+  opacity: 0.8;
+  line-height: 1.4;
+}
+.projectTabs {
+  flex: 1;
+  padding: 20px 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+.tabsFlow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 0;
+  align-items: center;
+  line-height: 1.3;
+  overflow-y: auto;
+  padding: 0 2px;
+  max-height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+}
+.tabsFlow::-webkit-scrollbar {
+  width: 2px;
+}
+.tabsFlow::-webkit-scrollbar-track {
+  background: transparent;
+}
+.tabsFlow::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 0;
+}
+.projectTab {
+  background: none;
+  border: none;
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  position: relative;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  border-radius: 0;
+  margin: 2px 0;
+  display: inline-block;
+  user-select: none;
+  outline: none;
+  min-height: 28px;
+  line-height: 1.2;
+  vertical-align: middle;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.projectTab:focus-visible {
+  outline: 1px solid rgba(0, 0, 0, 0.1);
+  outline-offset: 1px;
+}
+.projectTab .tabText {
+  font-size: 0.8rem;
+  color: #999;
+  transition: color 0.3s ease;
+  position: relative;
+  z-index: 2;
+  font-weight: 300;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+}
+.projectTab:hover:not(.active) {
+  cursor: pointer;
+}
+.projectTab:hover:not(.active)::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 25%;
+  height: 25%;
+  background: linear-gradient(33deg, #777 0%, #999 70%, transparent 100%);
+  clip-path: polygon(0 0, 100% 0, 100% 1px, 1px 1px, 1px 100%, 0 100%);
+  z-index: 1;
+  transform: scale(0);
+  animation: borderAppearTopLeft 0.3s ease forwards;
+}
+.projectTab:hover:not(.active)::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 35%;
+  height: 35%;
+  background: linear-gradient(22deg, #777 0%, #999 70%, transparent 100%);
+  clip-path: polygon(0 100%, 0 calc(100% - 1px), calc(100% - 1px) calc(100% - 1px), calc(100% - 1px) 0, 100% 0, 100% 100%);
+  z-index: 1;
+  transform: scale(0);
+  animation: borderAppearBottomRight 0.3s ease forwards;
+}
+.projectTab:hover:not(.active) .tabText {
+  color: #777;
+  font-weight: 350;
+}
+.projectTab.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 25%;
+  height: 25%;
+  background: linear-gradient(33deg, #ff6b6b 0%, #ffd93d 70%, transparent 100%);
+  clip-path: polygon(0 0, 100% 0, 100% 1px, 1px 1px, 1px 100%, 0 100%);
+  z-index: 1;
+  transform: scale(1);
+}
+.projectTab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 35%;
+  height: 35%;
+  background: linear-gradient(22deg, #4ecdc4 0%, #44a08d 70%, transparent 100%);
+  clip-path: polygon(0 100%, 0 calc(100% - 1px), calc(100% - 1px) calc(100% - 1px), calc(100% - 1px) 0, 100% 0, 100% 100%);
+  z-index: 1;
+  transform: scale(1);
+}
+.projectTab.active .tabText {
+  color: #333;
+  font-weight: 400;
+  position: relative;
+  z-index: 2;
+}
+.projectTab:hover:not(.active) {
+  background: transparent;
+}
+.projectTab:hover:not(.active) .tabText {
+  background: linear-gradient(45deg, #888, #666, #444);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.projectTab.active:hover::before {
+  background: linear-gradient(33deg, #ff6b6b 0%, #ffd93d 70%, transparent 100%);
+}
+.projectTab.active:hover::after {
+  background: linear-gradient(22deg, #4ecdc4 0%, #44a08d 70%, transparent 100%);
+}
+.tabText {
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+tabSeparator {
+  font-size: 0.65rem;
+  font-weight: 300;
+  margin: 0 4px;
+  opacity: 0.3;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  color: #ddd;
+}
+.closeButton {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  color: #666;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+  z-index: 10;
+}
+.closeButton:hover {
+  background: #ffffff;
+  color: #333;
+  transform: scale(1.1);
+}
+.closeButton:active {
+  transform: scale(0.95);
+}
+@media (max-width: 768px) {
+  .subMenuSidebar {
+    width: 240px;
+    left: 280px;
+  }
+  .subMenuContainer {
+    padding: 60px 30px 40px;
+  }
+  .projectTab {
+    padding: 4px 6px;
+    min-height: 24px;
+    margin: 1px 0;
+  }
+  .tabText {
+    font-size: 0.75rem;
+    line-height: 1.2;
+  }
+  tabSeparator {
+    font-size: 0.6rem;
+    margin: 0 3px;
+    opacity: 0.25;
+  }
+  .closeButton {
+    width: 28px;
+    height: 28px;
+    font-size: 1.2rem;
+    top: 15px;
+    right: 15px;
+  }
+}
+@media (max-width: 480px) {
+  .subMenuSidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 200;
+    transform: translateX(100%);
+  }
+  .subMenuSidebar.visible {
+    transform: translateX(0);
+  }
+  .subMenuContainer {
+    padding: 40px 20px 30px;
+  }
+  .projectTab {
+    padding: 3px 6px;
+    font-size: 0.7rem;
+    min-height: 22px;
+    margin: 1px 0;
+  }
+  .tabText {
+    font-size: 0.7rem;
+    line-height: 1.1;
+  }
+  tabSeparator {
+    font-size: 0.55rem;
+    margin: 1px 3px;
+    opacity: 0.2;
+  }
+  .closeButton {
+    width: 24px;
+    height: 24px;
+    font-size: 1rem;
+    top: 10px;
+    right: 10px;
+  }
+}
+/*# sourceMappingURL=SubMenuSidebar.module.css.map */

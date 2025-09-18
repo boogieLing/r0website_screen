@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* 模拟AbstractTab的样式结构 */
+        .abstractTab {
+            position: relative;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-weight: 300;
+            margin: 2px 0;
+            display: inline-block;
+        }
+
+        .abstractTab::before,
+        .abstractTab::after {
+            content: '';
+            position: absolute;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        /* 非选中状态的hover效果 */
+        .expandable:hover:not(.active)::before {
+            opacity: 1;
+            top: 0;
+            left: 0;
+            width: 25%;
+            height: 25%;
+            background: linear-gradient(33deg, #777 0%, #999 70%, transparent 100%);
+            clip-path: polygon(0 0, 100% 0, 100% 1px, 1px 1px, 1px 100%, 0 100%);
+        }
+
+        .expandable:hover:not(.active)::after {
+            opacity: 1;
+            bottom: 0;
+            right: 0;
+            width: 35%;
+            height: 35%;
+            background: linear-gradient(22deg, #777 0%, #999 70%, transparent 100%);
+            clip-path: polygon(0 100%, 0 calc(100% - 1px), calc(100% - 1px) calc(100% - 1px), calc(100% - 1px) 0, 100% 0, 100% 100%);
+        }
+
+        /* 选中状态 */
+        .abstractTab.active::before {
+            opacity: 1;
+            top: 0;
+            left: 0;
+            width: 25%;
+            height: 25%;
+            background: linear-gradient(33deg, #ff6b6b 0%, #ffd93d 70%, transparent 100%);
+            clip-path: polygon(0 0, 100% 0, 100% 1px, 1px 1px, 1px 100%, 0 100%);
+        }
+
+        .abstractTab.active::after {
+            opacity: 1;
+            bottom: 0;
+            right: 0;
+            width: 35%;
+            height: 35%;
+            background: linear-gradient(22deg, #4ecdc4 0%, #44a08d 70%, transparent 100%);
+            clip-path: polygon(0 100%, 0 calc(100% - 1px), calc(100% - 1px) calc(100% - 1px), calc(100% - 1px) 0, 100% 0, 100% 100%);
+        }
+
+        /* 问题：选中状态下hover会发生什么？ */
+        .abstractTab.active:hover::before {
+            /* 目前这个选择器没有定义样式 */
+            /* 如果hover的权重更高，可能会覆盖选中样式 */
+        }
+
+        .tabText {
+            font-size: 0.8rem;
+            color: #999;
+            transition: all 0.3s ease;
+        }
+
+        .active .tabText {
+            color: #333;
+            font-weight: 400;
+        }
+
+        .expandable:hover:not(.active) .tabText {
+            color: #777;
+            font-weight: 350;
+        }
+    </style>
+</head>
+<body>
+    <h2>测试选中状态下hover的样式行为</h2>
+
+    <h3>1. 非选中状态：</h3>
+    <div class="abstractTab expandable">
+        <span class="tabText">非选中Tab</span>
+    </div>
+
+    <h3>2. 选中状态（应该保持彩色边框）：</h3>
+    <div class="abstractTab expandable active">
+        <span class="tabText">选中Tab</span>
+    </div>
+
+    <h3>3. 选中状态 + hover（问题状态）：</h3>
+    <div class="abstractTab expandable active" style="margin-top: 20px;">
+        <span class="tabText">选中Tab - 鼠标悬停查看边框</span>
+    </div>
+
+    <p>问题描述：当选中的tab被hover时，边框颜色应该保持粉黄+蓝绿渐变，而不是变成灰色。</p>
+</body>
+</html>

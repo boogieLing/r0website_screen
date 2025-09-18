@@ -2,15 +2,25 @@ import {makeAutoObservable, computed} from "mobx";
 
 class SomniumNexusStore {
     _selectedCategory = "stillness";
+    _selectedSubCategory = null;
     _selectedImage = null;
     _hoveredImage = null;
     _isModalOpen = false;
+    _hasSubMenu = false;
+    _subCategories = [];
 
     // 摄影项目数据 | Photography project data (预设测试阶段项目)
     _galleryCategories = {
         "stillness": {
             title: "Stillness",
             description: "静谧时刻的诗意捕捉，探寻日常中的禅意美学",
+            hasSubMenu: true, // 标记有子菜单
+            subCategories: [
+                {key: "morning", title: "晨雾"},
+                {key: "reflection", title: "倒影"},
+                {key: "silence", title: "静默"},
+                {key: "space", title: "留白"}
+            ],
             images: [
                 {id: 1, title: "晨雾", year: "2024", src: "/static/images/stillness-01.jpg", category: "stillness"},
                 {id: 2, title: "倒影", year: "2024", src: "/static/images/stillness-02.jpg", category: "stillness"},
@@ -23,6 +33,7 @@ class SomniumNexusStore {
         "interlude": {
             title: "Interlude",
             description: "时光间隙的温柔记录，捕捉转瞬即逝的美好",
+            hasSubMenu: false, // 无子菜单
             images: [
                 {id: 7, title: "午后", year: "2024", src: "/static/images/interlude-01.jpg", category: "interlude"},
                 {id: 8, title: "微风", year: "2024", src: "/static/images/interlude-02.jpg", category: "interlude"},
@@ -35,6 +46,12 @@ class SomniumNexusStore {
         "echoes": {
             title: "Echoes",
             description: "记忆回响的诗意表达，探索内心的声音",
+            hasSubMenu: true, // 标记有子菜单
+            subCategories: [
+                {key: "memory", title: "记忆"},
+                {key: "dream", title: "梦境"},
+                {key: "heart", title: "心象"}
+            ],
             images: [
                 {id: 13, title: "回响", year: "2024", src: "/static/images/echoes-01.jpg", category: "echoes"},
                 {id: 14, title: "记忆", year: "2024", src: "/static/images/echoes-02.jpg", category: "echoes"},
@@ -47,6 +64,7 @@ class SomniumNexusStore {
         "fragments": {
             title: "Fragments",
             description: "片段化生活的瞬间美学，发现不完整的美",
+            hasSubMenu: false, // 无子菜单
             images: [
                 {id: 19, title: "碎片", year: "2024", src: "/static/images/fragments-01.jpg", category: "fragments"},
                 {id: 20, title: "瞬间", year: "2024", src: "/static/images/fragments-02.jpg", category: "fragments"},
@@ -59,6 +77,12 @@ class SomniumNexusStore {
         "transparency": {
             title: "Transparency",
             description: "透明质感的视觉探索，展现光影的层次",
+            hasSubMenu: true, // 标记有子菜单
+            subCategories: [
+                {key: "layer", title: "层次"},
+                {key: "light", title: "光影"},
+                {key: "texture", title: "质感"}
+            ],
             images: [
                 {id: 25, title: "透明", year: "2024", src: "/static/images/transparency-01.jpg", category: "transparency"},
                 {id: 26, title: "层次", year: "2024", src: "/static/images/transparency-02.jpg", category: "transparency"},
@@ -71,6 +95,7 @@ class SomniumNexusStore {
         "threshold": {
             title: "Threshold",
             description: "临界状态的哲学思考，探索转变的瞬间",
+            hasSubMenu: false, // 无子菜单
             images: [
                 {id: 31, title: "临界", year: "2024", src: "/static/images/threshold-01.jpg", category: "threshold"},
                 {id: 32, title: "转变", year: "2024", src: "/static/images/threshold-02.jpg", category: "threshold"},
@@ -85,9 +110,12 @@ class SomniumNexusStore {
     constructor() {
         makeAutoObservable(this, {
             selectedCategory: computed,
+            selectedSubCategory: computed,
             selectedImage: computed,
             hoveredImage: computed,
             isModalOpen: computed,
+            hasSubMenu: computed,
+            subCategories: computed,
             galleryCategories: computed,
             categories: computed,
             currentCategory: computed,
@@ -116,6 +144,18 @@ class SomniumNexusStore {
         return this._galleryCategories;
     }
 
+    get selectedSubCategory() {
+        return this._selectedSubCategory;
+    }
+
+    get hasSubMenu() {
+        return this._hasSubMenu;
+    }
+
+    get subCategories() {
+        return this._subCategories;
+    }
+
     get categories() {
         return Object.keys(this._galleryCategories);
     }
@@ -132,7 +172,27 @@ class SomniumNexusStore {
     setSelectedCategory = (category) => {
         if (this._galleryCategories[category]) {
             this._selectedCategory = category;
+            this._selectedSubCategory = null; // 重置子菜单选择
+
+            // 检查是否有子菜单
+            const hasSubMenu = this._galleryCategories[category].hasSubMenu || false;
+            this._hasSubMenu = hasSubMenu;
+
+            // 设置子菜单数据
+            if (hasSubMenu && this._galleryCategories[category].subCategories) {
+                this._subCategories = [...this._galleryCategories[category].subCategories];
+            } else {
+                this._subCategories = [];
+            }
         }
+    };
+
+    setSelectedSubCategory = (subCategoryKey) => {
+        this._selectedSubCategory = subCategoryKey;
+    };
+
+    clearSelectedSubCategory = () => {
+        this._selectedSubCategory = null;
     };
 
     setSelectedImage = (image) => {
