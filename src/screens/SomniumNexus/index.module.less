@@ -8,14 +8,16 @@
 
 .somniumNexusContainer {
     position: relative; // 改为相对定位，为绝对定位的侧边栏提供参考
-    min-height: 100vh;
+    height: 100vh; // 改为固定高度，避免min-height导致的滚动条
     font-family: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
     font-weight: 300;
     color: #2a2a2a;
     background-color: #fefefe;
     line-height: 1.6;
-    width: 100%;
-    overflow-x: hidden; // 防止动画期间的横向溢出
+    width: 100vw; // 使用vw单位确保精确适配
+    max-width: 100vw; // 防止任何溢出
+    overflow: hidden; // 完全防止滚动条，像rinkokawauchi.com一样
+    box-sizing: border-box;
 }
 
 // 摄影项目标签页 - 双tabsFlow布局设计
@@ -836,16 +838,20 @@
 }
 
 // 右侧主内容区 | Right Main Content - 固定位置和大小，不受侧边栏影响
+// 采用rinkokawauchi.com的重叠式布局：内容区域完全固定，侧边栏覆盖其上
+// 这样确保图片显示区域始终不变，符合图片网站设计原则
 .mainContent {
-    min-height: 100vh;
-    padding: 0 0 0 80px; // 为收缩侧边栏预留空间
+    position: absolute; // 绝对定位，精确控制位置和大小
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0; // 完全填充父容器
     background-color: #fefefe;
-    overflow-y: auto;
-    position: relative; // 相对定位，保持固定
-    width: 100%; // 固定宽度，不随侧边栏变化
+    overflow: hidden; // 完全隐藏滚动条，像rinkokawauchi.com一样
+    z-index: 1; // 基础层级
+    // 关键：位置始终固定，不随侧边栏状态变化
+    // 侧边栏通过绝对定位覆盖在内容之上，不影响内容区域大小
     box-sizing: border-box;
-    z-index: 1; // 基础层级，确保在 body 之上
-    transition: padding-left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); // 平滑过渡，但位置不变
 }
 
 // 透明蒙版 | Transparent Overlay - 在 expandedSidebar 之下，mainContent 之上
@@ -1376,11 +1382,15 @@
 
 // 图集包装器 - 无限滚动区域 - 全屏模式
 .galleryWrapper {
-    height: 100vh; // 全屏高度，移除头部减去的部分
-  width: 100%;
+    // 使用绝对定位来精确适配父容器，避免vh单位导致的滚动条
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     overflow: hidden;
-    position: relative;
-  display: block;
+    display: block;
+  padding-left: 80px;
 }
 
 // 动画定义
