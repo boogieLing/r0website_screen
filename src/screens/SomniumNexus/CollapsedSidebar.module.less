@@ -1,43 +1,62 @@
-// 收缩状态侧边栏样式 - 极简日系风格，与主内容平等布局
+// 收缩状态侧边栏样式 - 绝对定位，支持丝滑动画
 .collapsedSidebar {
-    position: fixed;
+    position: absolute; // 改为绝对定位，支持重叠动画
     left: 0;
     top: 0;
-    width: 80px; // 增加宽度，平等共享空间
+    width: 80px; // 收缩状态宽度
     height: 100vh;
     background: rgba(255, 255, 255, 0.95);
     border-right: 1px solid rgba(0, 0, 0, 0.08);
-    z-index: 1000;
+    z-index: 100; // 基础层级，低于 expandedSidebar
     display: flex;
     flex-direction: column;
     align-items: center;
     backdrop-filter: blur(5px);
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+    // 侧边栏出现/消失动画 - 从左侧滑入滑出
+    transform: translateX(-100%);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+    // 显示状态 - 从左侧滑入
+    &.visible {
+        transform: translateX(0);
+        opacity: 1;
+        visibility: visible;
+    }
+
+    // 隐藏状态 - 从左侧滑出
+    &.hiding {
+        transform: translateX(-100%);
+        opacity: 0;
+        visibility: hidden;
+    }
 }
 
 
-// 内容区域
+// 内容区域 - 提升 selectedProject 位置
 .contentArea {
     flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start; // 改为顶部对齐，提升位置
     width: 100%;
     padding: 20px 0;
-    margin-top: 80px; // 避开切换按钮位置
+    margin-top: 30px; // 大幅减少顶部边距，提升位置
 }
 
 // 默认提示（未选择状态）
-defaultPrompt {
+.defaultPrompt {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
     width: 40px;
     height: 80px;
     background: rgba(255, 255, 255, 0.8);
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    // border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -45,9 +64,7 @@ defaultPrompt {
     text-orientation: mixed;
 
     &:hover {
-        background: rgba(255, 255, 255, 0.95);
-        border-color: rgba(0, 0, 0, 0.15);
-        transform: translateY(-2px);
+
     }
 
     .promptText {
@@ -67,7 +84,7 @@ defaultPrompt {
     }
 }
 
-// 选中项目显示 - 优化高度和防止换行
+// 选中项目显示 - 优化高度和防止换行，添加进入动画
 .selectedProject {
     display: flex;
     flex-direction: row;
@@ -81,15 +98,22 @@ defaultPrompt {
     padding: 15px 8px;
     writing-mode: vertical-rl;
     text-orientation: mixed;
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    // transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     cursor: pointer;
     user-select: none;
     position: relative;
     overflow: hidden;
 
+    // 进入动画
+    // animation: slideInFromTop 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+    // 悬停效果增强
+    &:hover {
+       // TODO
+    }
 
     &:active {
-        transform: translateY(0);
+        transform: translateY(0) scale(0.98);
     }
 }
 
@@ -133,6 +157,8 @@ defaultPrompt {
     flex-direction: column;
     align-items: center;
     opacity: 0.6;
+  user-select: none;
+  pointer-events: none;
 }
 
 .siteName {
@@ -188,5 +214,26 @@ defaultPrompt {
 
     .siteName {
         font-size: 0.5rem;
+    }
+}
+
+// 动画定义
+@keyframes slideInFromTop {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
     }
 }

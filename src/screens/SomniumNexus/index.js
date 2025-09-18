@@ -14,7 +14,7 @@ const SomniumNexus = observer(() => {
     // eslint-disable-next-line
     const [, setSelectedProject] = useState("stillness");
     const [showSecondFlow, setShowSecondFlow] = useState(false);
-    const [sidebarExpanded, setSidebarExpanded] = useState(true); // 默认展开侧边栏
+    const [sidebarExpanded, setSidebarExpanded] = useState(false); // 默认展开侧边栏
     const [isAnimating, setIsAnimating] = useState(false); // 动画状态
     const [hasSelected, setHasSelected] = useState(false); // 跟踪用户是否选择了项目
 
@@ -107,24 +107,13 @@ const SomniumNexus = observer(() => {
 
     return (
         <div className={styles.somniumNexusContainer}>
-            {/* 根据状态渲染不同的侧边栏组件 */}
-            {sidebarExpanded ? (
-                // 展开状态 - 完整侧边栏
-                <aside className={styles.expandedSidebar}>
-                    {/* 收缩/展开切换按钮 - 添加动画类名 */}
-                    <button
-                        className={`${styles.toggleButton} ${isAnimating ? styles.animating : ''}`}
-                        onClick={handleSidebarToggle}
-                        aria-label="收缩侧边栏"
-                        disabled={isAnimating}
-                    >
-                        <span className={styles.toggleIcon}>‹</span>
-                    </button>
-
-                    <div className={styles.sidebarHeader}>
-                        <h1 className={styles.mainTitle}>Somnium Nexus</h1>
-                        <p className={styles.subtitle}>图集项目 | Image Collection</p>
-                    </div>
+            {/* 侧边栏组件 - 两个组件始终存在，通过 CSS 控制动画 */}
+            {/* 展开状态侧边栏 - 始终存在，通过 visible 类控制动画 */}
+            <aside className={`${styles.expandedSidebar} ${sidebarExpanded ? styles.visible : styles.hiding}`}>
+                <div className={styles.sidebarHeader}>
+                    <h1 className={styles.mainTitle}>Somnium Nexus</h1>
+                    <p className={styles.subtitle}>图集项目 | Image Collection</p>
+                </div>
 
                     <div className={styles.projectTabs}>
                         <div className={`${styles.tabsContainer} ${styles.expanded}`}>
@@ -206,9 +195,11 @@ const SomniumNexus = observer(() => {
                         <p className={styles.copyright}>© 2025 Somnium Nexus</p>
                     </div>
                 </aside>
-            ) : (
-                // 收缩状态 - CollapsedSidebar组件
+
+                {/* 收缩状态侧边栏 - 始终存在，通过 visible 类控制动画 */}
                 <CollapsedSidebar
+                    className=''
+                    show={!sidebarExpanded}  // 根据状态控制显示/隐藏
                     onToggle={handleSidebarToggle}
                     onProjectClick={handleProjectClick}
                     onGetStarted={handleGetStarted}
@@ -218,10 +209,17 @@ const SomniumNexus = observer(() => {
                     categories={categories}
                     isAnimating={isAnimating}
                 />
-            )}
 
-            {/* 右侧主内容区 | Right Main Content */}
-            <main className={`${styles.mainContent} ${sidebarExpanded ? styles.expanded : ''}`}>
+            {/* 右侧主内容区 | Right Main Content - 固定位置和大小 */}
+            <main className={styles.mainContent}>
+                {/* 透明蒙版 - 当侧边栏展开时显示 */}
+                {sidebarExpanded && (
+                    <div
+                        className={styles.overlay}
+                        onClick={handleSidebarToggle}
+                        aria-label="点击关闭侧边栏"
+                    />
+                )}
                 {!hasSelected ? (
                     <SimpleWelcomeModule onGetStarted={handleGetStarted} />
                 ) : (

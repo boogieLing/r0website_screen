@@ -3,6 +3,8 @@ import { observer } from 'mobx-react-lite';
 import styles from './CollapsedSidebar.module.less';
 
 const CollapsedSidebar = observer(({
+    className,
+    show = true,
     onToggle,
     onProjectClick,
     onGetStarted,
@@ -20,13 +22,13 @@ const CollapsedSidebar = observer(({
             // 已选择状态下，点击展开侧边栏
             onToggle();
         } else {
-            // 未选择状态下，开始探索
-            onGetStarted();
+            // 未选择状态下，只展开侧边栏，不自动选择项目
+            onToggle();
         }
     };
 
     return (
-        <div className={styles.collapsedSidebar}>
+        <div className={`${styles.collapsedSidebar} ${show ? styles.visible : styles.hiding}`}>
             {/* 合并的项目显示和切换区域 - 整个区域都是可点击的 */}
             <div className={styles.contentArea}>
                 {!hasSelected ? (
@@ -44,10 +46,10 @@ const CollapsedSidebar = observer(({
                         }}
                     >
                         <div className={styles.promptText}>
-                            选择
+                            Somnium
                         </div>
                         <div className={styles.promptSubText}>
-                            项目
+                            nexus
                         </div>
                     </div>
                 ) : (
@@ -79,7 +81,7 @@ const CollapsedSidebar = observer(({
             {/* 底部简约标识 */}
             <div className={styles.bottomIndicator}>
                 <div className={styles.siteName}>
-                    SN
+                    R0
                 </div>
             </div>
         </div>

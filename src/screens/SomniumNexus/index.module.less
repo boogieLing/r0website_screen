@@ -7,13 +7,15 @@
 }
 
 .somniumNexusContainer {
-    display: flex;
+    position: relative; // 改为相对定位，为绝对定位的侧边栏提供参考
     min-height: 100vh;
     font-family: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
     font-weight: 300;
     color: #2a2a2a;
     background-color: #fefefe;
     line-height: 1.6;
+    width: 100%;
+    overflow-x: hidden; // 防止动画期间的横向溢出
 }
 
 // 摄影项目标签页 - 双tabsFlow布局设计
@@ -250,20 +252,20 @@
         background: none; // 确保没有背景色
 
         .tabText {
-            color: #2d3748;
+            color: #033aa1;
             opacity: 1;
         }
 
         // 左上角L型边框动画 - 更细的渐变色
         &::before {
-            background: linear-gradient(33deg, #a0aec0 0%, #a0aec0 60%, transparent 100%);
+            background: linear-gradient(33deg, #a0aec0 0%, #263040 60%, transparent 100%);
             width: 14px;
             height: 14px;
         }
 
         // 右下角L型边框动画 - 更细的渐变色
         &::after {
-            background: linear-gradient(22deg, transparent 0%, #a0aec0 40%, #a0aec0 100%);
+            background: linear-gradient(22deg, transparent 0%, #a0aec0 40%, #c9dbf3 100%);
             width: 14px;
             height: 14px;
         }
@@ -275,18 +277,18 @@
         background: none;
 
         .tabText {
-            color: #2d3748;
+            color: #b83e09;
             font-weight: 500;
         }
 
         // 使用纯背景创建L型渐变边框 - 左上角
         &::before {
-            background: linear-gradient(33deg, #fed7d7 0%, #e17055 70%, transparent 100%);
+            background: linear-gradient(33deg, #f48585 0%, #f4896c 70%, transparent 100%);
         }
 
         // 使用纯背景创建L型渐变边框 - 右下角
         &::after {
-            background: linear-gradient(22deg, transparent 0%, #00cec9 40%, #00b894 100%);
+            background: linear-gradient(22deg, transparent 0%, #00cec9 40%, #04ffcb 100%);
         }
     }
 
@@ -523,25 +525,42 @@
     }
 }
 
-// 展开状态侧边栏 - Expanded Sidebar
+// 展开状态侧边栏 - 绝对定位，支持丝滑动画
 .expandedSidebar {
-    background-color: rgba(254, 254, 254, 0.45); // 半透明白色背景
-    height: 100vh;
-    width: 320px; // 固定展开宽度
-    position: fixed;
+    position: absolute; // 改为绝对定位，支持重叠动画
     left: 0;
     top: 0;
+    width: 320px; // 固定展开宽度
+    height: 100vh;
+    background-color: rgba(254, 254, 254, 0.95); // 更实色的背景，提高可读性
     display: flex;
     flex-direction: column;
     padding: 0; // 移除padding，由各个部分控制
     border-right: 1px solid rgba(0, 0, 0, 0.05); // 日系极细分隔线
-    z-index: 1000; // 提高z-index确保在上方
+    z-index: 1001; // 更高的 z-index，覆盖在其他元素之上
     overflow-y: hidden; // 改为hidden，由内部元素控制滚动
     backdrop-filter: blur(10px); // 毛玻璃效果
     box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
 
-    // 动态宽度动画
+    // 侧边栏出现/消失动画 - 从左侧滑入滑出
+    transform: translateX(-100%);
+    opacity: 0;
+    visibility: hidden;
     transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+    // 显示状态 - 从左侧滑入
+    &.visible {
+        transform: translateX(0);
+        opacity: 1;
+        visibility: visible;
+    }
+
+    // 隐藏状态 - 从左侧滑出
+    &.hiding {
+        transform: translateX(-100%);
+        opacity: 0;
+        visibility: hidden;
+    }
 
     // 收缩/展开切换按钮
     .toggleButton {
@@ -562,6 +581,10 @@
         z-index: 1001;
         backdrop-filter: blur(5px);
 
+        &.animating {
+            animation: buttonPulse 0.4s ease;
+        }
+
         &:hover {
             background-color: rgba(254, 254, 254, 1);
             right: -22px;
@@ -573,6 +596,11 @@
             color: #666;
             font-weight: 300;
             line-height: 1;
+            transition: transform 0.3s ease;
+
+            &.rotated {
+                transform: rotate(180deg);
+            }
         }
     }
 
@@ -790,23 +818,35 @@
     line-height: 1.4;
 }
 
-// 右侧主内容区 | Right Main Content - 收缩状态下平等共享空间
+// 右侧主内容区 | Right Main Content - 固定位置和大小，不受侧边栏影响
 .mainContent {
     min-height: 100vh;
-    padding: 0;
+    padding: 0 0 0 80px; // 为收缩侧边栏预留空间
     background-color: #fefefe;
     overflow-y: auto;
-    margin-left: 80px; // 收缩状态侧边栏宽度，平等共享空间
-    position: relative; // 相对定位
-    z-index: 1; // 确保在侧边栏下方
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative; // 相对定位，保持固定
+    width: 100%; // 固定宽度，不随侧边栏变化
+    box-sizing: border-box;
+    z-index: 1; // 基础层级，确保在 body 之上
+    transition: padding-left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); // 平滑过渡，但位置不变
+}
 
-    // 展开状态时的模糊效果和边距调整
-    &.expanded {
-        margin-left: 320px; // 展开状态侧边栏宽度
-        filter: blur(4px) brightness(0.8);
-        opacity: 0.6;
-        transform: scale(1.01); // 轻微放大增强视觉效果
+// 透明蒙版 | Transparent Overlay - 在 expandedSidebar 之下，mainContent 之上
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: transparent; // 完全透明
+    cursor: pointer;
+    z-index: 1000; // 在 expandedSidebar (1001) 之下，在 mainContent 之上
+    transition: background-color 0.3s ease, opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: background-color, opacity; // 性能优化
+
+    // 悬停效果 - 轻微视觉反馈
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.02); // 极轻微的透明度变化
     }
 }
 
@@ -1358,6 +1398,12 @@
     100% { transform: translateX(100%); }
 }
 
+@keyframes buttonPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
 // 空状态 | Empty State
 .emptyState {
     display: flex;
@@ -1467,7 +1513,7 @@
     top: 50%;
     transform: translateY(-50%);
     font-size: 1rem;
-    color: #74b9ff;
+    color: #1984ec;
     transition: all 0.25s ease;
     font-weight: 400;
     opacity: 0.8;
@@ -1483,7 +1529,7 @@
 }
 
 .subMenuIndicator.active {
-    color:#00cec9;
+    color: #027571;
     transform: translateY(-50%) rotate(90deg);
     font-size: 0.9rem;
     opacity: 1;

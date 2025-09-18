@@ -1,49 +1,56 @@
 .collapsedSidebar {
-  position: fixed;
+  position: absolute;
   left: 0;
   top: 0;
   width: 80px;
   height: 100vh;
   background: rgba(255, 255, 255, 0.95);
   border-right: 1px solid rgba(0, 0, 0, 0.08);
-  z-index: 1000;
+  z-index: 100;
   display: flex;
   flex-direction: column;
   align-items: center;
   backdrop-filter: blur(5px);
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform: translateX(-100%);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.collapsedSidebar.visible {
+  transform: translateX(0);
+  opacity: 1;
+  visibility: visible;
+}
+.collapsedSidebar.hiding {
+  transform: translateX(-100%);
+  opacity: 0;
+  visibility: hidden;
 }
 .contentArea {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   width: 100%;
   padding: 20px 0;
-  margin-top: 80px;
+  margin-top: 30px;
 }
-defaultPrompt {
+.defaultPrompt {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   width: 40px;
   height: 80px;
   background: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s ease;
   writing-mode: vertical-rl;
   text-orientation: mixed;
 }
-defaultPrompt:hover {
-  background: rgba(255, 255, 255, 0.95);
-  border-color: rgba(0, 0, 0, 0.15);
-  transform: translateY(-2px);
-}
-defaultPrompt .promptText {
+.defaultPrompt .promptText {
   font-size: 0.7rem;
   color: #2c3e50;
   font-weight: 500;
@@ -51,7 +58,7 @@ defaultPrompt .promptText {
   line-height: 1.2;
   margin-bottom: 8px;
 }
-defaultPrompt .promptSubText {
+.defaultPrompt .promptSubText {
   font-size: 0.6rem;
   color: #7f8c8d;
   font-weight: 400;
@@ -69,14 +76,13 @@ defaultPrompt .promptSubText {
   padding: 15px 8px;
   writing-mode: vertical-rl;
   text-orientation: mixed;
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   cursor: pointer;
   user-select: none;
   position: relative;
   overflow: hidden;
 }
 .selectedProject:active {
-  transform: translateY(0);
+  transform: translateY(0) scale(0.98);
 }
 .mainProject {
   font-size: 0.8rem;
@@ -115,6 +121,8 @@ defaultPrompt .promptSubText {
   flex-direction: column;
   align-items: center;
   opacity: 0.6;
+  user-select: none;
+  pointer-events: none;
 }
 .siteName {
   font-size: 0.6rem;
@@ -158,6 +166,24 @@ defaultPrompt .promptSubText {
   }
   .siteName {
     font-size: 0.5rem;
+  }
+}
+@keyframes slideInFromTop {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
   }
 }
 /*# sourceMappingURL=CollapsedSidebar.module.css.map */

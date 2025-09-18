@@ -10,6 +10,12 @@
   color: #2a2a2a;
   background-color: #fefefe;
   line-height: 1.6;
+  position: fixed;
+  width: 100vw;
+  max-width: 100vw;
+  box-sizing: border-box;
+  left: 0;
+  top: 0 ;
 }
 .projectTabs {
   flex: 1;
@@ -191,16 +197,16 @@
   background: none;
 }
 .projectTab:hover .tabText {
-  color: #2d3748;
+  color: #033aa1;
   opacity: 1;
 }
 .projectTab:hover::before {
-  background: linear-gradient(33deg, #a0aec0 0%, #a0aec0 60%, transparent 100%);
+  background: linear-gradient(33deg, #a0aec0 0%, #263040 60%, transparent 100%);
   width: 14px;
   height: 14px;
 }
 .projectTab:hover::after {
-  background: linear-gradient(22deg, transparent 0%, #a0aec0 40%, #a0aec0 100%);
+  background: linear-gradient(22deg, transparent 0%, #a0aec0 40%, #c9dbf3 100%);
   width: 14px;
   height: 14px;
 }
@@ -208,14 +214,14 @@
   background: none;
 }
 .projectTab.active .tabText {
-  color: #2d3748;
+  color: #b83e09;
   font-weight: 500;
 }
 .projectTab.active::before {
-  background: linear-gradient(33deg, #fed7d7 0%, #e17055 70%, transparent 100%);
+  background: linear-gradient(33deg, #f48585 0%, #f4896c 70%, transparent 100%);
 }
 .projectTab.active::after {
-  background: linear-gradient(22deg, transparent 0%, #00cec9 40%, #00b894 100%);
+  background: linear-gradient(22deg, transparent 0%, #00cec9 40%, #04ffcb 100%);
 }
 .tabsFlowRight .projectTab {
   padding-left: 24px;
@@ -397,7 +403,7 @@
   }
 }
 .expandedSidebar {
-  background-color: rgba(254, 254, 254, 0.45);
+  background-color: rgba(254, 254, 254, 0.75);
   height: 100vh;
   width: 320px;
   position: fixed;
@@ -407,11 +413,19 @@
   flex-direction: column;
   padding: 0;
   border-right: 1px solid rgba(0, 0, 0, 0.05);
-  z-index: 1000;
+  z-index: 1001;
   overflow-y: hidden;
   backdrop-filter: blur(10px);
   box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
+  transform: translateX(-100%);
+  opacity: 0;
+  visibility: hidden;
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.expandedSidebar.visible {
+  transform: translateX(0);
+  opacity: 1;
+  visibility: visible;
 }
 .expandedSidebar .toggleButton {
   position: absolute;
@@ -431,6 +445,9 @@
   z-index: 1001;
   backdrop-filter: blur(5px);
 }
+.expandedSidebar .toggleButton.animating {
+  animation: buttonPulse 0.4s ease;
+}
 .expandedSidebar .toggleButton:hover {
   background-color: #fefefe;
   right: -22px;
@@ -441,6 +458,10 @@
   color: #666;
   font-weight: 300;
   line-height: 1;
+  transition: transform 0.3s ease;
+}
+.expandedSidebar .toggleButton .toggleIcon.rotated {
+  transform: rotate(180deg);
 }
 .expandedSidebar .sidebarHeader .mainTitle,
 .expandedSidebar .sidebarHeader .subtitle {
@@ -628,19 +649,27 @@
 }
 .mainContent {
   min-height: 100vh;
-  padding: 0;
+  padding: 0 0 0 80px;
   background-color: #fefefe;
   overflow-y: auto;
-  margin-left: 80px;
   position: relative;
+  width: 100%;
+  box-sizing: border-box;
   z-index: 1;
+}
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: transparent;
+  cursor: pointer;
+  z-index: 1000;
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
-.mainContent.expanded {
-  margin-left: 320px;
-  filter: blur(4px) brightness(0.8);
-  opacity: 0.6;
-  transform: scale(1.01);
+.overlay:hover {
+  background-color: rgba(0, 0, 0, 0.02);
 }
 .galleryContainer {
   padding: 80px 60px;
@@ -1154,6 +1183,17 @@
     transform: translateX(100%);
   }
 }
+@keyframes buttonPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
 .emptyState {
   display: flex;
   align-items: center;
@@ -1240,7 +1280,7 @@
   top: 50%;
   transform: translateY(-50%);
   font-size: 1rem;
-  color: #74b9ff;
+  color: #1984ec;
   transition: all 0.25s ease;
   font-weight: 400;
   opacity: 0.8;
@@ -1255,7 +1295,7 @@
   height: 16px;
 }
 .subMenuIndicator.active {
-  color: #00cec9;
+  color: #027571;
   transform: translateY(-50%) rotate(90deg);
   font-size: 0.9rem;
   opacity: 1;
