@@ -8,7 +8,7 @@
     overflow-y: auto;
     overflow-x: hidden;
     padding: 0;
-    background: #000;
+    background: #f5f3f0; // 日系温暖背景色 - 米白色调
 
     // 自定义滚动条
     &::-webkit-scrollbar {
@@ -42,7 +42,7 @@
     }
 }
 
-// Flex布局 - 完全拼接，无间隙
+// 像素级精确布局 - 使用JS计算宽度
 .galleryFlex {
     display: flex;
     flex-wrap: wrap;
@@ -52,7 +52,6 @@
     box-sizing: border-box;
     padding: 0;
     margin: 0;
-    gap: 0; // 确保无间隙
 }
 
 // 图片包装器 - 简洁无圆角
@@ -60,7 +59,7 @@
     position: relative;
     border-radius: 0; // 移除圆角
     overflow: hidden;
-    background: #111; // 简洁背景色
+    background: #f8f6f3; // 日系温和背景色
     transition: none; // 移除过渡效果
     box-shadow: none; // 移除阴影
     cursor: pointer;
@@ -84,7 +83,7 @@
     bottom: 0;
     left: 0;
     right: 0;
-    background: rgba(0, 0, 0, 0.7); // 简洁半透明背景
+    background: rgba(0, 0, 0, 0.6); // 日系温和半透明背景
     color: white;
     padding: 10px 15px;
     opacity: 0;
@@ -97,6 +96,7 @@
     margin: 0 0 4px 0;
     letter-spacing: 0.02em;
     font-family: system-ui, -apple-system, sans-serif;
+    color: #f5f3f0; // 日系温和文字色
 }
 
 .imageYear {
@@ -105,20 +105,24 @@
     opacity: 0.8;
     margin: 0;
     letter-spacing: 0.01em;
+    color: #e8e5e0; // 日系温和副标题色
 }
 
-// 图集项目 - 简洁无效果
+// 图集项目 - 精确像素宽度由JS计算
 .galleryItem {
     position: relative;
-    transition: none; // 移除过渡效果
-    animation: none; // 移除动画
-    opacity: 1; // 直接显示
+    transition: none;
+    animation: none;
+    opacity: 1;
     padding: 0;
+    margin: 0;
     box-sizing: border-box;
+    flex-shrink: 0; // 防止flex缩小
+    height: auto;
 
     &:hover {
         .imageOverlay {
-            opacity: 1; // 只保留悬停显示信息
+            opacity: 1;
         }
     }
 }
@@ -128,7 +132,7 @@
     position: relative;
     border-radius: 0; // 移除圆角
     overflow: hidden;
-    background: #111; // 简洁背景色
+    background: #f8f6f3; // 日系温和背景色
     transition: none; // 移除过渡效果
     box-shadow: none; // 移除阴影
     cursor: pointer;
@@ -152,7 +156,7 @@
     bottom: 0;
     left: 0;
     right: 0;
-    background: rgba(0, 0, 0, 0.7); // 简洁半透明背景
+    background: rgba(0, 0, 0, 0.6); // 日系温和半透明背景
     color: white;
     padding: 10px 15px;
     opacity: 0;
@@ -165,6 +169,7 @@
     margin: 0 0 4px 0;
     letter-spacing: 0.02em;
     font-family: system-ui, -apple-system, sans-serif;
+    color: #f5f3f0; // 日系温和文字色
 }
 
 .imageYear {
@@ -173,6 +178,7 @@
     opacity: 0.8;
     margin: 0;
     letter-spacing: 0.01em;
+    color: #e8e5e0; // 日系温和副标题色
 }
 
 // 加载更多触发器 - 极简设计

@@ -367,7 +367,6 @@ const SomniumNexus = observer(() => {
                             images={currentImages}
                             onImageClick={handleImageClick}
                             columns={3}
-                            gap={60}
                         />
                     </div>
                 )}

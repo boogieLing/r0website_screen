@@ -10,14 +10,42 @@ import styles from './InfiniteGallery.module.less';
 const InfiniteGallery = observer(({
     images = [],
     onImageClick,
-    columns = 3,
-    gap = 60
+    columns = 3
 }) => {
     const [displayImages, setDisplayImages] = useState([]);
     const [loadedCount, setLoadedCount] = useState(12); // 初始加载数量
     const [isLoading, setIsLoading] = useState(false);
+    const [itemWidth, setItemWidth] = useState(0);
     const galleryRef = useRef(null);
     const observerRef = useRef(null);
+
+    // 计算每个项目的精确宽度 - 完全无缝挤满
+    const calculateItemWidth = useCallback(() => {
+        if (!galleryRef.current) return;
+
+        const containerWidth = galleryRef.current.clientWidth;
+        // 完全无缝：直接将容器宽度均分
+        const width = Math.floor(containerWidth / columns);
+
+        setItemWidth(width);
+    }, [columns]);
+
+    // 处理窗口大小变化
+    useEffect(() => {
+        const handleResize = () => {
+            calculateItemWidth();
+        };
+
+        // 初始计算
+        calculateItemWidth();
+
+        // 监听窗口大小变化
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, [calculateItemWidth]);
 
     // 处理图片网格布局
     const getGridItems = useCallback(() => {
@@ -53,7 +81,7 @@ const InfiniteGallery = observer(({
             setLoadedCount(newCount);
             setIsLoading(false);
         }, 300);
-    }, [isLoading, displayImages.length, images.length, loadedCount, images]);
+    }, [isLoading, displayImages.length, loadedCount, images]);
 
     // 设置Intersection Observer
     useEffect(() => {
@@ -99,17 +127,15 @@ const InfiniteGallery = observer(({
         <div
             className={styles.galleryContainer}
             ref={galleryRef}
-            style={{ gap: `${gap}px` }}
         >
-            <div className={styles.galleryFlex} style={{ gap: `${gap}px` }}>
+            <div className={styles.galleryFlex}>
                 {gridItems.map(({ image, index }) => (
                     <div
                         key={image.id}
                         className={styles.galleryItem}
                         style={{
-                            animationDelay: `${index * 0.1}s`,
-                            flex: `0 0 ${100 / columns}%`,
-                            maxWidth: `${100 / columns}%`,
+                            width: itemWidth > 0 ? `${itemWidth}px` : 'auto',
+                            height: 'auto',
                             '--aspect-ratio': '4:3'
                         }}
                         onClick={() => onImageClick?.(image)}
