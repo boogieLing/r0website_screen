@@ -150,7 +150,7 @@ const InfiniteGallery = observer(({
                 <div className={styles.emptyGallery}>
                     <div className={styles.emptyPlaceholder}>
                         <div className={styles.emptyIcon} />
-                        <p className={styles.emptyText}>暂无作品</p>
+                        <p className={styles.emptyText}>QwQ</p>
                         <p className={styles.emptySubtext}>No works available</p>
                     </div>
                 </div>

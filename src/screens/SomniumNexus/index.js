@@ -18,7 +18,6 @@ const SomniumNexus = observer(() => {
     const [isAnimating, setIsAnimating] = useState(false); // 动画状态
     const [hasSelected, setHasSelected] = useState(false); // 跟踪用户是否选择了项目
     const [hoveredCategory, setHoveredCategory] = useState(null); // 跟踪hover的类别
-    const [isHoverEnabled, setIsHoverEnabled] = useState(false); // 控制hover是否可用的状态
 
     const categories = somniumNexusStore.categories;
     const currentImages = somniumNexusStore.currentCategoryImages;
@@ -59,7 +58,7 @@ const SomniumNexus = observer(() => {
             // 如果没有选中任何分类，清空hover子菜单
             somniumNexusStore.setSubCategoriesForHover([]);
         }
-    }, [somniumNexusStore.selectedCategory, categories]);
+    }, [categories]);
 
     const handleProjectClick = useCallback((projectKey) => {
         // 标记用户已选择项目
@@ -123,23 +122,25 @@ const SomniumNexus = observer(() => {
         setSidebarExpanded(true);
         setIsAnimating(true); // 开始动画
 
-        // 延迟设置默认hover状态，等待动画完成
-        // 这样可以避免动画期间的hover事件问题
-        setTimeout(() => {
-            console.log('Animation completed, setting default hover state');
-            // 当展开侧栏但没有选中任何项目时，使用第一个项目作为默认hover状态
-            // 这样用户可以看到次级侧栏的内容，但不会真正选中该项目
-            if (!somniumNexusStore.selectedCategory && categories.length > 0) {
-                console.log('Setting default hover state for first category');
-                const firstCategory = categories[0];
-                const firstCategoryData = somniumNexusStore.galleryCategories[firstCategory];
-                if (firstCategoryData && firstCategoryData.hasSubMenu) {
-                    console.log('Setting subcategories for first category:', firstCategoryData.subCategories);
-                    somniumNexusStore.setSubCategoriesForHover(firstCategoryData.subCategories || []);
-                } else {
-                    console.log('First category has no sub menu');
-                }
+        // 立即设置默认hover状态，不等待动画完成
+        // 这样用户在动画期间移动鼠标也能立即看到次级菜单更新
+        if (!somniumNexusStore.selectedCategory && categories.length > 0) {
+            console.log('Setting default hover state for first category');
+            const firstCategory = categories[0];
+            const firstCategoryData = somniumNexusStore.galleryCategories[firstCategory];
+            if (firstCategoryData && firstCategoryData.hasSubMenu) {
+                console.log('Setting subcategories for first category:', firstCategoryData.subCategories);
+                somniumNexusStore.setSubCategoriesForHover(firstCategoryData.subCategories || []);
+                setShowSecondFlow(true); // 关键：显示次级菜单容器
+            } else {
+                console.log('First category has no sub menu');
             }
+        }
+
+        // 动画完成后重置动画状态
+        setTimeout(() => {
+            setIsAnimating(false);
+            console.log('Sidebar animation completed');
         }, 400); // 等待动画完成（与CSS动画时间一致）
 
         // 保持未选择状态，让用户通过侧栏选择项目
@@ -173,29 +174,14 @@ const SomniumNexus = observer(() => {
         setTimeout(() => {
             setIsAnimating(false);
             console.log('Sidebar animation completed');
-
-            // 如果是展开状态且没有选中任何项目，设置默认hover状态
-            if (sidebarExpanded && !somniumNexusStore.selectedCategory && categories.length > 0) {
-                const firstCategory = categories[0];
-                const firstCategoryData = somniumNexusStore.galleryCategories[firstCategory];
-                if (firstCategoryData && firstCategoryData.hasSubMenu) {
-                    console.log('Setting default hover state after sidebar toggle');
-                    somniumNexusStore.setSubCategoriesForHover(firstCategoryData.subCategories || []);
-                }
-            }
         }, 400);
-    }, [isAnimating, somniumNexusStore.selectedCategory, sidebarExpanded, categories]);
+    }, [isAnimating, sidebarExpanded]);
 
-    // 处理鼠标悬停在一级菜单上 - 只在侧栏展开且动画完成后生效
+    // 处理鼠标悬停在一级菜单上 - 只在侧栏展开时生效，动画期间也响应hover
     const handleCategoryHover = useCallback((categoryKey) => {
-        // 只有在侧栏展开且动画完成后才响应hover
+        // 只有在侧栏展开时才响应hover（移除动画限制）
         if (!sidebarExpanded) {
             console.log('Hover ignored: sidebar not expanded');
-            return;
-        }
-
-        if (isAnimating) {
-            console.log('Hover ignored: still animating');
             return;
         }
 
@@ -208,12 +194,14 @@ const SomniumNexus = observer(() => {
         if (category && category.hasSubMenu) {
             console.log('Setting subcategories for hover:', category.subCategories);
             somniumNexusStore.setSubCategoriesForHover(category.subCategories || []);
+            setShowSecondFlow(true); // 关键：显示次级菜单容器
         } else {
             console.log('Clearing subcategories for hover');
-            // 如果没有子菜单，清空子菜单显示
+            // 如果没有子菜单，清空子菜单显示并隐藏次级菜单容器
             somniumNexusStore.setSubCategoriesForHover([]);
+            setShowSecondFlow(false); // 隐藏次级菜单容器
         }
-    }, [sidebarExpanded, isAnimating, somniumNexusStore]);
+    }, [sidebarExpanded]);
 
     // 处理鼠标离开一级菜单
     const handleCategoryLeave = useCallback(() => {
@@ -228,12 +216,15 @@ const SomniumNexus = observer(() => {
             const currentCategoryData = somniumNexusStore.galleryCategories[currentCategory];
             if (currentCategoryData && currentCategoryData.hasSubMenu) {
                 somniumNexusStore.setSubCategoriesForHover(currentCategoryData.subCategories || []);
+                setShowSecondFlow(true); // 保持次级菜单显示
             } else {
                 somniumNexusStore.setSubCategoriesForHover([]);
+                setShowSecondFlow(false); // 隐藏次级菜单
             }
         } else {
-            // 如果没有选中任何分类，清空子菜单（欢迎状态）
+            // 如果没有选中任何分类，清空子菜单并隐藏次级菜单容器
             somniumNexusStore.setSubCategoriesForHover([]);
+            setShowSecondFlow(false); // 关键：隐藏次级菜单容器
         }
     }, [sidebarExpanded]);
 

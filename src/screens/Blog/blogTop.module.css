@@ -1,3 +1,14 @@
+.iconfont {
+  font-family: "iconfont", serif !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: transparent;
+}
+.blogTopShrink {
+  transform: translateY(-100%);
+}
 .blogTopBox {
   position: absolute;
   top: 0;
@@ -6,6 +17,7 @@
   width: 100%;
   height: 175px;
   background: transparent;
+  transition: 0.3s;
 }
 .blogTopBox .borderLeftBottom {
   position: absolute;
@@ -41,11 +53,15 @@
   border-left: 3px solid #00cec9;
   border-top: 3px solid #00cec9;
   z-index: 10;
+  user-select: none;
+  pointer-events: none;
 }
 .blogTopBox .borderClone {
   border-width: 5px;
   border-color: #00cec9;
   filter: blur(6px);
+  user-select: none;
+  pointer-events: none;
 }
 .blogTopBox .borderClone.borderLeftBottom {
   filter: blur(3px);
@@ -67,5 +83,153 @@
   height: 95px;
   width: calc(100% - 450px - 150px);
   background: rgba(0, 0, 0, 0.8);
+}
+.blogTopBox .contentLeft {
+  position: absolute;
+  height: 175px;
+  width: 600px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  color: #dfe6e9;
+  padding: 15px 20px;
+  box-sizing: border-box;
+}
+.blogTopBox .contentLeft .normalTips {
+  position: relative;
+  margin-bottom: 15px;
+}
+.blogTopBox .contentLeft .normalTips .iconfont {
+  position: relative;
+  margin-right: 5px;
+  font-size: 1.5rem;
+}
+.blogTopBox .contentLeft .normalTips .tipsBox {
+  position: relative;
+  letter-spacing: 0.3px;
+  margin-right: 5px;
+}
+.blogTopBox .contentLeft .normalTips .tipsBox .keyTips {
+  position: relative;
+  display: inline-block;
+}
+.blogTopBox .contentLeft .normalTips .tipsBox .keyTips::before {
+  content: "";
+  position: absolute;
+  height: 2px;
+  width: 100%;
+  bottom: -2px;
+  left: 0;
+  background: rgba(250, 177, 160, 0.9);
+  border-radius: 2px;
+}
+.blogTopBox .contentLeft .normalTips .tipsBox .keyTips::after {
+  content: "”";
+  position: absolute;
+  left: 90%;
+  top: -17px;
+  box-sizing: border-box;
+  width: 25px;
+  height: 25px;
+  font-size: 2.5rem;
+  text-align: center;
+  color: rgba(250, 177, 160, 0.9);
+}
+.blogTopBox .contentLeft .tinyTips {
+  font-size: 0.8rem;
+}
+.blogTopBox .contentLeft .inlineTips {
+  display: inline-block !important;
+}
+.blogTopBox .contentLeft .tinyIconfont {
+  font-size: 1rem !important;
+}
+.blogTopBox .contentLeft .praiseBox {
+  box-sizing: border-box;
+}
+.blogTopBox .contentLeft .praiseBox .praiseIcon {
+  position: absolute;
+  display: inline-block;
+  bottom: 0;
+  user-select: none;
+  animation: WobbleZ 0.5s linear 0.2s infinite alternate paused;
+}
+.blogTopBox .contentLeft .praiseBox .praiseIcon .iconfont {
+  display: inline-block;
+  margin-left: 5px;
+  transition: 0.2s;
+  color: #00cec9;
+  font-weight: 900;
+  font-size: 1.3rem !important;
+  text-shadow: 0 0 5px #00cec9, 0 0 7px white;
+}
+.blogTopBox .contentLeft .praiseBox:hover .praiseIcon {
+  animation-play-state: running;
+}
+.blogTopBox .contentLeft .praiseBox:hover .praiseIcon .iconfont {
+  font-size: 2rem !important;
+}
+.blogTopBox .contentLeft .titleBox {
+  font-size: 1.5rem;
+  letter-spacing: 1.3px;
+  font-weight: 900;
+  margin-bottom: 5px;
+}
+.blogTopBox .contentLeft .tinyUl {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: nowrap;
+  box-sizing: border-box;
+  margin-bottom: 15px;
+}
+.blogTopBox .contentLeft .tinyUl .tinyLi {
+  position: relative;
+  display: inline-block;
+  font-size: 0.8rem;
+  box-sizing: border-box;
+  margin-right: 5px;
+  border-radius: 3px;
+  border: 1px solid rgba(223, 230, 233, 0.15);
+  padding: 3px 10px;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: 0.2s ease-in-out;
+}
+.blogTopBox .contentLeft .tinyUl .tinyLi::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 110%;
+  width: 200px;
+  background-image: linear-gradient(0deg, rgba(0, 0, 0, 0), rgba(255, 255, 255, 0.3), rgba(0, 0, 0, 0));
+  transform: rotateZ(45deg) translate(-80px, 80px);
+}
+.blogTopBox .contentLeft .tinyUl .tinyLi:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+  border-color: transparent;
+}
+.blogTopBox .contentLeft .tinyUl .tinyLi:hover::after {
+  transition: 1s ease-in-out;
+  transform: rotateZ(45deg) translate(100px, -100px);
+}
+.blogTopBox .contentLeft .title {
+  position: relative;
+}
+@keyframes WobbleZ {
+  0% {
+    transform: rotateZ(0);
+  }
+  25% {
+    transform: rotateZ(20deg);
+  }
+  100% {
+    transform: rotateZ(-20deg);
+  }
 }
 /*# sourceMappingURL=blogTop.module.css.map */
