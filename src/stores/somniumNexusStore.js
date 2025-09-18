@@ -1,13 +1,14 @@
 import {makeAutoObservable, computed} from "mobx";
 
 class SomniumNexusStore {
-    _selectedCategory = "stillness";
+    _selectedCategory = null; // 默认不选择任何分类
     _selectedSubCategory = null;
     _selectedImage = null;
     _hoveredImage = null;
     _isModalOpen = false;
     _hasSubMenu = false;
     _subCategories = [];
+    _hoverSubCategories = []; // 用于存储hover状态的子菜单
 
     // 摄影项目数据 | Photography project data (预设测试阶段项目)
     _galleryCategories = {
@@ -116,6 +117,7 @@ class SomniumNexusStore {
             isModalOpen: computed,
             hasSubMenu: computed,
             subCategories: computed,
+            hoverSubCategories: computed,
             galleryCategories: computed,
             categories: computed,
             currentCategory: computed,
@@ -154,6 +156,10 @@ class SomniumNexusStore {
 
     get subCategories() {
         return this._subCategories;
+    }
+
+    get hoverSubCategories() {
+        return this._hoverSubCategories;
     }
 
     get categories() {
@@ -205,6 +211,11 @@ class SomniumNexusStore {
 
     clearSelectedSubCategory = () => {
         this._selectedSubCategory = null;
+    };
+
+    // 设置hover状态的子菜单 | Set hover state subcategories
+    setSubCategoriesForHover = (subCategories) => {
+        this._hoverSubCategories = subCategories;
     };
 
     setSelectedImage = (image) => {

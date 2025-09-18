@@ -90,7 +90,7 @@ const SimpleWelcomeModule = ({ onGetStarted }) => {
                         展示摄影作品的静谧之美
                     </p>
                     <p className={styles.subDescription}>
-                        通过左侧导航选择项目开始探索
+                        让光影引领你进入诗意的视觉之旅
                     </p>
                 </div>
 

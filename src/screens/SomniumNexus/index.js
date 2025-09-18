@@ -17,6 +17,7 @@ const SomniumNexus = observer(() => {
     const [sidebarExpanded, setSidebarExpanded] = useState(false); // 默认展开侧边栏
     const [isAnimating, setIsAnimating] = useState(false); // 动画状态
     const [hasSelected, setHasSelected] = useState(false); // 跟踪用户是否选择了项目
+    const [hoveredCategory, setHoveredCategory] = useState(null); // 跟踪hover的类别
 
     const categories = somniumNexusStore.categories;
     const currentImages = somniumNexusStore.currentCategoryImages;
@@ -40,6 +41,24 @@ const SomniumNexus = observer(() => {
             }
         }
     }, [category]);
+
+    // 当选择新的分类时，同步更新hover状态的子菜单
+    useEffect(() => {
+        // 只有在确实选择了分类的情况下才更新hover状态
+        const currentCategory = somniumNexusStore.selectedCategory;
+
+        if (currentCategory) {
+            const categoryData = somniumNexusStore.galleryCategories[currentCategory];
+            if (categoryData && categoryData.hasSubMenu) {
+                somniumNexusStore.setSubCategoriesForHover(categoryData.subCategories || []);
+            } else {
+                somniumNexusStore.setSubCategoriesForHover([]);
+            }
+        } else {
+            // 如果没有选中任何分类，清空hover子菜单
+            somniumNexusStore.setSubCategoriesForHover([]);
+        }
+    }, [somniumNexusStore.selectedCategory, categories]);
 
     const handleProjectClick = useCallback((projectKey) => {
         // 标记用户已选择项目
@@ -96,23 +115,23 @@ const SomniumNexus = observer(() => {
         somniumNexusStore.closeModal();
     };
 
-    // 处理开始探索
+    // 处理开始探索 - 修改为只弹出侧栏，不选择任何项目
     const handleGetStarted = () => {
-        setHasSelected(true);
-        // 可以选择第一个项目作为默认展示
-        if (categories.length > 0) {
+        // 不再自动选择项目，只展开侧栏让用户自己选择
+        setSidebarExpanded(true);
+
+        // 当展开侧栏但没有选中任何项目时，使用第一个项目作为默认hover状态
+        // 这样用户可以看到次级侧栏的内容，但不会真正选中该项目
+        if (!somniumNexusStore.selectedCategory && categories.length > 0) {
             const firstCategory = categories[0];
-            somniumNexusStore.setSelectedCategory(firstCategory);
-
-            // 清除子分类选择，显示所有图片
-            somniumNexusStore.clearSelectedSubCategory();
-
-            // 如果第一个项目有子菜单，不自动展开侧边栏，但标记次级菜单可用
-            if (somniumNexusStore.galleryCategories[firstCategory].hasSubMenu) {
-                setSidebarExpanded(false); // 不自动展开侧边栏
-                setShowSecondFlow(true); // 但次级菜单可用
+            const firstCategoryData = somniumNexusStore.galleryCategories[firstCategory];
+            if (firstCategoryData && firstCategoryData.hasSubMenu) {
+                somniumNexusStore.setSubCategoriesForHover(firstCategoryData.subCategories || []);
             }
         }
+
+        // 保持未选择状态，让用户通过侧栏选择项目
+        // 不清除之前的选择状态，如果用户已经选择过项目
     };
 
     // 流畅的侧边栏切换动画
@@ -144,6 +163,46 @@ const SomniumNexus = observer(() => {
         }, 400);
     }, [isAnimating]);
 
+    // 处理鼠标悬停在一级菜单上 - 只在侧栏展开时生效
+    const handleCategoryHover = useCallback((categoryKey) => {
+        // 只有在侧栏展开状态下才响应hover
+        if (!sidebarExpanded) return;
+
+        setHoveredCategory(categoryKey);
+
+        // 无论当前是否选中了分类，hover时都显示对应分类的子菜单
+        // 这样可以实现hover一级菜单时更新次级侧栏的效果
+        const category = somniumNexusStore.galleryCategories[categoryKey];
+        if (category && category.hasSubMenu) {
+            somniumNexusStore.setSubCategoriesForHover(category.subCategories || []);
+        } else {
+            // 如果没有子菜单，清空子菜单显示
+            somniumNexusStore.setSubCategoriesForHover([]);
+        }
+    }, [sidebarExpanded]);
+
+    // 处理鼠标离开一级菜单
+    const handleCategoryLeave = useCallback(() => {
+        // 只有在侧栏展开状态下才响应
+        if (!sidebarExpanded) return;
+
+        setHoveredCategory(null);
+
+        // 当鼠标离开时，恢复到当前选中分类的子菜单（如果有选中分类的话）
+        const currentCategory = somniumNexusStore.selectedCategory;
+        if (currentCategory) {
+            const currentCategoryData = somniumNexusStore.galleryCategories[currentCategory];
+            if (currentCategoryData && currentCategoryData.hasSubMenu) {
+                somniumNexusStore.setSubCategoriesForHover(currentCategoryData.subCategories || []);
+            } else {
+                somniumNexusStore.setSubCategoriesForHover([]);
+            }
+        } else {
+            // 如果没有选中任何分类，清空子菜单（欢迎状态）
+            somniumNexusStore.setSubCategoriesForHover([]);
+        }
+    }, [sidebarExpanded]);
+
     return (
         <div className={styles.somniumNexusContainer}>
             {/* 侧边栏组件 - 两个组件始终存在，通过 CSS 控制动画 */}
@@ -165,8 +224,12 @@ const SomniumNexus = observer(() => {
                                             <div
                                                 className={`${styles.projectTab} ${
                                                     somniumNexusStore.selectedCategory === categoryKey ? styles.active : ''
+                                                } ${
+                                                    hoveredCategory === categoryKey ? styles.hovered : ''
                                                 }`}
                                                 onClick={() => handleProjectClick(categoryKey)}
+                                                onMouseEnter={() => handleCategoryHover(categoryKey)}
+                                                onMouseLeave={handleCategoryLeave}
                                                 role="button"
                                                 tabIndex={0}
                                                 onKeyDown={(e) => {
@@ -197,30 +260,39 @@ const SomniumNexus = observer(() => {
 
                             {/* 右侧子菜单tabsFlow */}
                             <div className={styles.tabsFlowRight}>
-                                {somniumNexusStore.hasSubMenu && showSecondFlow && somniumNexusStore.subCategories.map((subCategory) => (
-                                    <div key={subCategory.key} className={styles.tabWrapper}>
-                                        <div
-                                            className={`${styles.projectTab} ${
-                                                somniumNexusStore.selectedSubCategory === subCategory.key ? styles.active : ''
-                                            }`}
-                                            onClick={() => handleSubCategoryClick(subCategory.key)}
-                                            role="button"
-                                            tabIndex={0}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter' || e.key === ' ') {
-                                                    e.preventDefault();
-                                                    handleSubCategoryClick(subCategory.key);
-                                                }
-                                            }}
-                                        >
-                                            <span className={styles.tabText}
-                                                data-active={somniumNexusStore.selectedSubCategory === subCategory.key}
-                                            >
-                                                {subCategory.title}
-                                            </span>
+                                {showSecondFlow && (
+                                    somniumNexusStore.hoverSubCategories.length > 0 ? (
+                                        somniumNexusStore.hoverSubCategories.map((subCategory) => (
+                                            <div key={subCategory.key} className={styles.tabWrapper}>
+                                                <div
+                                                    className={`${styles.projectTab} ${
+                                                        somniumNexusStore.selectedSubCategory === subCategory.key ? styles.active : ''
+                                                    }`}
+                                                    onClick={() => handleSubCategoryClick(subCategory.key)}
+                                                    role="button"
+                                                    tabIndex={0}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter' || e.key === ' ') {
+                                                            e.preventDefault();
+                                                            handleSubCategoryClick(subCategory.key);
+                                                        }
+                                                    }}
+                                                >
+                                                    <span className={styles.tabText}
+                                                        data-active={somniumNexusStore.selectedSubCategory === subCategory.key}
+                                                    >
+                                                        {subCategory.title}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        // 空子菜单状态显示
+                                        <div className={styles.emptySubMenu}>
+                                            <span className={styles.emptyText}>-</span>
                                         </div>
-                                    </div>
-                                ))}
+                                    )
+                                )}
                             </div>
                         </div>
                     </div>
@@ -259,7 +331,10 @@ const SomniumNexus = observer(() => {
                         aria-label="点击关闭侧边栏"
                     />
                 )}
-                {!hasSelected ? (
+                {(!hasSelected && !sidebarExpanded) ? (
+                    <SimpleWelcomeModule onGetStarted={handleGetStarted} />
+                ) : (!hasSelected || !somniumNexusStore.selectedCategory) ? (
+                    // 保持欢迎页面显示，即使侧栏展开但未选择项目
                     <SimpleWelcomeModule onGetStarted={handleGetStarted} />
                 ) : (
                     <div className={styles.galleryWrapper}>
