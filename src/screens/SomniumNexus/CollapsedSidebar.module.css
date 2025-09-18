@@ -1,0 +1,163 @@
+.collapsedSidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 80px;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.95);
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  backdrop-filter: blur(5px);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.contentArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 20px 0;
+  margin-top: 80px;
+}
+defaultPrompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+defaultPrompt:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+defaultPrompt .promptText {
+  font-size: 0.7rem;
+  color: #2c3e50;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+defaultPrompt .promptSubText {
+  font-size: 0.6rem;
+  color: #7f8c8d;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+}
+.selectedProject {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  padding: 15px 8px;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+}
+.selectedProject:active {
+  transform: translateY(0);
+}
+.mainProject {
+  font-size: 0.8rem;
+  color: #2c3e50;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  line-height: 1.2;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.subProject {
+  font-size: 0.7rem;
+  color: #7f8c8d;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  line-height: 1.1;
+  margin-top: 8px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.bottomIndicator {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0.6;
+}
+.siteName {
+  font-size: 0.6rem;
+  color: #95a5a6;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+@media (max-width: 480px) {
+  .collapsedSidebar {
+    width: 50px;
+  }
+  .toggleButton {
+    right: -18px;
+    width: 18px;
+  }
+  .toggleButton:hover {
+    right: -20px;
+    width: 20px;
+  }
+  .contentArea {
+    margin-top: 70px;
+  }
+  .defaultPrompt {
+    width: 36px;
+    height: 70px;
+  }
+  .selectedProject {
+    width: 38px;
+    padding: 10px 4px;
+  }
+  .mainProject {
+    font-size: 0.7rem;
+  }
+  .subProject {
+    font-size: 0.6rem;
+  }
+  .bottomIndicator {
+    bottom: 20px;
+  }
+  .siteName {
+    font-size: 0.5rem;
+  }
+}
+/*# sourceMappingURL=CollapsedSidebar.module.css.map */

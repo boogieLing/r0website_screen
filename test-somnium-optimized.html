@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Somnium Nexus 布局优化测试</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        .header p {
+            margin: 0;
+            opacity: 0.8;
+            font-size: 1.1em;
+        }
+        .content {
+            padding: 40px;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        .feature-card {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .feature-card h3 {
+            margin: 0 0 15px 0;
+            color: #2c3e50;
+            font-size: 1.3em;
+        }
+        .feature-card p {
+            margin: 0;
+            color: #666;
+            line-height: 1.6;
+        }
+        .demo-section {
+            background: #ecf0f1;
+            padding: 30px;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+        .demo-section h2 {
+            margin: 0 0 20px 0;
+            color: #2c3e50;
+            text-align: center;
+        }
+        .layout-demo {
+            display: flex;
+            height: 400px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .demo-sidebar {
+            width: 60px;
+            background: rgba(255,255,255,0.95);
+            border-right: 1px solid rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            position: relative;
+        }
+        .demo-sidebar.expanded {
+            width: 320px;
+            background: rgba(255,255,255,0.98);
+            box-shadow: 2px 0 20px rgba(0,0,0,0.1);
+        }
+        .demo-toggle {
+            position: absolute;
+            right: -15px;
+            top: 20px;
+            width: 15px;
+            height: 40px;
+            background: white;
+            border: 1px solid #ddd;
+            border-left: none;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #666;
+        }
+        .demo-sidebar-content {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            font-size: 0.7em;
+            color: #666;
+            letter-spacing: 0.1em;
+        }
+        .demo-sidebar.expanded .demo-sidebar-content {
+            writing-mode: horizontal-tb;
+            font-size: 1em;
+        }
+        .demo-main {
+            flex: 1;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            color: #666;
+            font-weight: 300;
+        }
+        .status {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: #d5f4e6;
+            border-radius: 6px;
+            color: #155724;
+        }
+        .instructions {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 6px;
+            margin-top: 20px;
+            border-left: 4px solid #ffc107;
+        }
+        .instructions h4 {
+            margin: 0 0 10px 0;
+            color: #856404;
+        }
+        .instructions ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #856404;
+        }
+        .instructions li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Somnium Nexus</h1>
+            <p>图集项目布局优化 - 全屏模式 & 可收缩侧边栏</p>
+        </div>
+        <div class="content">
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🎯 主内容区全屏</h3>
+                    <p>主内容区域现在占据整个屏幕，最大化展示空间，让图片展示更加沉浸和震撼。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📱 可收缩侧边栏</h3>
+                    <p>侧边栏可以收缩到仅60px宽度，通过切换按钮控制展开/收缩状态。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📝 纵向文字显示</h3>
+                    <p>收缩状态下，标签文字纵向排列，节省水平空间，同时保持可读性。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎨 半透明覆盖效果</h3>
+                    <p>展开时使用半透明背景和毛玻璃效果，侧边栏浮动在主内容之上，不影响主区域大小。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔧 智能状态显示</h3>
+                    <p>收缩时显示当前选中的项目名称，让用户随时了解所处位置。</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚡ 流畅动画</h3>
+                    <p>所有状态切换都配有流畅的过渡动画，提供优雅的交互体验。</p>
+                </div>
+            </div>
+
+            <div class="demo-section">
+                <h2>布局演示</h2>
+                <div class="layout-demo" id="layoutDemo">
+                    <div class="demo-sidebar" id="demoSidebar">
+                        <div class="demo-toggle" id="demoToggle">›</div>
+                        <div class="demo-sidebar-content">
+                            项目选择器
+                        </div>
+                    </div>
+                    <div class="demo-main">
+                        主内容区域 - 图片展示区域
+                    </div>
+                </div>
+                <div class="status" id="status">
+                    当前状态：收缩模式 | 主区域：全屏显示
+                </div>
+            </div>
+
+            <div class="instructions">
+                <h4>使用说明</h4>
+                <ul>
+                    <li>点击侧边栏的切换按钮可以展开/收缩侧边栏</li>
+                    <li>收缩状态下，标签文字会自动变为纵向排列</li>
+                    <li>展开状态下，侧边栏会显示完整内容和子菜单</li>
+                    <li>主内容区域始终保持全屏，不受侧边栏状态影响</li>
+                    <li>当前选中项目会在收缩状态下显示在侧边栏顶部</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const demoSidebar = document.getElementById('demoSidebar');
+        const demoToggle = document.getElementById('demoToggle');
+        const status = document.getElementById('status');
+
+        let isExpanded = false;
+
+        demoToggle.addEventListener('click', function() {
+            isExpanded = !isExpanded;
+
+            if (isExpanded) {
+                demoSidebar.classList.add('expanded');
+                demoToggle.textContent = '‹';
+                status.textContent = '当前状态：展开模式 | 主区域：全屏显示（不受影响）';
+            } else {
+                demoSidebar.classList.remove('expanded');
+                demoToggle.textContent = '›';
+                status.textContent = '当前状态：收缩模式 | 主区域：全屏显示';
+            }
+        });
+    </script>
+</body>
+</html>

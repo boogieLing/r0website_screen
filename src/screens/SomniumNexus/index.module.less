@@ -523,12 +523,11 @@
     }
 }
 
-// 左侧导航栏 | Left Sidebar - 日系美学设计
-.sidebar {
-    background-color: #fefefe; // 日系纯白色背景
+// 展开状态侧边栏 - Expanded Sidebar
+.expandedSidebar {
+    background-color: rgba(254, 254, 254, 0.45); // 半透明白色背景
     height: 100vh;
-
-  min-width: 240px;
+    width: 320px; // 固定展开宽度
     position: fixed;
     left: 0;
     top: 0;
@@ -536,50 +535,100 @@
     flex-direction: column;
     padding: 0; // 移除padding，由各个部分控制
     border-right: 1px solid rgba(0, 0, 0, 0.05); // 日系极细分隔线
-    z-index: 100;
+    z-index: 1000; // 提高z-index确保在上方
     overflow-y: hidden; // 改为hidden，由内部元素控制滚动
+    backdrop-filter: blur(10px); // 毛玻璃效果
+    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
 
     // 动态宽度动画
-    transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
-    // 收缩状态 - 只有第一个flow
-    &.collapsed {
-        width: 202px; // 单flow宽度（404px的一半）
+    // 收缩/展开切换按钮
+    .toggleButton {
+        position: absolute;
+        right: -20px; // 悬浮在侧边栏右侧
+        top: 20px; // 从顶部开始，避免与纵向文字重叠
+        width: 20px;
+        height: 60px;
+        background-color: rgba(254, 254, 254, 0.9);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-left: none;
+        border-radius: 0 4px 4px 0;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        z-index: 1001;
+        backdrop-filter: blur(5px);
 
-        @media (max-width: 768px) {
-            width: 130px; // 平板端单flow宽度（260px的一半）
+        &:hover {
+            background-color: rgba(254, 254, 254, 1);
+            right: -22px;
+            width: 22px;
+        }
+
+        .toggleIcon {
+            font-size: 0.8rem;
+            color: #666;
+            font-weight: 300;
+            line-height: 1;
         }
     }
 
-    // 展开状态 - 双flow
-    &.expanded {
-        width: 404px; // 双flow完整宽度
-
-        @media (max-width: 768px) {
-            width: 260px; // 平板端双flow完整宽度
+    .sidebarHeader {
+        .mainTitle,
+        .subtitle {
+            display: block; // 展开状态显示标题
         }
+    }
+
+    .projectTabs {
+        .tabsContainer {
+            .tabsFlowLeft,
+            .tabsFlowRight {
+                .projectTab {
+                    .tabText {
+                        writing-mode: horizontal-tb; // 横向文字
+                        font-size: 0.8rem; // 正常字体大小
+                    }
+
+                    .subMenuIndicator {
+                        display: flex; // 展开状态显示指示器
+                    }
+
+                    // 显示L型边框
+                    &::before,
+                    &::after {
+                        display: block;
+                    }
+                }
+            }
+
+            .tabsFlowRight {
+                display: flex; // 展开状态显示右侧面板
+            }
+        }
+    }
+
+    .sidebarFooter {
+        display: block; // 展开状态显示底部
     }
 
     @media (max-width: 480px) {
-        width: 100%;
-        height: auto;
-        position: relative;
-
-        &.collapsed,
-        &.expanded {
-            width: 100%; // 移动端始终全宽
-        }
+        width: 280px; // 移动端展开状态
     }
 }
 
+// 独立的侧边栏头部样式
 .sidebarHeader {
     padding: 30px 30px 0; // 上留白，左右留白，下无留白
     margin-bottom: 0; // 移除margin，使用flex布局控制间距
     flex-shrink: 0; // 防止被压缩
     pointer-events: none;
     user-select: none;
-  height: 15vh
-;
+    height: 15vh;
+
     @media (max-width: 768px) {
         padding: 40px 20px 0; // 平板端减少留白
     }
@@ -741,38 +790,23 @@
     line-height: 1.4;
 }
 
-// 右侧主内容区 | Right Main Content
+// 右侧主内容区 | Right Main Content - 收缩状态下平等共享空间
 .mainContent {
-    flex: 1;
     min-height: 100vh;
     padding: 0;
     background-color: #fefefe;
     overflow-y: auto;
+    margin-left: 80px; // 收缩状态侧边栏宽度，平等共享空间
+    position: relative; // 相对定位
+    z-index: 1; // 确保在侧边栏下方
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
-    // 动态边距动画
-    transition: margin-left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-
-    // 收缩状态边距 - 单flow
-    &.collapsed {
-        margin-left: 202px; // 对应收缩侧栏宽度
-
-        @media (max-width: 768px) {
-            margin-left: 130px; // 平板端单flow边距
-        }
-    }
-
-    // 展开状态边距 - 双flow
+    // 展开状态时的模糊效果和边距调整
     &.expanded {
-        margin-left: 404px; // 对应展开侧栏宽度
-
-        @media (max-width: 768px) {
-            margin-left: 260px; // 平板端双flow边距
-        }
-    }
-
-    @media (max-width: 480px) {
-        margin-left: 0 !important;
-        padding: 20px;
+        margin-left: 320px; // 展开状态侧边栏宽度
+        filter: blur(4px) brightness(0.8);
+        opacity: 0.6;
+        transform: scale(1.01); // 轻微放大增强视觉效果
     }
 }
 
@@ -1278,39 +1312,18 @@
     }
 }
 
-// 图集头部 | Gallery Header
+// 图集头部 | Gallery Header - 已隐藏
 .galleryHeader {
-    padding: 60px 60px 40px;
-    text-align: center;
-    background: linear-gradient(135deg, #fefefe 0%, #f8f8f8 100%);
-    border-bottom: 1px solid #f0f0f0;
-
-    @media (max-width: 1200px) {
-        padding: 40px 40px 30px;
-    }
-
-    @media (max-width: 768px) {
-        padding: 30px 30px 20px;
-    }
-
-    @media (max-width: 480px) {
-        padding: 20px 20px 15px;
-    }
+    display: none; // 完全隐藏画廊头部
 }
 
-// 图集包装器 - 无限滚动区域
+// 图集包装器 - 无限滚动区域 - 全屏模式
 .galleryWrapper {
-    height: calc(100vh - 200px); // 减去头部高度
+    height: 100vh; // 全屏高度，移除头部减去的部分
+  width: 100%;
     overflow: hidden;
     position: relative;
-
-    @media (max-width: 768px) {
-        height: calc(100vh - 150px);
-    }
-
-    @media (max-width: 480px) {
-        height: calc(100vh - 120px);
-    }
+  display: block;
 }
 
 // 动画定义

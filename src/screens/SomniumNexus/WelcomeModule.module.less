@@ -1,0 +1,240 @@
+// 欢迎模块样式 | Welcome Module Styles
+// 采用极简主义设计，提供优雅的首次体验
+
+.welcomeContainer {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+// 背景装饰元素
+.welcomeContainer::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: backgroundPulse 8s ease-in-out infinite;
+}
+
+@keyframes backgroundPulse {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    50% { transform: scale(1.1) rotate(180deg); }
+}
+
+.welcomeContent {
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    width: 90%;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 60px 50px;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    animation: fadeInUp 0.8s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.welcomeHeader {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.welcomeTitle {
+    font-size: 3em;
+    font-weight: 300;
+    color: #2c3e50;
+    margin: 0 0 10px 0;
+    letter-spacing: 0.05em;
+    font-family: 'Helvetica Neue', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+}
+
+.welcomeSubtitle {
+    font-size: 1.2em;
+    color: #7f8c8d;
+    margin: 0;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    font-family: 'Helvetica Neue', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+}
+
+.welcomeDescription {
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.descriptionText {
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.8;
+    margin: 0 0 20px 0;
+    font-weight: 300;
+    font-family: 'Helvetica Neue', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+}
+
+.welcomeFeatures {
+    margin-bottom: 40px;
+}
+
+.featuresTitle {
+    text-align: center;
+    font-size: 1.5em;
+    color: #2c3e50;
+    margin: 0 0 30px 0;
+    font-weight: 400;
+    font-family: 'Helvetica Neue', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+}
+
+.featuresGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+}
+
+.featureItem {
+    background: rgba(255, 255, 255, 0.7);
+    padding: 25px 20px;
+    border-radius: 12px;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.featureItem:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.featureIcon {
+    font-size: 2.5em;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.featureTitle {
+    font-size: 1.1em;
+    color: #2c3e50;
+    margin: 0 0 10px 0;
+    font-weight: 500;
+    font-family: 'Helvetica Neue', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+}
+
+.featureDesc {
+    font-size: 0.9em;
+    color: #7f8c8d;
+    margin: 0;
+    line-height: 1.6;
+    font-weight: 300;
+}
+
+.welcomeAction {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.getStartedButton {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    font-size: 1.1em;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Helvetica Neue', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.getStartedButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+}
+
+.buttonArrow {
+    font-size: 1.2em;
+    transition: transform 0.3s ease;
+}
+
+.getStartedButton:hover .buttonArrow {
+    transform: translateX(5px);
+}
+
+.welcomeFooter {
+    text-align: center;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    padding-top: 20px;
+    margin-top: 20px;
+}
+
+.footerText {
+    font-size: 0.9em;
+    color: #95a5a6;
+    margin: 0;
+    font-weight: 300;
+    font-family: 'Helvetica Neue', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+    .welcomeContent {
+        padding: 40px 30px;
+        margin: 20px;
+    }
+
+    .welcomeTitle {
+        font-size: 2.5em;
+    }
+
+    .featuresGrid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .descriptionText {
+        font-size: 1em;
+    }
+}
+
+@media (max-width: 480px) {
+    .welcomeContent {
+        padding: 30px 20px;
+        margin: 10px;
+    }
+
+    .welcomeTitle {
+        font-size: 2em;
+    }
+
+    .welcomeSubtitle {
+        font-size: 1em;
+    }
+
+    .getStartedButton {
+        padding: 12px 30px;
+        font-size: 1em;
+    }
+}

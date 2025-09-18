@@ -396,10 +396,10 @@
     padding: 20px 16px;
   }
 }
-.sidebar {
-  background-color: #fefefe;
+.expandedSidebar {
+  background-color: rgba(254, 254, 254, 0.45);
   height: 100vh;
-  min-width: 240px;
+  width: 320px;
   position: fixed;
   left: 0;
   top: 0;
@@ -407,35 +407,69 @@
   flex-direction: column;
   padding: 0;
   border-right: 1px solid rgba(0, 0, 0, 0.05);
-  z-index: 100;
+  z-index: 1000;
   overflow-y: hidden;
-  transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  backdrop-filter: blur(10px);
+  box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
-.sidebar.collapsed {
-  width: 202px;
+.expandedSidebar .toggleButton {
+  position: absolute;
+  right: -20px;
+  top: 20px;
+  width: 20px;
+  height: 60px;
+  background-color: rgba(254, 254, 254, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-left: none;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 1001;
+  backdrop-filter: blur(5px);
 }
-@media (max-width: 768px) {
-  .sidebar.collapsed {
-    width: 130px;
-  }
+.expandedSidebar .toggleButton:hover {
+  background-color: #fefefe;
+  right: -22px;
+  width: 22px;
 }
-.sidebar.expanded {
-  width: 404px;
+.expandedSidebar .toggleButton .toggleIcon {
+  font-size: 0.8rem;
+  color: #666;
+  font-weight: 300;
+  line-height: 1;
 }
-@media (max-width: 768px) {
-  .sidebar.expanded {
-    width: 260px;
-  }
+.expandedSidebar .sidebarHeader .mainTitle,
+.expandedSidebar .sidebarHeader .subtitle {
+  display: block;
+}
+.expandedSidebar .projectTabs .tabsContainer .tabsFlowLeft .projectTab .tabText,
+.expandedSidebar .projectTabs .tabsContainer .tabsFlowRight .projectTab .tabText {
+  writing-mode: horizontal-tb;
+  font-size: 0.8rem;
+}
+.expandedSidebar .projectTabs .tabsContainer .tabsFlowLeft .projectTab .subMenuIndicator,
+.expandedSidebar .projectTabs .tabsContainer .tabsFlowRight .projectTab .subMenuIndicator {
+  display: flex;
+}
+.expandedSidebar .projectTabs .tabsContainer .tabsFlowLeft .projectTab::before,
+.expandedSidebar .projectTabs .tabsContainer .tabsFlowRight .projectTab::before,
+.expandedSidebar .projectTabs .tabsContainer .tabsFlowLeft .projectTab::after,
+.expandedSidebar .projectTabs .tabsContainer .tabsFlowRight .projectTab::after {
+  display: block;
+}
+.expandedSidebar .projectTabs .tabsContainer .tabsFlowRight {
+  display: flex;
+}
+.expandedSidebar .sidebarFooter {
+  display: block;
 }
 @media (max-width: 480px) {
-  .sidebar {
-    width: 100%;
-    height: auto;
-    position: relative;
-  }
-  .sidebar.collapsed,
-  .sidebar.expanded {
-    width: 100%;
+  .expandedSidebar {
+    width: 280px;
   }
 }
 .sidebarHeader {
@@ -444,8 +478,7 @@
   flex-shrink: 0;
   pointer-events: none;
   user-select: none;
-  height: 15vh
-;
+  height: 15vh;
 }
 @media (max-width: 768px) {
   .sidebarHeader {
@@ -594,34 +627,20 @@
   line-height: 1.4;
 }
 .mainContent {
-  flex: 1;
   min-height: 100vh;
   padding: 0;
   background-color: #fefefe;
   overflow-y: auto;
-  transition: margin-left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-.mainContent.collapsed {
-  margin-left: 202px;
-}
-@media (max-width: 768px) {
-  .mainContent.collapsed {
-    margin-left: 130px;
-  }
+  margin-left: 80px;
+  position: relative;
+  z-index: 1;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 .mainContent.expanded {
-  margin-left: 404px;
-}
-@media (max-width: 768px) {
-  .mainContent.expanded {
-    margin-left: 260px;
-  }
-}
-@media (max-width: 480px) {
-  .mainContent {
-    margin-left: 0 !important;
-    padding: 20px;
-  }
+  margin-left: 320px;
+  filter: blur(4px) brightness(0.8);
+  opacity: 0.6;
+  transform: scale(1.01);
 }
 .galleryContainer {
   padding: 80px 60px;
@@ -1089,40 +1108,14 @@
   }
 }
 .galleryHeader {
-  padding: 60px 60px 40px;
-  text-align: center;
-  background: linear-gradient(135deg, #fefefe 0%, #f8f8f8 100%);
-  border-bottom: 1px solid #f0f0f0;
-}
-@media (max-width: 1200px) {
-  .galleryHeader {
-    padding: 40px 40px 30px;
-  }
-}
-@media (max-width: 768px) {
-  .galleryHeader {
-    padding: 30px 30px 20px;
-  }
-}
-@media (max-width: 480px) {
-  .galleryHeader {
-    padding: 20px 20px 15px;
-  }
+  display: none;
 }
 .galleryWrapper {
-  height: calc(100vh - 200px);
+  height: 100vh;
+  width: 100%;
   overflow: hidden;
   position: relative;
-}
-@media (max-width: 768px) {
-  .galleryWrapper {
-    height: calc(100vh - 150px);
-  }
-}
-@media (max-width: 480px) {
-  .galleryWrapper {
-    height: calc(100vh - 120px);
-  }
+  display: block;
 }
 @keyframes fadeIn {
   from {
