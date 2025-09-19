@@ -83,8 +83,10 @@ function r0_help() {
     log('  r0_status - 显示当前环境状态');
     log('');
     log('其他指令:');
-    log('  r0_help   - 显示此帮助信息');
-    log('  r0_info   - 显示系统详细信息');
+    log('  r0_help      - 显示此帮助信息');
+    log('  r0_info      - 显示系统详细信息');
+    log('  r0_flex      - 切换到Flex布局');
+    log('  r0_freeform  - 切换到自由布局');
     log('');
     log('💡 提示: 直接在控制台输入指令即可执行');
 }
