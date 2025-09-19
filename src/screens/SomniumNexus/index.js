@@ -4,6 +4,7 @@ import {useParams} from "react-router-dom";
 import globalStore from "@/stores/globalStore";
 import somniumNexusStore from "@/stores/somniumNexusStore";
 import GalleryFlex from "@/components/GalleryFlex/GalleryFlex";
+import galleryStore from "@/stores/galleryStore";
 import GracefulImage from "@/components/SkeletonImage/GracefulImage";
 import SimpleWelcomeModule from "./SimpleWelcomeModule";
 import CollapsedSidebar from "./CollapsedSidebar";
@@ -40,6 +41,15 @@ const SomniumNexus = observer(() => {
                 setShowSecondFlow(true); // 但次级菜单可用
             }
         }
+    }, [category]);
+
+    // 清理GalleryStore数据
+    useEffect(() => {
+        return () => {
+            if (category) {
+                galleryStore.clearCategory(category);
+            }
+        };
     }, [category]);
 
     // 当选择新的分类时，同步更新hover状态的子菜单
@@ -367,6 +377,7 @@ const SomniumNexus = observer(() => {
                             images={currentImages}
                             onImageClick={handleImageClick}
                             columns={3}
+                            categoryId={category || 'default'}
                         />
                     </div>
                 )}

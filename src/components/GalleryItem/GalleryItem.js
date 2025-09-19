@@ -20,6 +20,9 @@ const GalleryItem = observer(({
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
     const [resizeStart, setResizeStart] = useState({ width: 0, height: 0, x: 0, y: 0 });
 
+    // 优化：使用解构获取数据，避免重复访问
+    const { id, x, y, width, height, originalImage } = item;
+
     // 处理鼠标按下开始拖拽
     const handleMouseDown = useCallback((e) => {
         if (!editMode) return;
@@ -45,12 +48,12 @@ const GalleryItem = observer(({
 
         setIsResizing(true);
         setResizeStart({
-            width: item.width,
-            height: item.height,
+            width,
+            height,
             x: e.clientX,
             y: e.clientY
         });
-    }, [editMode, item.width, item.height]);
+    }, [editMode, width, height]);
 
     // 处理鼠标移动
     const handleMouseMove = useCallback((e) => {
@@ -64,7 +67,7 @@ const GalleryItem = observer(({
             let newY = e.clientY - galleryRect.top - dragStart.y;
 
             // 边界约束
-            newX = Math.max(0, Math.min(newX, galleryRect.width - item.width));
+            newX = Math.max(0, Math.min(newX, galleryRect.width - width));
             newY = Math.max(0, newY);
 
             // 水平对齐（网格对齐）
@@ -72,7 +75,7 @@ const GalleryItem = observer(({
             newX = Math.round(newX / gridSize) * gridSize;
             newY = Math.round(newY / gridSize) * gridSize;
 
-            onUpdate(item.id, { x: newX, y: newY });
+            onUpdate(id, { x: newX, y: newY });
         }
 
         if (isResizing) {
@@ -91,9 +94,9 @@ const GalleryItem = observer(({
             newWidth = Math.round(newWidth / gridSize) * gridSize;
             newHeight = Math.round(newHeight / gridSize) * gridSize;
 
-            onUpdate(item.id, { width: newWidth, height: newHeight });
+            onUpdate(id, { width: newWidth, height: newHeight });
         }
-    }, [isDragging, isResizing, dragStart, resizeStart, item, onUpdate, galleryRef]);
+    }, [isDragging, isResizing, dragStart, resizeStart, x, y, width, height, onUpdate, galleryRef]);
 
     // 处理鼠标释放
     const handleMouseUp = useCallback(() => {
@@ -121,9 +124,9 @@ const GalleryItem = observer(({
     // 处理点击
     const handleClick = useCallback(() => {
         if (!editMode && onClick) {
-            onClick(item.originalImage);
+            onClick(originalImage);
         }
-    }, [editMode, onClick, item.originalImage]);
+    }, [editMode, onClick, originalImage]);
 
     return (
         <div
@@ -133,19 +136,19 @@ const GalleryItem = observer(({
             } ${isResizing ? styles.resizing : ''}`}
             style={{
                 position: 'absolute',
-                left: `${item.x}px`,
-                top: `${item.y}px`,
-                width: `${item.width}px`,
-                height: `${item.height}px`,
-                zIndex: isDragging || isResizing ? 1000 : item.id
+                left: `${x}px`,
+                top: `${y}px`,
+                width: `${width}px`,
+                height: `${height}px`,
+                zIndex: isDragging || isResizing ? 1000 : id
             }}
             onMouseDown={handleMouseDown}
             onClick={handleClick}
         >
             <div className={styles.imageWrapper}>
                 <GracefulImage
-                    src={item.originalImage.src}
-                    alt={item.originalImage.title}
+                    src={originalImage.src}
+                    alt={originalImage.title}
                     className={styles.galleryImage}
                     aspectRatio="4:3"
                     skeletonSize="none"
@@ -154,8 +157,8 @@ const GalleryItem = observer(({
 
                 {/* 信息覆盖层 */}
                 <div className={styles.imageOverlay}>
-                    <h3 className={styles.imageTitle}>{item.originalImage.title}</h3>
-                    <p className={styles.imageYear}>{item.originalImage.year}</p>
+                    <h3 className={styles.imageTitle}>{originalImage.title}</h3>
+                    <p className={styles.imageYear}>{originalImage.year}</p>
                 </div>
 
                 {/* 编辑模式下的控制点 */}

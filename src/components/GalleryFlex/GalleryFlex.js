@@ -1,6 +1,7 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import GalleryItem from '../GalleryItem/GalleryItem';
+import galleryStore from '@/stores/galleryStore';
 import styles from './GalleryFlex.module.less';
 
 /**
@@ -11,45 +12,35 @@ const GalleryFlex = observer(({
     images = [],
     onImageClick,
     columns = 3,
-    className = ''
+    className = '',
+    categoryId = 'default'
 }) => {
-    const [editMode, setEditMode] = useState(false);
-    const [items, setItems] = useState([]);
     const galleryRef = useRef(null);
 
-    // 初始化项目数据
+    // 初始化项目数据 - 使用GalleryStore
     useEffect(() => {
-        const initializedItems = images.map((image, index) => ({
-            id: image.id,
-            originalImage: image,
-            x: (index % columns) * (100 / columns),
-            y: Math.floor(index / columns) * 300,
-            width: 100 / columns,
-            height: 300,
-            row: Math.floor(index / columns),
-            col: index % columns
-        }));
-        setItems(initializedItems);
-    }, [images, columns]);
+        if (images.length > 0) {
+            galleryStore.initializeItems(categoryId, images, columns);
+        }
+    }, [images, columns, categoryId]);
 
-    // 切换编辑模式
+    // 切换编辑模式 - 使用GalleryStore
     const toggleEditMode = useCallback(() => {
-        setEditMode(prev => !prev);
+        galleryStore.toggleEditMode();
     }, []);
 
-    // 更新项目位置和大小
+    // 更新项目 - 使用GalleryStore
     const updateItem = useCallback((itemId, updates) => {
-        setItems(prev => prev.map(item =>
-            item.id === itemId ? { ...item, ...updates } : item
-        ));
+        galleryStore.updateItem(itemId, updates);
     }, []);
 
-    // 计算容器高度
+    // 计算容器高度 - 使用GalleryStore数据
     const getContainerHeight = useCallback(() => {
+        const items = galleryStore.getItemsByCategory(categoryId);
         if (items.length === 0) return 'auto';
         const maxY = Math.max(...items.map(item => item.y + item.height));
         return `${maxY + 50}px`;
-    }, [items]);
+    }, [categoryId]);
 
     return (
         <div className={`${styles.galleryFlex} ${className}`} ref={galleryRef}>
@@ -57,11 +48,11 @@ const GalleryFlex = observer(({
                 className={styles.galleryContainer}
                 style={{ height: getContainerHeight() }}
             >
-                {items.map((item) => (
+                {galleryStore.getItemsByCategory(categoryId).map((item) => (
                     <GalleryItem
                         key={item.id}
                         item={item}
-                        editMode={editMode}
+                        editMode={galleryStore.editMode}
                         onUpdate={updateItem}
                         onClick={onImageClick}
                         galleryRef={galleryRef}
@@ -73,9 +64,9 @@ const GalleryFlex = observer(({
             <div
                 className={styles.editToggle}
                 onClick={toggleEditMode}
-                title={editMode ? '切换到展示模式' : '切换到编辑模式'}
+                title={galleryStore.editMode ? '切换到展示模式' : '切换到编辑模式'}
             >
-                <div className={`${styles.triangle} ${editMode ? styles.active : ''}`} />
+                <div className={`${styles.triangle} ${galleryStore.editMode ? styles.active : ''}`} />
             </div>
         </div>
     );
