@@ -31,22 +31,32 @@ const GalleryItem = observer(({
     // 优化：使用解构获取数据，避免重复访问
     const { id, x, y, width, height, originalImage } = item;
 
-    // 实时计算宽高比 - 最简形式：直接输出比值
+    // 实时计算宽高比 - 处理auto宽度和数值宽度
     const calculateAspectRatio = useCallback((w, h) => {
-        if (!w || !h || w === 0 || h === 0) return '1:1';
+        // 处理auto宽度或其他无效值
+        if (!w || !h || w === 0 || h === 0 || w === 'auto' || isNaN(w) || isNaN(h)) {
+            return '1:1';
+        }
 
-        // 直接计算并返回最简分数
-        const width = Math.round(w);
-        const height = Math.round(h);
+        // 确保是数值类型
+        const width = Math.round(Number(w));
+        const height = Math.round(Number(h));
+
+        // 验证数值有效性
+        if (width <= 0 || height <= 0) {
+            return '1:1';
+        }
 
         // 计算最大公约数
         const gcd = (a, b) => {
+            a = Math.abs(a);
+            b = Math.abs(b);
             return b === 0 ? a : gcd(b, a % b);
         };
 
         const divisor = gcd(width, height);
-        const ratioW = width / divisor;
-        const ratioH = height / divisor;
+        const ratioW = Math.round(width / divisor);
+        const ratioH = Math.round(height / divisor);
 
         return `${ratioW}:${ratioH}`;
     }, []);
@@ -91,7 +101,7 @@ const GalleryItem = observer(({
 
         setIsResizing(true);
         setResizeStart({
-            width,
+            width: width === 'auto' ? 160 : width, // 如果宽度是auto，使用默认值
             height,
             x: e.clientX,
             y: e.clientY
@@ -175,6 +185,11 @@ const GalleryItem = observer(({
             // 最小尺寸约束
             newWidth = Math.max(100, newWidth);
             newHeight = Math.max(100, newHeight);
+
+            // 如果当前宽度是auto（flex模式），使用一个合理的默认值
+            if (width === 'auto') {
+                newWidth = Math.max(160, newWidth); // flex模式的默认宽度
+            }
 
             // 网格对齐
             const gridSize = 10;
@@ -360,7 +375,7 @@ const GalleryItem = observer(({
                         {/* 编辑状态指示器 - 显示有价值的信息 */}
                         <div className={styles.editIndicator}>
                             <span className={styles.editText}>
-                                {Math.round(width)}×{Math.round(height)} | {realTimeRatio}
+                                {width === 'auto' ? 'auto' : Math.round(width)}×{Math.round(height)} | {realTimeRatio}
                             </span>
                         </div>
                     </>
