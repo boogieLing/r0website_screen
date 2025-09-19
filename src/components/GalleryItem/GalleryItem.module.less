@@ -1,11 +1,19 @@
 // GalleryItem 样式 - 日系极简美学，无圆角无边框，细腻动画
 .galleryItem {
-    position: absolute;
+    position: absolute; // 默认绝对定位
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); // 更细腻的动画曲线
     cursor: pointer;
     user-select: none;
     // 确保即使在负坐标下也能显示
     will-change: transform;
+
+    // Flex模式：使用相对定位
+    &.flexMode {
+        position: relative;
+        top: auto !important;
+        left: auto !important;
+        transform: none !important;
+    }
 
     &.exhibitMode {
         &:hover {

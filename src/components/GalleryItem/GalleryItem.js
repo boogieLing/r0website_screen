@@ -15,7 +15,8 @@ const GalleryItem = observer(({
     onUpdate,
     onClick,
     galleryRef,
-    allItems // 添加所有items的prop用于磁吸计算
+    allItems, // 添加所有items的prop用于磁吸计算
+    flexMode = false // 新增：flex模式，使用相对定位而非绝对定位
 }) => {
     const itemRef = useRef(null);
     const galleryRect = useRef(null); // 缓存gallery的边界信息
@@ -67,7 +68,7 @@ const GalleryItem = observer(({
 
     // 处理鼠标按下开始拖拽
     const handleMouseDown = useCallback((e) => {
-        if (!editMode) return;
+        if (!editMode || flexMode) return; // flex模式下禁用拖拽
 
         e.preventDefault();
         e.stopPropagation();
@@ -79,7 +80,7 @@ const GalleryItem = observer(({
             x: e.clientX - rect.left,
             y: e.clientY - rect.top
         });
-    }, [editMode, galleryRef]);
+    }, [editMode, flexMode, galleryRef]);
 
     // 处理调整大小
     const handleResizeMouseDown = useCallback((e) => {
@@ -263,11 +264,13 @@ const GalleryItem = observer(({
             ref={itemRef}
             className={`${styles.galleryItem} ${editMode ? styles.editMode : styles.exhibitMode} ${
                 isDragging ? styles.dragging : ''
-            } ${isResizing ? styles.resizing : ''} ${isMagnetic ? styles.magneticActive : ''}`}
+            } ${isResizing ? styles.resizing : ''} ${isMagnetic ? styles.magneticActive : ''} ${
+                flexMode ? styles.flexMode : ''
+            }`}
             style={{
-                position: 'absolute',
-                left: `${x}px`,
-                top: `${y}px`,
+                position: flexMode ? 'relative' : 'absolute',
+                left: flexMode ? 'auto' : `${x}px`,
+                top: flexMode ? 'auto' : `${y}px`,
                 width: `${width}px`,
                 height: `${height}px`,
                 zIndex: isDragging || isResizing ? 1000 : id

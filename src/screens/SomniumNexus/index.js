@@ -4,11 +4,14 @@ import {useParams} from "react-router-dom";
 import globalStore from "@/stores/globalStore";
 import somniumNexusStore from "@/stores/somniumNexusStore";
 import GalleryFlex from "@/components/GalleryFlex/GalleryFlex";
+import FlexGalleryContainer from "@/components/FlexGalleryContainer/FlexGalleryContainer";
 import galleryStore from "@/stores/galleryStore";
+import flexGalleryStore from "@/stores/flexGalleryStore";
 import GracefulImage from "@/components/SkeletonImage/GracefulImage";
 import SimpleWelcomeModule from "./SimpleWelcomeModule";
 import CollapsedSidebar from "./CollapsedSidebar";
 import styles from "./index.module.less";
+import {environmentManager, LAYOUT_TYPES} from "@/utils/environment";
 
 const SomniumNexus = observer(() => {
     const {category} = useParams();
@@ -19,6 +22,7 @@ const SomniumNexus = observer(() => {
     const [isAnimating, setIsAnimating] = useState(false); // 动画状态
     const [hasSelected, setHasSelected] = useState(false); // 跟踪用户是否选择了项目
     const [hoveredCategory, setHoveredCategory] = useState(null); // 跟踪hover的类别
+    const [currentLayout, setCurrentLayout] = useState(environmentManager.getCurrentLayoutType()); // 当前布局类型
 
     const categories = somniumNexusStore.categories;
     const currentImages = somniumNexusStore.currentCategoryImages;
@@ -43,11 +47,26 @@ const SomniumNexus = observer(() => {
         }
     }, [category]);
 
-    // 清理GalleryStore数据
+    // 监听布局变化
+    useEffect(() => {
+        const handleLayoutChange = () => {
+            setCurrentLayout(environmentManager.getCurrentLayoutType());
+        };
+
+        // 监听环境变化（包括布局变化）
+        environmentManager.addEnvironmentChangeListener(handleLayoutChange);
+
+        return () => {
+            environmentManager.removeEnvironmentChangeListener(handleLayoutChange);
+        };
+    }, []);
+
+    // 清理数据
     useEffect(() => {
         return () => {
             if (category) {
                 galleryStore.clearCategory(category);
+                flexGalleryStore.clearCategory(category);
             }
         };
     }, [category]);
@@ -373,12 +392,22 @@ const SomniumNexus = observer(() => {
                     <SimpleWelcomeModule onGetStarted={handleGetStarted} />
                 ) : (
                     <div className={styles.galleryWrapper}>
-                        <GalleryFlex
-                            images={currentImages}
-                            onImageClick={handleImageClick}
-                            columns={3}
-                            categoryId={category || 'default'}
-                        />
+                        {currentLayout === LAYOUT_TYPES.FLEX ? (
+                            <FlexGalleryContainer
+                                images={currentImages}
+                                onImageClick={handleImageClick}
+                                itemSize="medium"
+                                gap={8}
+                                categoryId={category || 'flex'}
+                            />
+                        ) : (
+                            <GalleryFlex
+                                images={currentImages}
+                                onImageClick={handleImageClick}
+                                columns={3}
+                                categoryId={category || 'default'}
+                            />
+                        )}
                     </div>
                 )}
             </main>

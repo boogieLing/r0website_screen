@@ -1,0 +1,98 @@
+/**
+ * FlexGalleryContainer - 响应式flex布局样式
+ * 百分比宽度，1-5列响应式，居中排列
+ */
+.flexGalleryContainer {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  padding: 16px;
+  box-sizing: border-box;
+}
+.flexContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  min-height: 100%;
+  margin: 0 auto;
+  max-width: 1400px;
+}
+.flexContainer[data-columns="1"] .galleryItem {
+  width: calc(100% - 8px);
+}
+.flexContainer[data-columns="2"] .galleryItem {
+  width: calc(50% - 6px);
+}
+.flexContainer[data-columns="3"] .galleryItem {
+  width: calc(33.333% - 5.333px);
+}
+.flexContainer[data-columns="4"] .galleryItem {
+  width: calc(25% - 6px);
+}
+.flexContainer[data-columns="5"] .galleryItem {
+  width: calc(20% - 6.4px);
+}
+@media (max-width: 480px) {
+  .flexContainer .galleryItem {
+    width: calc(100% - 8px) !important;
+  }
+}
+@media (min-width: 481px) and (max-width: 768px) {
+  .flexContainer .galleryItem {
+    width: calc(50% - 6px) !important;
+  }
+}
+@media (min-width: 769px) and (max-width: 1024px) {
+  .flexContainer .galleryItem {
+    width: calc(33.333% - 5.333px) !important;
+  }
+}
+@media (min-width: 1025px) and (max-width: 1280px) {
+  .flexContainer .galleryItem {
+    width: calc(25% - 6px) !important;
+  }
+}
+@media (min-width: 1281px) {
+  .flexContainer .galleryItem {
+    width: calc(20% - 6.4px) !important;
+  }
+}
+.editToggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+}
+.editToggle:hover {
+  background: #fff;
+  transform: scale(1.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+.editToggle:active {
+  transform: scale(0.95);
+}
+.triangle {
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 12px solid #666;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.triangle.active {
+  border-bottom: 12px solid #4ecdc4;
+  transform: rotate(180deg);
+}
+/*# sourceMappingURL=FlexGalleryContainer.module.css.map */

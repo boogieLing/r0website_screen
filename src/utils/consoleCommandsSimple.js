@@ -4,7 +4,7 @@
  * 完全静默模式 - 不输出任何信息
  */
 
-import { environmentManager } from "./environment";
+import { environmentManager, LAYOUT_TYPES } from "./environment";
 import somniumNexusStore from "@/stores/somniumNexusStore";
 import galleryStore from "@/stores/galleryStore";
 
@@ -207,8 +207,28 @@ export function initConsoleCommands() {
     window.r0_edit = r0_edit;
     window.r0_migrate = r0_migrate;
     window.r0_secret = r0_secret;
+    window.r0_flex = r0_flex;
+    window.r0_freeform = r0_freeform;
 
     // 静默初始化，不输出任何信息
+}
+
+/**
+ * 切换到Flex布局
+ */
+function r0_flex() {
+    environmentManager.switchToFlexLayout();
+    log('已切换到Flex布局');
+    showCurrentEnvironment();
+}
+
+/**
+ * 切换到自由布局
+ */
+function r0_freeform() {
+    environmentManager.switchToFreeformLayout();
+    log('已切换到自由布局');
+    showCurrentEnvironment();
 }
 
 /**

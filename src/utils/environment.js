@@ -8,6 +8,12 @@ import React from 'react';
 import somniumNexusStore from "@/stores/somniumNexusStore";
 import testDataStore from "@/stores/testDataStore";
 
+// 布局类型枚举
+export const LAYOUT_TYPES = {
+    FLEX: 'flex',
+    FREEFORM: 'freeform'
+};
+
 // 环境类型枚举
 export const ENVIRONMENT_TYPES = {
     TEST: 'test',
@@ -20,6 +26,7 @@ export const ENVIRONMENT_TYPES = {
 class EnvironmentManager {
     constructor() {
         this.currentEnvironment = ENVIRONMENT_TYPES.PRODUCTION;
+        this.currentLayoutType = LAYOUT_TYPES.FREEFORM; // 默认自由布局
         this.environmentChangeListeners = [];
     }
 
@@ -41,6 +48,31 @@ class EnvironmentManager {
         somniumNexusStore.disableTestEnvironment();
         this.notifyEnvironmentChange();
         console.log('已切换到正式环境');
+    }
+
+    /**
+     * 切换到Flex布局
+     */
+    switchToFlexLayout() {
+        this.currentLayoutType = LAYOUT_TYPES.FLEX;
+        this.notifyEnvironmentChange();
+        console.log('已切换到Flex布局');
+    }
+
+    /**
+     * 切换到自由布局
+     */
+    switchToFreeformLayout() {
+        this.currentLayoutType = LAYOUT_TYPES.FREEFORM;
+        this.notifyEnvironmentChange();
+        console.log('已切换到自由布局');
+    }
+
+    /**
+     * 获取当前布局类型
+     */
+    getCurrentLayoutType() {
+        return this.currentLayoutType;
     }
 
     /**
