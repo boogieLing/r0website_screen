@@ -2,6 +2,7 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import GalleryItem from '../GalleryItem/GalleryItem';
 import galleryStore from '@/stores/galleryStore';
+import { calculateNonOverlappingPosition, getOverlappingItems } from '@/utils/magneticLayout';
 import styles from './GalleryFlex.module.less';
 
 /**
@@ -16,6 +17,7 @@ const GalleryFlex = observer(({
     categoryId = 'default'
 }) => {
     const galleryRef = useRef(null);
+    const updateTimeout = useRef(null); // 用于存储防抖定时器
 
     // 初始化项目数据 - 使用GalleryStore
     useEffect(() => {
@@ -61,36 +63,70 @@ const GalleryFlex = observer(({
         return { needsUpdate, newHeight };
     }, [categoryId, galleryStore]);
 
-    // 更新项目 - 使用GalleryStore，并触发高度重新计算
+    // 更新项目 - 使用GalleryStore，添加磁吸和防重叠功能
     const updateItem = useCallback((itemId, updates) => {
-        galleryStore.updateItem(itemId, updates);
+        // 获取当前分类的所有items
+        const allItems = galleryStore.getItemsByCategory(categoryId);
+        const currentItem = allItems.find(item => item.id === itemId);
 
-        // 强制重新计算容器高度，确保实时同步，使用更小的缓冲区
-        // 使用setTimeout确保DOM更新完成后再计算
-        setTimeout(() => {
+        if (!currentItem) {
+            galleryStore.updateItem(itemId, updates);
+            return;
+        }
+
+        // 判断是位置更新还是尺寸更新
+        const isPositionUpdate = updates.x !== undefined || updates.y !== undefined;
+        const isSizeUpdate = updates.width !== undefined || updates.height !== undefined;
+
+        if (isPositionUpdate) {
+            // 位置更新：应用磁吸和防重叠
+            const updatedItem = { ...currentItem, ...updates };
+            const otherItems = allItems.filter(item => item.id !== itemId);
+            const finalPosition = calculateNonOverlappingPosition(updatedItem, otherItems);
+            galleryStore.updateItem(itemId, finalPosition);
+        } else if (isSizeUpdate) {
+            // 尺寸更新：直接应用，不进行磁吸
+            console.log('尺寸更新:', { itemId, updates }); // 调试日志
+            galleryStore.updateItem(itemId, updates);
+        } else {
+            // 其他更新：直接应用
+            galleryStore.updateItem(itemId, updates);
+        }
+
+        // 使用requestAnimationFrame优化高度更新
+        if (updateTimeout.current) {
+            cancelAnimationFrame(updateTimeout.current);
+        }
+
+        updateTimeout.current = requestAnimationFrame(() => {
             const items = galleryStore.getItemsByCategory(categoryId);
             if (items.length === 0) return;
 
-            // 重新计算边界
+            // 快速计算边界 - 只计算必要的值
             let minY = 0;
             let maxY = 0;
-            items.forEach(item => {
+
+            // 使用高效的for循环
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
                 minY = Math.min(minY, item.y);
                 maxY = Math.max(maxY, item.y + item.height);
-            });
+            }
 
             const contentHeight = maxY - minY;
-            const bufferHeight = 50; // 减少缓冲区到50px
+            // 使用更小的缓冲区，gap=10px实现紧凑效果
+            const bufferHeight = 0;
             const requiredHeight = contentHeight + bufferHeight;
-            const minHeight = window.innerHeight;
-            const newHeight = Math.max(requiredHeight, minHeight);
+            const newHeight = Math.max(requiredHeight, window.innerHeight);
 
-            // 更新容器高度
-            const container = galleryRef.current?.querySelector(`.${styles.galleryContainer}`);
-            if (container) {
-                container.style.height = `${newHeight}px`;
+            // 直接更新容器高度，避免DOM查询
+            if (galleryRef.current) {
+                const container = galleryRef.current.firstElementChild;
+                if (container) {
+                    container.style.height = `${newHeight}px`;
+                }
             }
-        }, 0);
+        });
     }, [categoryId, galleryStore]);
 
     // 计算容器高度 - 智能高度计算，确保实时同步
@@ -131,16 +167,20 @@ const GalleryFlex = observer(({
                 className={styles.galleryContainer}
                 style={{ height: getContainerHeight() }}
             >
-                {galleryStore.getItemsByCategory(categoryId).map((item) => (
-                    <GalleryItem
-                        key={item.id}
-                        item={item}
-                        editMode={galleryStore.editMode}
-                        onUpdate={updateItem}
-                        onClick={onImageClick}
-                        galleryRef={galleryRef}
-                    />
-                ))}
+                {galleryStore.getItemsByCategory(categoryId).map((item) => {
+                    const allItems = galleryStore.getItemsByCategory(categoryId);
+                    return (
+                        <GalleryItem
+                            key={item.id}
+                            item={item}
+                            editMode={galleryStore.editMode}
+                            onUpdate={updateItem}
+                            onClick={onImageClick}
+                            galleryRef={galleryRef}
+                            allItems={allItems}
+                        />
+                    );
+                })}
             </div>
 
             {/* 编辑模式切换按钮 - 右下角三角 */}

@@ -420,7 +420,7 @@
   top: 0;
   width: 320px;
   height: 100vh;
-  background-color: rgba(254, 254, 254, 0.95);
+  background-color: rgba(254, 254, 254, 0.75);
   display: flex;
   flex-direction: column;
   padding: 0;
@@ -1164,7 +1164,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  overflow: hidden;
+  overflow: auto;
   display: block;
   padding-left: 80px;
 }

@@ -1,0 +1,112 @@
+.galleryFlex {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  overflow: visible;
+  background: #faf8f5;
+}
+.galleryContainer {
+  width: 100%;
+  background: linear-gradient(135deg, #faf8f5 0%, #f5f2ed 50%, #f0ece5 100%);
+  transition: height 0.3s ease;
+  min-height: 100vh;
+  overflow: visible;
+  position: relative;
+}
+.galleryContainer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%), radial-gradient(circle at 40% 80%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 1;
+}
+.editToggle {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+.editToggle::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
+  border: 1px solid rgba(120, 110, 100, 0.2);
+  pointer-events: none;
+}
+.editToggle:hover {
+  background: #fff;
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+.editToggle:hover::before {
+  border-color: rgba(120, 110, 100, 0.3);
+}
+.editToggle:active {
+  transform: scale(0.95);
+}
+.triangle {
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 12px solid #666;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.triangle.active {
+  border-bottom: none;
+  border-top: 12px solid #4ecdc4;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  transform: translateY(-2px);
+}
+.triangle {
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 12px solid #666;
+  transition: all 0.3s ease;
+}
+.triangle.active {
+  border-bottom: none;
+  border-top: 12px solid #4ecdc4;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+}
+:global(.edit-mode) .galleryContainer {
+  background: linear-gradient(135deg, #faf8f5 0%, #f5f2ed 50%, #f0ece5 100%);
+  min-height: 100vh;
+  overflow: visible;
+  position: relative;
+}
+:global(.edit-mode) .galleryContainer::after {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  border: 1px solid rgba(120, 110, 100, 0.1);
+  pointer-events: none;
+  z-index: 1;
+}
+:global(.edit-mode) .galleryContainer::before {
+  background-image: radial-gradient(circle at 15% 45%, rgba(255, 255, 255, 0.12) 0%, transparent 45%), radial-gradient(circle at 85% 15%, rgba(255, 255, 255, 0.06) 0%, transparent 45%), radial-gradient(circle at 35% 85%, rgba(255, 255, 255, 0.1) 0%, transparent 45%);
+}
+/*# sourceMappingURL=GalleryFlex.module.css.map */

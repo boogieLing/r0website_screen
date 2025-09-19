@@ -4,19 +4,36 @@
     width: 100%;
     min-height: 100vh; // 最小高度100vh，内容可以超出
     overflow: visible; // 允许内容超出，实现无限滚动
-    background: #f5f3f0; // 日系温暖背景色
+    background: #faf8f5; // 更温暖的日系背景色 - 米白色调
 }
 
 .galleryContainer {
     position: relative;
     width: 100%;
-    background: #f5f3f0;
+    background: linear-gradient(135deg, #faf8f5 0%, #f5f2ed 50%, #f0ece5 100%); // 日系渐变背景
     transition: height 0.3s ease;
     min-height: 100vh; // 确保容器至少100vh
     overflow: visible; // 允许子元素超出
+    // 添加微妙的纹理效果
+    position: relative;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image:
+            radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+            radial-gradient(circle at 40% 80%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
+        pointer-events: none;
+        z-index: 1;
+    }
 }
 
-// 编辑模式切换按钮 - 右下角三角
+// 编辑模式切换按钮 - 右下角三角，去除圆角
 .editToggle {
     position: absolute;
     bottom: 20px;
@@ -24,7 +41,6 @@
     width: 50px;
     height: 50px;
     background: rgba(255, 255, 255, 0.9);
-    border-radius: 50%;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -33,10 +49,26 @@
     transition: all 0.3s ease;
     z-index: 1000;
 
+    // 使用细线进行视觉划分
+    &::before {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        right: 2px;
+        bottom: 2px;
+        border: 1px solid rgba(120, 110, 100, 0.2); // 细线边框
+        pointer-events: none;
+    }
+
     &:hover {
         background: #fff;
         transform: scale(1.1);
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+
+        &::before {
+            border-color: rgba(120, 110, 100, 0.3);
+        }
     }
 
     &:active {
@@ -44,7 +76,23 @@
     }
 }
 
-// 三角图标
+// 三角图标 - 优化动画效果
+.triangle {
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 12px solid #666;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); // 更流畅的动画曲线
+
+    &.active {
+        border-bottom: none;
+        border-top: 12px solid #4ecdc4;
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        transform: translateY(-2px); // 添加微妙的位移
+    }
+}
 .triangle {
     width: 0;
     height: 0;
@@ -61,12 +109,33 @@
     }
 }
 
-// 编辑模式下的特殊样式
+// 编辑模式下的特殊样式 - 日系极简风格，无圆角无边框
 :global(.edit-mode) {
     .galleryContainer {
-        border: 2px dashed rgba(0, 0, 0, 0.1);
-        background: rgba(248, 246, 243, 0.8);
+        background: linear-gradient(135deg, #faf8f5 0%, #f5f2ed 50%, #f0ece5 100%); // 保持日系渐变背景
         min-height: 100vh; // 编辑模式下也保持最小高度
         overflow: visible; // 确保编辑模式下也能无限滚动
+        position: relative;
+
+        // 使用细线伪元素进行视觉划分 - 日系极简风格
+        &::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            border: 1px solid rgba(120, 110, 100, 0.1); // 极细的边界线
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        // 编辑模式下添加更微妙的光影效果
+        &::before {
+            background-image:
+                radial-gradient(circle at 15% 45%, rgba(255, 255, 255, 0.12) 0%, transparent 45%),
+                radial-gradient(circle at 85% 15%, rgba(255, 255, 255, 0.06) 0%, transparent 45%),
+                radial-gradient(circle at 35% 85%, rgba(255, 255, 255, 0.1) 0%, transparent 45%);
+        }
     }
 }

@@ -32,7 +32,7 @@ class GalleryStore {
                 items.set(itemId, existingItem);
             } else {
                 const gridX = (index % columns) * (100 / columns);
-                const gridY = Math.floor(index / columns) * 300;
+                const gridY = Math.floor(index / columns) * 280; // 调整为5:7比例的高度
 
                 items.set(itemId, {
                     id: itemId,
@@ -40,8 +40,8 @@ class GalleryStore {
                     categoryId: categoryId,
                     x: gridX,
                     y: gridY,
-                    width: 100 / columns,
-                    height: 300,
+                    width: 200, // 固定宽度200px，保持5:7比例
+                    height: 280, // 对应高度280px (200 * 1.4 = 280，接近5:7比例)
                     row: Math.floor(index / columns),
                     col: index % columns,
                     originalImage: image
@@ -118,13 +118,13 @@ class GalleryStore {
         const items = this.getItemsByCategory(categoryId);
         items.forEach((item, index) => {
             const gridX = (index % columns) * (100 / columns);
-            const gridY = Math.floor(index / columns) * 300;
+            const gridY = Math.floor(index / columns) * 280; // 调整为5:7比例的高度
 
             this.updateItem(item.id, {
                 x: gridX,
                 y: gridY,
-                width: 100 / columns,
-                height: 300,
+                width: 200, // 固定宽度200px，保持5:7比例
+                height: 280, // 对应高度280px (200 * 1.4 = 280，接近5:7比例)
                 row: Math.floor(index / columns),
                 col: index % columns
             });
