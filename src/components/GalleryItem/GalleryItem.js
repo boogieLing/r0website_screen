@@ -30,6 +30,41 @@ const GalleryItem = observer(({
     // 优化：使用解构获取数据，避免重复访问
     const { id, x, y, width, height, originalImage } = item;
 
+    // 实时计算宽高比 - 最简形式：直接输出比值
+    const calculateAspectRatio = useCallback((w, h) => {
+        if (!w || !h || w === 0 || h === 0) return '1:1';
+
+        // 直接计算并返回最简分数
+        const width = Math.round(w);
+        const height = Math.round(h);
+
+        // 计算最大公约数
+        const gcd = (a, b) => {
+            return b === 0 ? a : gcd(b, a % b);
+        };
+
+        const divisor = gcd(width, height);
+        const ratioW = width / divisor;
+        const ratioH = height / divisor;
+
+        return `${ratioW}:${ratioH}`;
+    }, []);
+
+    // 实时计算当前比例
+    const realTimeRatio = calculateAspectRatio(width, height);
+
+    // 当尺寸变化时的动画效果
+    useEffect(() => {
+        // 可以在这里添加动画逻辑，比如短暂高亮指示器
+        const indicator = itemRef.current?.querySelector(`.${styles.editIndicator}`);
+        if (indicator) {
+            indicator.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                if (indicator) indicator.style.transform = 'scale(1)';
+            }, 150);
+        }
+    }, [width, height, styles.editIndicator]);
+
     // 处理鼠标按下开始拖拽
     const handleMouseDown = useCallback((e) => {
         if (!editMode) return;
@@ -259,22 +294,38 @@ const GalleryItem = observer(({
                 {/* 编辑模式下的控制点 */}
                 {editMode && (
                     <>
-                        {/* 比例控制按钮组 */}
+                        {/* 比例控制按钮组 - 使用div替代button */}
                         <div className={styles.ratioControls}>
-                            <button
+                            <div
                                 className={styles.ratioButton}
                                 onClick={toggleRatioMenu}
                                 title="选择比例"
+                                role="button"
+                                tabIndex={0}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        toggleRatioMenu();
+                                    }
+                                }}
                             >
                                 {currentRatio}
-                            </button>
-                            <button
+                            </div>
+                            <div
                                 className={styles.flipButton}
                                 onClick={handleFlipRatio}
                                 title="调转长宽"
+                                role="button"
+                                tabIndex={0}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        handleFlipRatio();
+                                    }
+                                }}
                             >
                                 ↻
-                            </button>
+                            </div>
                         </div>
 
                         {/* 比例选择菜单 */}
@@ -294,11 +345,6 @@ const GalleryItem = observer(({
                             </div>
                         )}
 
-                        {/* 拖拽手柄 */}
-                        <div className={styles.dragHandle} title="拖拽移动">
-                            <div className={styles.dragIcon} />
-                        </div>
-
                         {/* 调整大小手柄 */}
                         <div
                             className={styles.resizeHandle}
@@ -308,9 +354,11 @@ const GalleryItem = observer(({
                             <div className={styles.resizeIcon} />
                         </div>
 
-                        {/* 编辑状态指示器 */}
+                        {/* 编辑状态指示器 - 显示有价值的信息 */}
                         <div className={styles.editIndicator}>
-                            <span className={styles.editText}>EDIT</span>
+                            <span className={styles.editText}>
+                                {Math.round(width)}×{Math.round(height)} | {realTimeRatio}
+                            </span>
                         </div>
                     </>
                 )}
