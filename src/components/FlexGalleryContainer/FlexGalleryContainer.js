@@ -35,34 +35,36 @@ const FlexGalleryContainer = observer(({
         return 3; // 初始默认值
     });
 
-    // 计算最佳列数 - 基于容器宽度的保守计算，严格1-5列
+    // 计算最佳列数 - 基于容器宽度的精确计算，严格1-5列
     const calculateOptimalColumns = useCallback(() => {
         if (columns !== 'auto') {
             // 确保手动指定的列数也在1-5范围内
             return Math.max(1, Math.min(5, columns));
         }
 
-        // 基于容器宽度的保守计算，考虑间距和padding
+        // 基于容器宽度的精确计算，考虑实际item尺寸需求
         const containerWidth = containerRef.current?.offsetWidth || window.innerWidth;
         const containerPadding = 32; // 16px padding on each side
         const availableWidth = containerWidth - containerPadding;
 
-        // 保守的断点计算 - 确保不会超过5列
-        // 基于百分比宽度的最小需求：5列=20%, 4列=25%, 3列=33.33%, 2列=50%, 1列=100%
-        // 每个item需要的最小宽度（包含间距）
-        const minItemWidth = availableWidth / 5 + gap; // 5列时每个item的平均宽度需求
+        // 定义标准item尺寸（基于常见图片比例和可读性）
+        const minItemSizes = {
+            1: 300, // 1列时最小300px宽度
+            2: 220, // 2列时最小220px宽度
+            3: 180, // 3列时最小180px宽度
+            4: 150, // 4列时最小150px宽度
+            5: 120  // 5列时最小120px宽度
+        };
 
-        if (availableWidth >= minItemWidth * 5) {
-            return 5; // 足够保守地容纳5列
-        } else if (availableWidth >= minItemWidth * 4) {
-            return 4; // 足够容纳4列
-        } else if (availableWidth >= minItemWidth * 3) {
-            return 3; // 足够容纳3列
-        } else if (availableWidth >= minItemWidth * 2) {
-            return 2; // 足够容纳2列
-        } else {
-            return 1; // 默认1列
+        // 从最多列数开始测试，找到最适合的列数
+        for (let cols = 5; cols >= 1; cols--) {
+            const requiredWidth = minItemSizes[cols] * cols + gap * (cols - 1);
+            if (availableWidth >= requiredWidth) {
+                return cols;
+            }
         }
+
+        return 1; // 默认1列
     }, [columns, gap]);
 
     // 监听窗口大小变化，动态调整列数
@@ -70,6 +72,7 @@ const FlexGalleryContainer = observer(({
         if (columns === 'auto') {
             const handleResize = () => {
                 const newColumns = calculateOptimalColumns();
+                console.log(`窗口大小变化: ${containerRef.current?.offsetWidth || window.innerWidth}px -> ${newColumns}列`);
                 setCurrentColumns(newColumns);
             };
 
@@ -101,38 +104,13 @@ const FlexGalleryContainer = observer(({
         }
     }, [currentColumns]);
 
-    // 智能列数限制 - 基于实际容器宽度的动态计算
-    const getSafeColumns = useCallback(() => {
-        let result = Math.max(1, Math.min(5, currentColumns));
+    // 简化列数获取 - 直接信任calculateOptimalColumns的结果
+    const safeColumns = Math.max(1, Math.min(5, currentColumns));
 
-        // 如果有容器引用，进行额外的安全检查
-        if (containerRef.current) {
-            const containerWidth = containerRef.current.offsetWidth;
-            const containerPadding = 32;
-            const availableWidth = containerWidth - containerPadding;
-
-            // 计算每列所需的最小宽度（基于百分比和间距）
-            const requiredWidths = {
-                1: availableWidth, // 100%
-                2: availableWidth / 2 + gap, // 50% + gap
-                3: availableWidth / 3 + gap, // 33.33% + gap
-                4: availableWidth / 4 + gap, // 25% + gap
-                5: availableWidth / 5 + gap  // 20% + gap
-            };
-
-            // 从期望的列数开始，逐步减少直到找到合适的列数
-            for (let cols = result; cols >= 1; cols--) {
-                if (availableWidth >= requiredWidths[cols]) {
-                    result = cols;
-                    break;
-                }
-            }
-        }
-
-        return Math.max(1, Math.min(5, result));
-    }, [currentColumns, gap]);
-
-    const safeColumns = getSafeColumns();
+    // 调试信息
+    useEffect(() => {
+        console.log(`当前列数设置: ${safeColumns}, data-columns: ${columns}, currentColumns: ${currentColumns}`);
+    }, [safeColumns, columns, currentColumns]);
 
     // 初始化flex布局数据 - 传入当前列数
     useEffect(() => {
@@ -165,6 +143,7 @@ const FlexGalleryContainer = observer(({
                 className={styles.flexContainer}
                 style={{ gap: `${gap}px` }}
                 data-columns={safeColumns}
+                title={`当前列数: ${safeColumns}`}
             >
                 {items.map((item) => (
                     <GalleryItem
