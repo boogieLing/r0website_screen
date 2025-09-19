@@ -65,7 +65,7 @@ const GalleryFlex = observer(({
     const updateItem = useCallback((itemId, updates) => {
         galleryStore.updateItem(itemId, updates);
 
-        // 强制重新计算容器高度，确保实时同步
+        // 强制重新计算容器高度，确保实时同步，使用更小的缓冲区
         // 使用setTimeout确保DOM更新完成后再计算
         setTimeout(() => {
             const items = galleryStore.getItemsByCategory(categoryId);
@@ -80,7 +80,7 @@ const GalleryFlex = observer(({
             });
 
             const contentHeight = maxY - minY;
-            const bufferHeight = 200;
+            const bufferHeight = 50; // 减少缓冲区到50px
             const requiredHeight = contentHeight + bufferHeight;
             const minHeight = window.innerHeight;
             const newHeight = Math.max(requiredHeight, minHeight);
@@ -110,9 +110,9 @@ const GalleryFlex = observer(({
         // 计算内容总高度，包括负坐标区域
         const contentHeight = maxY - minY;
 
-        // 添加智能缓冲区：根据内容大小动态调整
-        const baseBuffer = 200; // 基础缓冲区
-        const dynamicBuffer = Math.max(0, (maxY - 1000) * 0.1); // 超过1000px后增加10%缓冲
+        // 添加最小缓冲区：保持紧凑间距
+        const baseBuffer = 50; // 基础缓冲区减少到50px
+        const dynamicBuffer = Math.max(0, (maxY - 800) * 0.05); // 超过800px后增加5%缓冲，更保守
         const totalBuffer = baseBuffer + dynamicBuffer;
 
         // 确保容器高度能容纳所有内容，包括负坐标区域
