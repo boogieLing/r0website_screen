@@ -3,7 +3,7 @@ import {observer} from "mobx-react-lite";
 import {useParams} from "react-router-dom";
 import globalStore from "@/stores/globalStore";
 import somniumNexusStore from "@/stores/somniumNexusStore";
-import InfiniteGallery from "@/components/InfiniteGallery/InfiniteGallery";
+import GalleryFlex from "@/components/GalleryFlex/GalleryFlex";
 import GracefulImage from "@/components/SkeletonImage/GracefulImage";
 import SimpleWelcomeModule from "./SimpleWelcomeModule";
 import CollapsedSidebar from "./CollapsedSidebar";
@@ -363,7 +363,7 @@ const SomniumNexus = observer(() => {
                     <SimpleWelcomeModule onGetStarted={handleGetStarted} />
                 ) : (
                     <div className={styles.galleryWrapper}>
-                        <InfiniteGallery
+                        <GalleryFlex
                             images={currentImages}
                             onImageClick={handleImageClick}
                             columns={3}
