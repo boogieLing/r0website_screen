@@ -103,6 +103,32 @@
     }
 }
 
+// 基于列数的宽度控制类 - 通过props传入GalleryItem
+.galleryItem-1col {
+    width: calc(100% - 8px) !important; // 单列：100%宽度减去间距
+}
+
+.galleryItem-2col {
+    width: calc(50% - 6px) !important; // 两列：50%宽度减去间距
+}
+
+.galleryItem-3col {
+    width: calc(33.333% - 5.333px) !important; // 三列：33.333%宽度减去间距
+}
+
+.galleryItem-4col {
+    width: calc(25% - 6px) !important; // 四列：25%宽度减去间距
+}
+
+.galleryItem-5col {
+    width: calc(20% - 6.4px) !important; // 五列：20%宽度减去间距
+}
+
+// 强制隐藏第6列及以后的元素 - 防止任何可能的6列情况
+.flexContainer .galleryItem:nth-child(n+6) {
+    display: none !important;
+}
+
 // 额外的安全规则 - 确保flex布局正常工作
 .flexContainer {
     .galleryItem {
@@ -116,11 +142,6 @@
         border: 1px solid rgba(255, 0, 0, 0.2) !important;
         background-color: rgba(255, 0, 0, 0.05) !important;
     }
-}
-
-// 强制隐藏第6列及以后的元素 - 防止任何可能的6列情况
-.flexContainer .galleryItem:nth-child(n+6) {
-    display: none !important;
 }
 
 // 编辑模式切换按钮 - 简约风格，与GalleryFlex统一

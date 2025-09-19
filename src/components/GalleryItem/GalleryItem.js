@@ -16,7 +16,8 @@ const GalleryItem = observer(({
     onClick,
     galleryRef,
     allItems, // 添加所有items的prop用于磁吸计算
-    flexMode = false // 新增：flex模式，使用相对定位而非绝对定位
+    flexMode = false, // 新增：flex模式，使用相对定位而非绝对定位
+    className = '' // 新增：允许外部传入额外的CSS类名
 }) => {
     const itemRef = useRef(null);
     const galleryRect = useRef(null); // 缓存gallery的边界信息
@@ -281,7 +282,7 @@ const GalleryItem = observer(({
                 isDragging ? styles.dragging : ''
             } ${isResizing ? styles.resizing : ''} ${isMagnetic ? styles.magneticActive : ''} ${
                 flexMode ? styles.flexMode : ''
-            }`}
+            } ${className}`}
             style={{
                 position: flexMode ? 'relative' : 'absolute',
                 left: flexMode ? 'auto' : `${x}px`,

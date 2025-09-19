@@ -176,6 +176,7 @@ const FlexGalleryContainer = observer(({
                         galleryRef={containerRef}
                         allItems={items} // 提供所有items给GalleryItem
                         flexMode={true} // 启用flex模式，使用相对定位
+                        className={styles[`galleryItem-${safeColumns}col`]} // 传入列数相关的CSS类名
                     />
                 ))}
             </div>
