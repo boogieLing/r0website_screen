@@ -22,49 +22,44 @@
     max-width: 1400px; // 最大宽度限制，可根据需要调整
 }
 
-// 固定宽度配置 - 适应不同高度照片
+// 百分比宽度配置 - 严格限制1-5列
 .flexContainer[data-columns="1"] {
     .galleryItem {
-        width: 320px; // 单列固定宽度
-        max-width: calc(100% - 8px);
+        width: calc(100% - 8px); // 单列：100%宽度减去间距
     }
 }
 
 .flexContainer[data-columns="2"] {
     .galleryItem {
-        width: 240px; // 两列固定宽度
-        max-width: calc(50% - 6px);
+        width: calc(50% - 6px); // 两列：50%宽度减去间距
     }
 }
 
 .flexContainer[data-columns="3"] {
     .galleryItem {
-        width: 200px; // 三列固定宽度
-        max-width: calc(33.333% - 5.333px);
+        width: calc(33.333% - 5.333px); // 三列：33.333%宽度减去间距
     }
 }
 
 .flexContainer[data-columns="4"] {
     .galleryItem {
-        width: 180px; // 四列固定宽度
-        max-width: calc(25% - 6px);
+        width: calc(25% - 6px); // 四列：25%宽度减去间距
     }
 }
 
 .flexContainer[data-columns="5"] {
     .galleryItem {
-        width: 160px; // 五列固定宽度
-        max-width: calc(20% - 6.4px);
+        width: calc(20% - 6.4px); // 五列：20%宽度减去间距
     }
 }
 
-// 媒体查询 - 严格限制1-5列，使用固定宽度
+// 媒体查询 - 基于容器宽度的列数限制，严格1-5列
 @media (max-width: 480px) {
     .flexContainer {
         justify-content: center; // 小屏居中
+        // 强制1列布局，覆盖data-columns设置
         .galleryItem {
-            width: 280px !important; // 手机：固定宽度，相当于1列
-            max-width: calc(100% - 8px) !important;
+            width: calc(100% - 8px) !important; // 手机：强制1列
         }
     }
 }
@@ -72,46 +67,45 @@
 @media (min-width: 481px) and (max-width: 768px) {
     .flexContainer {
         justify-content: center; // 中小屏居中
+        // 强制最多2列，防止在小屏幕上显示过多列
         .galleryItem {
-            width: 200px !important; // 平板小屏：固定宽度，相当于2-3列
-            max-width: calc(50% - 6px) !important;
+            max-width: calc(50% - 6px) !important; // 限制最大2列宽度
         }
     }
 }
 
 @media (min-width: 769px) and (max-width: 1024px) {
     .flexContainer {
+        // 平板中屏：最多3列
         .galleryItem {
-            width: 180px !important; // 平板中屏：固定宽度，相当于3-4列
-            max-width: calc(33.333% - 5.333px) !important;
+            max-width: calc(33.333% - 5.333px) !important; // 限制最大3列宽度
         }
     }
 }
 
 @media (min-width: 1025px) and (max-width: 1280px) {
     .flexContainer {
+        // 桌面小屏：最多4列
         .galleryItem {
-            width: 170px !important; // 桌面小屏：固定宽度，相当于4-5列
-            max-width: calc(25% - 6px) !important;
+            max-width: calc(25% - 6px) !important; // 限制最大4列宽度
         }
     }
 }
 
-@media (min-width: 1281px) and (max-width: 1600px) {
+@media (min-width: 1281px) {
     .flexContainer {
+        // 桌面大屏：最多5列，严格限制
         .galleryItem {
-            width: 160px !important; // 桌面大屏：固定宽度，5列
-            max-width: calc(20% - 6.4px) !important;
+            max-width: calc(20% - 6.4px) !important; // 限制最大5列宽度
         }
     }
 }
 
-@media (min-width: 1601px) {
-    .flexContainer {
-        .galleryItem {
-            width: 160px !important; // 超大屏：仍然保持5列固定宽度
-            max-width: calc(20% - 6.4px) !important;
-        }
+// 额外的安全规则 - 强制限制最大宽度为5列
+.flexContainer {
+    .galleryItem {
+        min-width: 0 !important; // 防止内容撑开
+        max-width: calc(20% - 6.4px) !important; // 强制最大为5列宽度
     }
 }
 

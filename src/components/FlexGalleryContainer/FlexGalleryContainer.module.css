@@ -13,50 +13,72 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
-  align-items: center;
+  align-items: flex-start;
   width: 100%;
   min-height: 100%;
   margin: 0 auto;
   max-width: 1400px;
 }
 .flexContainer[data-columns="1"] .galleryItem {
-  width: calc(100% - 8px);
+  width: 320px;
+  max-width: calc(100% - 8px);
 }
 .flexContainer[data-columns="2"] .galleryItem {
-  width: calc(50% - 6px);
+  width: 240px;
+  max-width: calc(50% - 6px);
 }
 .flexContainer[data-columns="3"] .galleryItem {
-  width: calc(33.333% - 5.333px);
+  width: 200px;
+  max-width: calc(33.333% - 5.333px);
 }
 .flexContainer[data-columns="4"] .galleryItem {
-  width: calc(25% - 6px);
+  width: 180px;
+  max-width: calc(25% - 6px);
 }
 .flexContainer[data-columns="5"] .galleryItem {
-  width: calc(20% - 6.4px);
+  width: 160px;
+  max-width: calc(20% - 6.4px);
 }
 @media (max-width: 480px) {
+  .flexContainer {
+    justify-content: center;
+  }
   .flexContainer .galleryItem {
-    width: calc(100% - 8px) !important;
+    width: 280px !important;
+    max-width: calc(100% - 8px) !important;
   }
 }
 @media (min-width: 481px) and (max-width: 768px) {
+  .flexContainer {
+    justify-content: center;
+  }
   .flexContainer .galleryItem {
-    width: calc(50% - 6px) !important;
+    width: 200px !important;
+    max-width: calc(50% - 6px) !important;
   }
 }
 @media (min-width: 769px) and (max-width: 1024px) {
   .flexContainer .galleryItem {
-    width: calc(33.333% - 5.333px) !important;
+    width: 180px !important;
+    max-width: calc(33.333% - 5.333px) !important;
   }
 }
 @media (min-width: 1025px) and (max-width: 1280px) {
   .flexContainer .galleryItem {
-    width: calc(25% - 6px) !important;
+    width: 170px !important;
+    max-width: calc(25% - 6px) !important;
   }
 }
-@media (min-width: 1281px) {
+@media (min-width: 1281px) and (max-width: 1600px) {
   .flexContainer .galleryItem {
-    width: calc(20% - 6.4px) !important;
+    width: 160px !important;
+    max-width: calc(20% - 6.4px) !important;
+  }
+}
+@media (min-width: 1601px) {
+  .flexContainer .galleryItem {
+    width: 160px !important;
+    max-width: calc(20% - 6.4px) !important;
   }
 }
 .editToggle {

@@ -35,31 +35,35 @@ const FlexGalleryContainer = observer(({
         return 3; // 初始默认值
     });
 
-    // 计算最佳列数 - 严格限制在1-5列，使用固定宽度逻辑
+    // 计算最佳列数 - 基于容器宽度的保守计算，严格1-5列
     const calculateOptimalColumns = useCallback(() => {
         if (columns !== 'auto') {
             // 确保手动指定的列数也在1-5范围内
             return Math.max(1, Math.min(5, columns));
         }
 
-        // 基于固定宽度的响应式计算
+        // 基于容器宽度的保守计算，考虑间距和padding
         const containerWidth = containerRef.current?.offsetWidth || window.innerWidth;
         const containerPadding = 32; // 16px padding on each side
         const availableWidth = containerWidth - containerPadding;
 
-        // 定义固定宽度断点 - 严格限制1-5列
-        if (availableWidth >= 160 * 5 + gap * 4) {
-            return 5; // 足够容纳5列固定宽度
-        } else if (availableWidth >= 170 * 4 + gap * 3) {
-            return 4; // 足够容纳4列固定宽度
-        } else if (availableWidth >= 180 * 3 + gap * 2) {
-            return 3; // 足够容纳3列固定宽度
-        } else if (availableWidth >= 200 * 2 + gap) {
-            return 2; // 足够容纳2列固定宽度
+        // 保守的断点计算 - 确保不会超过5列
+        // 基于百分比宽度的最小需求：5列=20%, 4列=25%, 3列=33.33%, 2列=50%, 1列=100%
+        // 每个item需要的最小宽度（包含间距）
+        const minItemWidth = availableWidth / 5 + gap; // 5列时每个item的平均宽度需求
+
+        if (availableWidth >= minItemWidth * 5) {
+            return 5; // 足够保守地容纳5列
+        } else if (availableWidth >= minItemWidth * 4) {
+            return 4; // 足够容纳4列
+        } else if (availableWidth >= minItemWidth * 3) {
+            return 3; // 足够容纳3列
+        } else if (availableWidth >= minItemWidth * 2) {
+            return 2; // 足够容纳2列
         } else {
             return 1; // 默认1列
         }
-    }, [columns, standardSize.width, gap]);
+    }, [columns, gap, standardSize]); // 保留standardSize依赖，但不再使用其width值
 
     // 监听窗口大小变化，动态调整列数
     useEffect(() => {
@@ -97,8 +101,38 @@ const FlexGalleryContainer = observer(({
         }
     }, [currentColumns]);
 
-    // 强制限制渲染时的列数，防止任何可能的6列情况
-    const safeColumns = Math.max(1, Math.min(5, currentColumns));
+    // 智能列数限制 - 基于实际容器宽度的动态计算
+    const getSafeColumns = useCallback(() => {
+        let result = Math.max(1, Math.min(5, currentColumns));
+
+        // 如果有容器引用，进行额外的安全检查
+        if (containerRef.current) {
+            const containerWidth = containerRef.current.offsetWidth;
+            const containerPadding = 32;
+            const availableWidth = containerWidth - containerPadding;
+
+            // 计算每列所需的最小宽度（基于百分比和间距）
+            const requiredWidths = {
+                1: availableWidth, // 100%
+                2: availableWidth / 2 + gap, // 50% + gap
+                3: availableWidth / 3 + gap, // 33.33% + gap
+                4: availableWidth / 4 + gap, // 25% + gap
+                5: availableWidth / 5 + gap  // 20% + gap
+            };
+
+            // 从期望的列数开始，逐步减少直到找到合适的列数
+            for (let cols = result; cols >= 1; cols--) {
+                if (availableWidth >= requiredWidths[cols]) {
+                    result = cols;
+                    break;
+                }
+            }
+        }
+
+        return Math.max(1, Math.min(5, result));
+    }, [currentColumns, gap]);
+
+    const safeColumns = getSafeColumns();
 
     // 初始化flex布局数据 - 传入当前列数
     useEffect(() => {
