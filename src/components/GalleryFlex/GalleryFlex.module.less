@@ -2,8 +2,8 @@
 .galleryFlex {
     position: relative;
     width: 100%;
-    height: 100%;
-    overflow: hidden;
+    min-height: 100vh; // 最小高度100vh，内容可以超出
+    overflow: visible; // 允许内容超出，实现无限滚动
     background: #f5f3f0; // 日系温暖背景色
 }
 
@@ -12,6 +12,8 @@
     width: 100%;
     background: #f5f3f0;
     transition: height 0.3s ease;
+    min-height: 100vh; // 确保容器至少100vh
+    overflow: visible; // 允许子元素超出
 }
 
 // 编辑模式切换按钮 - 右下角三角
@@ -64,5 +66,7 @@
     .galleryContainer {
         border: 2px dashed rgba(0, 0, 0, 0.1);
         background: rgba(248, 246, 243, 0.8);
+        min-height: 100vh; // 编辑模式下也保持最小高度
+        overflow: visible; // 确保编辑模式下也能无限滚动
     }
 }

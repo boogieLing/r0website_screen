@@ -4,6 +4,8 @@
     transition: all 0.3s ease;
     cursor: pointer;
     user-select: none;
+    // 确保即使在负坐标下也能显示
+    will-change: transform;
 
     &.exhibitMode {
         &:hover {

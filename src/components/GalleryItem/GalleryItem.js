@@ -55,20 +55,20 @@ const GalleryItem = observer(({
         });
     }, [editMode, width, height]);
 
-    // 处理鼠标移动
+    // 处理鼠标移动 - 修复边界消失bug
     const handleMouseMove = useCallback((e) => {
         if (!galleryRef.current) return;
 
         const galleryRect = galleryRef.current.getBoundingClientRect();
 
         if (isDragging) {
-            // 计算新位置
+            // 计算新位置 - 允许负坐标，实现无限滚动效果
             let newX = e.clientX - galleryRect.left - dragStart.x;
             let newY = e.clientY - galleryRect.top - dragStart.y;
 
-            // 边界约束
-            newX = Math.max(0, Math.min(newX, galleryRect.width - width));
-            newY = Math.max(0, newY);
+            // 移除严格的边界约束，允许拖出容器但保持最小边界
+            newX = Math.max(-width + 50, newX); // 允许拖出左侧，但保持部分可见
+            newY = Math.max(-height + 50, newY); // 允许拖出顶部，但保持部分可见
 
             // 水平对齐（网格对齐）
             const gridSize = 10;

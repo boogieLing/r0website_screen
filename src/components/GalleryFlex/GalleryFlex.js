@@ -34,12 +34,32 @@ const GalleryFlex = observer(({
         galleryStore.updateItem(itemId, updates);
     }, []);
 
-    // 计算容器高度 - 使用GalleryStore数据
+    // 计算容器高度 - 支持无限滚动
     const getContainerHeight = useCallback(() => {
         const items = galleryStore.getItemsByCategory(categoryId);
-        if (items.length === 0) return 'auto';
-        const maxY = Math.max(...items.map(item => item.y + item.height));
-        return `${maxY + 50}px`;
+        if (items.length === 0) return '100vh';
+
+        // 计算所有项目的边界
+        let minY = Infinity;
+        let maxY = -Infinity;
+        let minX = Infinity;
+        let maxX = -Infinity;
+
+        items.forEach(item => {
+            minY = Math.min(minY, item.y);
+            maxY = Math.max(maxY, item.y + item.height);
+            minX = Math.min(minX, item.x);
+            maxX = Math.max(maxX, item.x + item.width);
+        });
+
+        // 考虑负坐标的情况，计算总高度
+        const totalHeight = maxY - Math.min(0, minY) + 100; // 添加额外空间
+        const totalWidth = maxX - Math.min(0, minX) + 100; // 添加额外空间
+
+        // 返回足够大的尺寸以容纳所有内容，包括拖出边界的项目
+        // 基础高度100vh，加上超出部分，确保无限滚动
+        const baseHeight = 100 * 16; // 100vh转换为像素（假设1vh=16px）
+        return `${Math.max(totalHeight, baseHeight)}px`;
     }, [categoryId]);
 
     return (
