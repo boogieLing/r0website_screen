@@ -1,0 +1,100 @@
+.loginIcon {
+  position: relative;
+  width: 12px;
+  height: 12px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  opacity: 0.4;
+  margin-top: 8px;
+}
+.loginIcon::before,
+.loginIcon::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  transition: all 0.4s ease;
+}
+.loginIcon::before {
+  width: 100%;
+  height: 100%;
+  border: 1px solid #a0aec0;
+  top: 0;
+  left: 0;
+}
+.loginIcon::after {
+  width: 4px;
+  height: 4px;
+  background-color: transparent;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.loginIcon:hover {
+  opacity: 0.6;
+  transform: scale(1.1);
+}
+.loggedIn {
+  opacity: 0.7;
+}
+.loggedIn::before {
+  border-color: #033aa1;
+  background-color: #033aa1;
+}
+.loggedIn::after {
+  opacity: 0;
+}
+.loggedIn:hover {
+  opacity: 0.9;
+}
+.loggedIn:hover::before {
+  background-color: #2a5587;
+  border-color: #2a5587;
+}
+.loading {
+  opacity: 0.5;
+}
+.loading::before {
+  animation: pulse 2s ease-in-out infinite;
+  border-color: #cbd5e0;
+}
+.loginIcon:focus {
+  outline: none;
+  opacity: 0.8;
+}
+.loginIcon:focus::before {
+  box-shadow: 0 0 0 1px rgba(3, 58, 161, 0.3);
+}
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+@media (max-width: 768px) {
+  .loginIcon {
+    width: 10px;
+    height: 10px;
+    margin-top: 3px;
+  }
+  .loginIcon::after {
+    width: 3px;
+    height: 3px;
+  }
+}
+@media (max-width: 480px) {
+  .loginIcon {
+    width: 8px;
+    height: 8px;
+    margin-top: 2px;
+  }
+  .loginIcon::after {
+    width: 2px;
+    height: 2px;
+  }
+}
+/*# sourceMappingURL=LoginIcon.module.css.map */

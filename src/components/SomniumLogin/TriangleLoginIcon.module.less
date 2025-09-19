@@ -1,0 +1,113 @@
+// TriangleLoginIcon 三角形登录图标样式
+// 日系极简：侧栏左下角的直角三角形，紧贴角落
+
+.triangleContainer {
+    position: absolute;
+    bottom: 0; // 紧贴底部
+    left: 0;   // 紧贴左侧
+    z-index: 10;
+    pointer-events: auto;
+    width: 20px; // 固定容器大小
+    height: 20px;
+
+    // 确保在sidebarFooter中正确对齐 - 紧贴左下角
+    .sidebarFooter & {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        margin: 0; // 移除间距
+    }
+}
+
+.triangleIcon {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 20px; // 填满容器
+    height: 20px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    opacity: 0.15; // 更低的透明度，更低调
+
+    // 使用clip-path创建直角三角形，紧贴左下角
+    background: #d1d5db; // 更淡的灰色，降低视觉重量
+    clip-path: polygon(0 100%, 100% 100%, 0 0);
+
+    // 悬停时轻微变亮和放大
+    &:hover {
+        opacity: 0.8;
+        transform: scale(1.1);
+        background: linear-gradient(135deg, #a0aec0 0%, #cbd5e0 100%);
+    }
+}
+
+// 移除三角形形状层，直接使用clip-path
+
+// 悬停效果 - 保持直角三角形但增加亮度
+.triangleIcon:hover {
+    opacity: 0.4; // 更微妙的悬停效果
+    transform: scale(1.05); // 更小的放大效果
+    background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%); // 更柔和的悬停效果
+}
+
+// 已登录状态 - 微妙的蓝色
+.loggedIn {
+    opacity: 0; // 降低透明度
+    background: #c1d6d3; // 更柔和的蓝色（靛蓝色系）
+
+    &:hover {
+        opacity: 0.6; // 更微妙的悬停透明度
+        background: linear-gradient(135deg, #a5fccb 0%, #81dcf8 100%); // 更柔和的蓝色渐变
+    }
+}
+
+// 加载状态 - 极简脉冲
+.loading {
+    opacity: 0.25; // 更低的加载状态透明度
+    animation: gentlePulse 2s ease-in-out infinite;
+}
+
+// 展开状态 - 保持直角三角形但稍大
+.expanded {
+    transform: scale(1.1); // 更小的放大效果
+    opacity: 0.3; // 稍微增加透明度
+}
+
+// 悬停光晕效果
+.hoverGlow {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: radial-gradient(circle, rgba(209, 213, 219, 0.15) 0%, transparent 60%);
+    border-radius: 50%;
+    opacity: 0;
+    animation: glowAppear 0.3s ease forwards;
+}
+
+// 温和的脉冲动画
+@keyframes gentlePulse {
+    0%, 100% {
+        opacity: 0.3;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+}
+
+// 光晕出现动画
+@keyframes glowAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+// 移除响应式调整，保持固定大小和位置

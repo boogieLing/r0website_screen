@@ -1,0 +1,126 @@
+// LoginIcon 极简装饰性登录图标样式
+// 日系美学：克制、极简、融入环境，几乎不可见的存在
+
+.loginIcon {
+    position: relative;
+    width: 12px;
+    height: 12px;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    opacity: 0.4; // 极低的初始可见度
+    margin-top: 8px; // 微调位置
+
+    // 使用伪元素创建极简形状
+    &::before,
+    &::after {
+        content: '';
+        position: absolute;
+        border-radius: 50%;
+        transition: all 0.4s ease;
+    }
+
+    &::before {
+        width: 100%;
+        height: 100%;
+        border: 1px solid #a0aec0;
+        top: 0;
+        left: 0;
+    }
+
+    &::after {
+        width: 4px;
+        height: 4px;
+        background-color: transparent;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+}
+
+// 悬停效果 - 极轻微的变化
+.loginIcon:hover {
+    opacity: 0.6;
+    transform: scale(1.1);
+}
+
+// 已登录状态 - 极简实心点
+.loggedIn {
+    opacity: 0.7;
+
+    &::before {
+        border-color: #033aa1;
+        background-color: #033aa1;
+    }
+
+    &::after {
+        opacity: 0;
+    }
+
+    &:hover {
+        opacity: 0.9;
+
+        &::before {
+            background-color: #2a5587;
+            border-color: #2a5587;
+        }
+    }
+}
+
+// 加载状态 - 极简旋转效果
+.loading {
+    opacity: 0.5;
+
+    &::before {
+        animation: pulse 2s ease-in-out infinite;
+        border-color: #cbd5e0;
+    }
+}
+
+// 聚焦状态 - 为键盘导航提供视觉反馈
+.loginIcon:focus {
+    outline: none;
+    opacity: 0.8;
+
+    &::before {
+        box-shadow: 0 0 0 1px rgba(3, 58, 161, 0.3);
+    }
+}
+
+// 脉冲动画 - 极简而克制
+@keyframes pulse {
+    0%, 100% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.05);
+    }
+}
+
+// 响应式调整 - 保持极简
+@media (max-width: 768px) {
+    .loginIcon {
+        width: 10px;
+        height: 10px;
+        margin-top: 3px;
+    }
+
+    .loginIcon::after {
+        width: 3px;
+        height: 3px;
+    }
+}
+
+@media (max-width: 480px) {
+    .loginIcon {
+        width: 8px;
+        height: 8px;
+        margin-top: 2px;
+    }
+
+    .loginIcon::after {
+        width: 2px;
+        height: 2px;
+    }
+}

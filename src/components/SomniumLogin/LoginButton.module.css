@@ -1,0 +1,75 @@
+.loginButton {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  font-family: 'Helvetica Neue', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+  text-align: left;
+  width: 100%;
+  position: relative;
+}
+.loginButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.buttonText {
+  font-size: 0.8rem;
+  font-weight: 350;
+  color: #4a5568;
+  letter-spacing: 0.02em;
+  transition: all 0.3s ease;
+  position: relative;
+  display: block;
+  padding: 4px 20px;
+  line-height: 1.4;
+}
+.userInfo {
+  font-size: 0.7rem;
+  font-weight: 300;
+  color: #718096;
+  opacity: 0.8;
+  margin-top: 2px;
+  display: block;
+  padding-left: 20px;
+}
+.loginButton:hover:not(:disabled) .buttonText {
+  color: #033aa1;
+  opacity: 1;
+}
+.loginButton:active .buttonText,
+.loginButton:focus .buttonText {
+  color: #b83e09;
+  font-weight: 500;
+}
+.sidebarButton .buttonText {
+  padding: 4px 0;
+  padding-left: 20px;
+}
+.sidebarButton .userInfo {
+  padding-left: 20px;
+}
+@media (max-width: 768px) {
+  .buttonText {
+    font-size: 0.75rem;
+    padding: 4px 0;
+    padding-left: 24px;
+  }
+  .userInfo {
+    font-size: 0.65rem;
+    padding-left: 24px;
+  }
+}
+@media (max-width: 480px) {
+  .buttonText {
+    font-size: 0.7rem;
+    padding: 3px 0;
+    padding-left: 14px;
+  }
+  .userInfo {
+    font-size: 0.6rem;
+    padding-left: 14px;
+  }
+}
+/*# sourceMappingURL=LoginButton.module.css.map */

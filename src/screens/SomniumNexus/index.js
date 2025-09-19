@@ -3,6 +3,7 @@ import {observer} from "mobx-react-lite";
 import {useParams} from "react-router-dom";
 import globalStore from "@/stores/globalStore";
 import somniumNexusStore from "@/stores/somniumNexusStore";
+import userStore from "@/stores/userStore";
 import GalleryFlex from "@/components/GalleryFlex/GalleryFlex";
 import FlexGalleryContainer from "@/components/FlexGalleryContainer/FlexGalleryContainer";
 import galleryStore from "@/stores/galleryStore";
@@ -10,6 +11,9 @@ import flexGalleryStore from "@/stores/flexGalleryStore";
 import GracefulImage from "@/components/SkeletonImage/GracefulImage";
 import SimpleWelcomeModule from "./SimpleWelcomeModule";
 import CollapsedSidebar from "./CollapsedSidebar";
+import SomniumLogin from "@/components/SomniumLogin/SomniumLogin";
+import TriangleLoginIcon from "@/components/SomniumLogin/TriangleLoginIcon";
+import signLineImg from "@/static/pic/sign_line.png";
 import styles from "./index.module.less";
 import {environmentManager, LAYOUT_TYPES} from "@/utils/environment";
 
@@ -23,6 +27,7 @@ const SomniumNexus = observer(() => {
     const [hasSelected, setHasSelected] = useState(false); // 跟踪用户是否选择了项目
     const [hoveredCategory, setHoveredCategory] = useState(null); // 跟踪hover的类别
     const [currentLayout, setCurrentLayout] = useState(environmentManager.getCurrentLayoutType()); // 当前布局类型
+    const [showLoginModal, setShowLoginModal] = useState(false); // 登录模态框状态
 
     const categories = somniumNexusStore.categories;
     const currentImages = somniumNexusStore.currentCategoryImages;
@@ -263,8 +268,18 @@ const SomniumNexus = observer(() => {
             {/* 展开状态侧边栏 - 始终存在，通过 visible 类控制动画 */}
             <aside className={`${styles.expandedSidebar} ${sidebarExpanded ? styles.visible : styles.hiding}`}>
                 <div className={styles.sidebarHeader}>
-                    <h1 className={styles.mainTitle}>Somnium Nexus</h1>
-                    <p className={styles.subtitle}>图集项目 | Image Collection</p>
+                    <div className={styles.headerTopRow}>
+                        <h1 className={styles.mainTitle}>Somnium Nexus</h1>
+                    </div>
+                    <p className={styles.subtitle}>
+                        {userStore.isLoggedIn
+                            ? `${userStore.username || userStore.email}`
+                            : "图集项目 | Image Collection"
+                        }
+                    </p>
+                    <div className={styles.signatureOverlay}>
+                        <img src={signLineImg} alt="" className={styles.signatureImage} />
+                    </div>
                 </div>
 
                     <div className={styles.projectTabs}>
@@ -358,6 +373,7 @@ const SomniumNexus = observer(() => {
                             <button className={styles.langButton}>JP</button>
                         </div>
                         <p className={styles.copyright}>© 2025 Somnium Nexus</p>
+                        <TriangleLoginIcon onClick={() => setShowLoginModal(true)} />
                     </div>
                 </aside>
 
@@ -445,6 +461,12 @@ const SomniumNexus = observer(() => {
                     </div>
                 </div>
             )}
+
+            {/* 登录模态框 */}
+            <SomniumLogin
+                isOpen={showLoginModal}
+                onClose={() => setShowLoginModal(false)}
+            />
         </div>
     );
 });

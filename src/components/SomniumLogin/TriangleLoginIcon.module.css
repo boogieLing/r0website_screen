@@ -1,0 +1,86 @@
+.triangleContainer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  pointer-events: auto;
+  width: 20px;
+  height: 20px;
+}
+.sidebarFooter .triangleContainer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+}
+.triangleIcon {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  opacity: 0.15;
+  background: #d1d5db;
+  clip-path: polygon(0 100%, 100% 100%, 0 0);
+}
+.triangleIcon:hover {
+  opacity: 0.8;
+  transform: scale(1.1);
+  background: linear-gradient(135deg, #a0aec0 0%, #cbd5e0 100%);
+}
+.triangleIcon:hover {
+  opacity: 0.4;
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+}
+.loggedIn {
+  opacity: 0;
+  background: #c1d6d3;
+}
+.loggedIn:hover {
+  opacity: 0.6;
+  background: linear-gradient(135deg, #a5fccb 0%, #81dcf8 100%);
+}
+.loading {
+  opacity: 0.25;
+  animation: gentlePulse 2s ease-in-out infinite;
+}
+.expanded {
+  transform: scale(1.1);
+  opacity: 0.3;
+}
+.hoverGlow {
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: radial-gradient(circle, rgba(209, 213, 219, 0.15) 0%, transparent 60%);
+  border-radius: 50%;
+  opacity: 0;
+  animation: glowAppear 0.3s ease forwards;
+}
+@keyframes gentlePulse {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+}
+@keyframes glowAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+/*# sourceMappingURL=TriangleLoginIcon.module.css.map */
