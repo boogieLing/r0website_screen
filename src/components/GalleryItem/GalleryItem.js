@@ -271,7 +271,7 @@ const GalleryItem = observer(({
                 position: flexMode ? 'relative' : 'absolute',
                 left: flexMode ? 'auto' : `${x}px`,
                 top: flexMode ? 'auto' : `${y}px`,
-                width: `${width}px`,
+                width: flexMode && width === 'auto' ? 'auto' : `${width}px`, // flex模式且width为auto时，让CSS控制宽度
                 height: `${height}px`,
                 zIndex: isDragging || isResizing ? 1000 : id
             }}

@@ -7,12 +7,14 @@
     // 确保即使在负坐标下也能显示
     will-change: transform;
 
-    // Flex模式：使用相对定位
+    // Flex模式：使用相对定位，宽度由CSS控制
     &.flexMode {
         position: relative;
         top: auto !important;
         left: auto !important;
         transform: none !important;
+        width: auto !important; // 强制宽度由外部CSS控制
+        min-width: 0 !important; // 防止内容撑开
     }
 
     &.exhibitMode {

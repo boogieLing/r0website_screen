@@ -19,11 +19,11 @@ const FlexGalleryContainer = observer(({
 }) => {
     const containerRef = useRef(null);
 
-    // 标准尺寸定义
+    // 标准尺寸定义 - 仅用于高度，宽度由CSS flex布局控制
     const sizeMap = {
-        small: { width: 120, height: 160 },
-        medium: { width: 160, height: 200 },
-        large: { width: 200, height: 250 }
+        small: { width: 'auto', height: 160 },  // width: auto 让CSS控制宽度
+        medium: { width: 'auto', height: 200 },
+        large: { width: 'auto', height: 250 }
     };
 
     const standardSize = sizeMap[itemSize] || sizeMap.medium;
@@ -63,7 +63,7 @@ const FlexGalleryContainer = observer(({
         } else {
             return 1; // 默认1列
         }
-    }, [columns, gap, standardSize]); // 保留standardSize依赖，但不再使用其width值
+    }, [columns, gap]);
 
     // 监听窗口大小变化，动态调整列数
     useEffect(() => {
@@ -137,7 +137,7 @@ const FlexGalleryContainer = observer(({
     // 初始化flex布局数据 - 传入当前列数
     useEffect(() => {
         if (images.length > 0) {
-            flexGalleryStore.initializeItems(categoryId, images, standardSize, currentColumns);
+            flexGalleryStore.initializeItems(categoryId, images, { height: standardSize.height }, currentColumns);
         }
     }, [images.length, categoryId, currentColumns]); // 列数变化时重新初始化
 

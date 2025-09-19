@@ -20,14 +20,14 @@ class FlexGalleryStore {
         return this.categoryItems.get(categoryId) || [];
     }
 
-    // 初始化分类项目 - 支持响应式列数
+    // 初始化分类项目 - 支持响应式列数，宽度由CSS控制
     initializeItems(categoryId, images, standardSize, columns = 3) {
         const items = images.map((image, index) => ({
             id: image.id || `flex-${index}`,
             x: 0, // flex布局下位置自动计算
             y: 0, // flex布局下位置自动计算
-            width: standardSize.width,
-            height: standardSize.height,
+            width: 'auto', // 宽度由CSS flex布局控制，不设置固定值
+            height: standardSize.height, // 仅高度由sizeMap控制
             originalImage: image,
             categoryId: categoryId,
             columns: columns // 保存当前列数，用于响应式布局
