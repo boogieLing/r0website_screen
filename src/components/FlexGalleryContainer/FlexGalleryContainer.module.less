@@ -20,6 +20,7 @@
     min-height: 100%;
     margin: 0 auto; // 确保居中
     max-width: 1400px; // 最大宽度限制，可根据需要调整
+    box-sizing: border-box; // 确保padding包含在宽度计算中
 }
 
 // 百分比宽度配置 - 严格限制1-5列，完全由CSS控制
@@ -105,7 +106,15 @@
 // 额外的安全规则 - 确保flex布局正常工作
 .flexContainer {
     .galleryItem {
-        min-width: 0 !important; // 防止内容撑开，但不再限制max-width
+        min-width: 0 !important; // 防止内容撑开
+        box-sizing: border-box !important; // 确保padding和border包含在宽度计算中
+        flex-shrink: 0 !important; // 防止flex项目收缩
+        flex-grow: 0 !important; // 防止flex项目增长
+        flex-basis: auto !important; // 让基础尺寸由width属性控制
+
+        // 调试样式 - 临时添加边框帮助可视化
+        border: 1px solid rgba(255, 0, 0, 0.2) !important;
+        background-color: rgba(255, 0, 0, 0.05) !important;
     }
 }
 

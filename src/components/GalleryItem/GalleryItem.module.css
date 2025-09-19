@@ -10,6 +10,7 @@
   top: auto !important;
   left: auto !important;
   transform: none !important;
+  min-width: 0 !important;
 }
 .galleryItem.exhibitMode:hover {
   transform: translateY(-2px);
