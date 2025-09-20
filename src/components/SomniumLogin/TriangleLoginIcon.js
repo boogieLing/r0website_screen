@@ -8,7 +8,20 @@ const TriangleLoginIcon = observer(({onClick}) => {
 
     const handleClick = () => {
         if (userStore.isLoading) return;
-        onClick();
+
+        if (userStore.isLoggedIn) {
+            // 如果已登录，执行注销
+            userStore.logout();
+        } else {
+            // 如果未登录，打开登录模态框
+            onClick();
+        }
+    };
+
+    const getTooltipText = () => {
+        if (userStore.isLoading) return "处理中...";
+        if (userStore.isLoggedIn) return `点击注销 (${userStore.userDisplayName})`;
+        return "点击登录";
     };
 
     return (
@@ -33,6 +46,11 @@ const TriangleLoginIcon = observer(({onClick}) => {
             >
                 {isHovered && !userStore.isLoading && (
                     <div className={styles.hoverGlow} />
+                )}
+                {isHovered && (
+                    <div className={styles.tooltip}>
+                        {getTooltipText()}
+                    </div>
                 )}
             </div>
         </div>

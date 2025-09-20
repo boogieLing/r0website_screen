@@ -1,0 +1,154 @@
+.actionTabWrapper {
+  display: block;
+  margin: 2px 0;
+  padding: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+.actionTab {
+  position: relative;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  border-radius: 6px;
+  margin: 1px 0;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid transparent;
+}
+.actionTab::before,
+.actionTab::after {
+  content: '';
+  position: absolute;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  opacity: 0;
+}
+.actionTab::before {
+  top: -1px;
+  left: -1px;
+  width: 8px;
+  height: 8px;
+  border-top: 2px solid transparent;
+  border-left: 2px solid transparent;
+  border-radius: 2px 0 0 0;
+}
+.actionTab::after {
+  bottom: -1px;
+  right: -1px;
+  width: 8px;
+  height: 8px;
+  border-bottom: 2px solid transparent;
+  border-right: 2px solid transparent;
+  border-radius: 0 0 2px 2px;
+}
+.tabText {
+  font-size: 13px;
+  color: #6b7280;
+  font-weight: 400;
+  transition: all 0.3s ease;
+  display: block;
+  line-height: 1.4;
+  letter-spacing: 0.2px;
+}
+.tabText[data-active='true'] {
+  color: #1f2937;
+  font-weight: 500;
+}
+.subMenuIndicator {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%) rotate(0deg);
+  font-size: 14px;
+  color: #9ca3af;
+  transition: all 0.3s ease;
+  opacity: 0.6;
+}
+.subMenuIndicator.active {
+  transform: translateY(-50%) rotate(90deg);
+  color: #4b5563;
+  opacity: 1;
+}
+.actionTab:hover {
+  background: rgba(147, 51, 234, 0.05);
+  transform: translateX(2px);
+}
+.actionTab:hover .tabText {
+  color: #7c3aed;
+  opacity: 1;
+}
+.actionTab:hover::before {
+  background: linear-gradient(33deg, #a855f7 0%, #c084fc 60%, transparent 100%);
+  width: 12px;
+  height: 12px;
+  opacity: 1;
+  border-top-color: #a855f7;
+  border-left-color: #a855f7;
+}
+.actionTab:hover::after {
+  background: linear-gradient(22deg, transparent 0%, #d8b4fe 40%, #e9d5ff 100%);
+  width: 12px;
+  height: 12px;
+  opacity: 1;
+  border-bottom-color: #c084fc;
+  border-right-color: #c084fc;
+}
+.actionTab:hover .subMenuIndicator {
+  color: #7c3aed;
+  opacity: 1;
+  transform: translateY(-50%) rotate(90deg);
+}
+.actionTab.active {
+  background: rgba(109, 40, 217, 0.1);
+  border-color: rgba(109, 40, 217, 0.2);
+}
+.actionTab.active .tabText {
+  color: #5b21b6;
+  font-weight: 500;
+}
+.actionTab.active::before {
+  background: linear-gradient(33deg, #7c3aed 0%, #a855f7 70%, transparent 100%);
+  width: 14px;
+  height: 14px;
+  opacity: 1;
+  border-top-color: #7c3aed;
+  border-left-color: #7c3aed;
+}
+.actionTab.active::after {
+  background: linear-gradient(22deg, transparent 0%, #9333ea 40%, #c084fc 100%);
+  width: 14px;
+  height: 14px;
+  opacity: 1;
+  border-bottom-color: #9333ea;
+  border-right-color: #9333ea;
+}
+.actionTab.active .subMenuIndicator {
+  color: #5b21b6;
+  opacity: 1;
+  transform: translateY(-50%) rotate(90deg);
+}
+.actionTab.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+.actionTab.loading .tabText {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@media (max-width: 768px) {
+  .actionTab {
+    padding: 12px 16px;
+    margin: 2px 0;
+  }
+  .tabText {
+    font-size: 14px;
+  }
+}
+/*# sourceMappingURL=ActionTab.module.css.map */

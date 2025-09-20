@@ -4,6 +4,7 @@ import {useParams} from "react-router-dom";
 import globalStore from "@/stores/globalStore";
 import somniumNexusStore from "@/stores/somniumNexusStore";
 import userStore from "@/stores/userStore";
+import actionStore from "@/stores/actionStore";
 import GalleryFlex from "@/components/GalleryFlex/GalleryFlex";
 import FlexGalleryContainer from "@/components/FlexGalleryContainer/FlexGalleryContainer";
 import galleryStore from "@/stores/galleryStore";
@@ -26,6 +27,7 @@ const SomniumNexus = observer(() => {
     const [isAnimating, setIsAnimating] = useState(false); // 动画状态
     const [hasSelected, setHasSelected] = useState(false); // 跟踪用户是否选择了项目
     const [hoveredCategory, setHoveredCategory] = useState(null); // 跟踪hover的类别
+    const [hoveredActionCategory, setHoveredActionCategory] = useState(null); // 跟踪hover的操作类别
     const [currentLayout, setCurrentLayout] = useState(environmentManager.getCurrentLayoutType()); // 当前布局类型
     const [showLoginModal, setShowLoginModal] = useState(false); // 登录模态框状态
 
@@ -132,6 +134,63 @@ const SomniumNexus = observer(() => {
         }
     }, [sidebarExpanded]);
 
+    // 项目分类hover处理 - 清除操作分类的选中态
+    const handleCategoryLeave = useCallback(() => {
+        // 只有在侧栏展开状态下才响应
+        if (!sidebarExpanded) return;
+
+        setHoveredCategory(null);
+        setHoveredActionCategory(null); // 同时清除操作分类的hover状态
+
+        // 当鼠标离开时，恢复到当前选中分类的子菜单（如果有选中分类的话）
+        const currentCategory = somniumNexusStore.selectedCategory;
+        const currentActionCategory = actionStore.selectedActionCategory;
+
+        if (currentCategory) {
+            const currentCategoryData = somniumNexusStore.galleryCategories[currentCategory];
+            if (currentCategoryData && currentCategoryData.hasSubMenu) {
+                somniumNexusStore.setSubCategoriesForHover(currentCategoryData.subCategories || []);
+                setShowSecondFlow(true); // 保持次级菜单显示
+                actionStore.setShowActionSecondFlow(false); // 隐藏操作次级菜单
+            } else {
+                somniumNexusStore.setSubCategoriesForHover([]);
+                setShowSecondFlow(false); // 隐藏次级菜单
+            }
+        } else if (currentActionCategory) {
+            const currentActionData = actionStore.getActionCategory(currentActionCategory);
+            if (currentActionData && currentActionData.hasSubMenu) {
+                actionStore.setActionSubCategoriesForHover(currentActionData.subCategories || []);
+                actionStore.setShowActionSecondFlow(true); // 显示操作次级菜单
+                setShowSecondFlow(false); // 隐藏项目次级菜单
+            } else {
+                actionStore.setActionSubCategoriesForHover([]);
+                actionStore.setShowActionSecondFlow(false); // 隐藏操作次级菜单
+            }
+        } else {
+            // 如果没有选中任何分类，清空子菜单并隐藏次级菜单容器
+            somniumNexusStore.setSubCategoriesForHover([]);
+            actionStore.setActionSubCategoriesForHover([]);
+            setShowSecondFlow(false); // 关键：隐藏次级菜单容器
+            actionStore.setShowActionSecondFlow(false); // 隐藏操作次级菜单
+        }
+    }, [sidebarExpanded]);
+
+    // 项目分类hover处理 - 清除操作分类的选中态
+    const handleCategoryHover = useCallback((categoryKey) => {
+        setHoveredCategory(categoryKey);
+        setHoveredActionCategory(null); // 清除操作分类的hover状态
+
+        // 清除操作分类的选中态，确保项目分类和操作分类互斥
+        actionStore.clearActionSelection();
+
+        const categoryData = somniumNexusStore.galleryCategories[categoryKey];
+        if (categoryData && categoryData.hasSubMenu) {
+            somniumNexusStore.setSubCategoriesForHover(categoryData.subCategories || []);
+        } else {
+            somniumNexusStore.setSubCategoriesForHover([]);
+        }
+    }, [categories]);
+
     const handleSubCategoryClick = useCallback((subCategoryKey) => {
         somniumNexusStore.setSelectedSubCategory(subCategoryKey);
 
@@ -211,56 +270,7 @@ const SomniumNexus = observer(() => {
         }, 400);
     }, [isAnimating, sidebarExpanded]);
 
-    // 处理鼠标悬停在一级菜单上 - 只在侧栏展开时生效，动画期间也响应hover
-    const handleCategoryHover = useCallback((categoryKey) => {
-        // 只有在侧栏展开时才响应hover（移除动画限制）
-        if (!sidebarExpanded) {
-            console.log('Hover ignored: sidebar not expanded');
-            return;
-        }
-
-        console.log('Hover triggered for category:', categoryKey);
-        setHoveredCategory(categoryKey);
-
-        // 无论当前是否选中了分类，hover时都显示对应分类的子菜单
-        // 这样可以实现hover一级菜单时更新次级侧栏的效果
-        const category = somniumNexusStore.galleryCategories[categoryKey];
-        if (category && category.hasSubMenu) {
-            console.log('Setting subcategories for hover:', category.subCategories);
-            somniumNexusStore.setSubCategoriesForHover(category.subCategories || []);
-            setShowSecondFlow(true); // 关键：显示次级菜单容器
-        } else {
-            console.log('Clearing subcategories for hover');
-            // 如果没有子菜单，清空子菜单显示并隐藏次级菜单容器
-            somniumNexusStore.setSubCategoriesForHover([]);
-            setShowSecondFlow(false); // 隐藏次级菜单容器
-        }
-    }, [sidebarExpanded]);
-
-    // 处理鼠标离开一级菜单
-    const handleCategoryLeave = useCallback(() => {
-        // 只有在侧栏展开状态下才响应
-        if (!sidebarExpanded) return;
-
-        setHoveredCategory(null);
-
-        // 当鼠标离开时，恢复到当前选中分类的子菜单（如果有选中分类的话）
-        const currentCategory = somniumNexusStore.selectedCategory;
-        if (currentCategory) {
-            const currentCategoryData = somniumNexusStore.galleryCategories[currentCategory];
-            if (currentCategoryData && currentCategoryData.hasSubMenu) {
-                somniumNexusStore.setSubCategoriesForHover(currentCategoryData.subCategories || []);
-                setShowSecondFlow(true); // 保持次级菜单显示
-            } else {
-                somniumNexusStore.setSubCategoriesForHover([]);
-                setShowSecondFlow(false); // 隐藏次级菜单
-            }
-        } else {
-            // 如果没有选中任何分类，清空子菜单并隐藏次级菜单容器
-            somniumNexusStore.setSubCategoriesForHover([]);
-            setShowSecondFlow(false); // 关键：隐藏次级菜单容器
-        }
-    }, [sidebarExpanded]);
+    // 项目分类hover处理 - 清除操作分类的选中态
 
     return (
         <div className={styles.somniumNexusContainer}>
@@ -284,8 +294,9 @@ const SomniumNexus = observer(() => {
 
                     <div className={styles.projectTabs}>
                         <div className={`${styles.tabsContainer} ${styles.expanded}`}>
-                            {/* 左侧主tabsFlow */}
+                            {/* 左侧主tabsFlow - 项目分类和操作分类 */}
                             <div className={styles.tabsFlowLeft}>
+                                {/* 项目分类 */}
                                 {categories.map((categoryKey, index) => {
                                     const hasSubMenu = somniumNexusStore.galleryCategories[categoryKey].hasSubMenu;
                                     return (
@@ -325,42 +336,151 @@ const SomniumNexus = observer(() => {
                                         </div>
                                     );
                                 })}
+
+                                {/* 操作分类分隔线 */}
+                                <div className={styles.actionTabsDivider}></div>
+
+                                {/* 操作分类 - 使用相同的tabWrapper结构，但独立的状态管理 */}
+                                {actionStore.actionCategoryKeys.map((actionKey) => {
+                                    const actionData = actionStore.actionCategories[actionKey];
+                                    const isActive = actionStore.selectedActionCategory === actionKey;
+                                    const isHovered = hoveredActionCategory === actionKey;
+
+                                    return (
+                                        <div key={`action-${actionKey}`} className={styles.tabWrapper}>
+                                            <div
+                                                className={`${styles.projectTab} ${
+                                                    isActive ? styles.active : ''
+                                                } ${
+                                                    isHovered ? styles.hovered : ''
+                                                }`}
+                                                onClick={() => {
+                                                    // 操作tab的点击逻辑
+                                                    if (actionData.hasSubMenu) {
+                                                        actionStore.setSelectedActionCategory(actionKey);
+                                                        actionStore.setActionSubCategoriesForHover(actionData.subCategories || []);
+                                                        actionStore.setShowActionSecondFlow(true);
+                                                    } else {
+                                                        // 没有子菜单的操作，执行后不保持选中态
+                                                        actionStore.executeAction(actionKey);
+                                                    }
+                                                }}
+                                                onMouseEnter={() => {
+                                                    setHoveredActionCategory(actionKey);
+                                                    if (actionData.hasSubMenu) {
+                                                        actionStore.setActionSubCategoriesForHover(actionData.subCategories || []);
+                                                    }
+                                                }}
+                                                onMouseLeave={handleCategoryLeave}
+                                                role="button"
+                                                tabIndex={0}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter' || e.key === ' ') {
+                                                        e.preventDefault();
+                                                        if (actionData.hasSubMenu) {
+                                                            actionStore.setSelectedActionCategory(actionKey);
+                                                            actionStore.setActionSubCategoriesForHover(actionData.subCategories || []);
+                                                            actionStore.setShowActionSecondFlow(true);
+                                                        } else {
+                                                            actionStore.executeAction(actionKey);
+                                                        }
+                                                    }
+                                                }}
+                                            >
+                                                <span className={styles.tabText}
+                                                    data-active={isActive}
+                                                >
+                                                    {actionData.title}
+                                                </span>
+                                                {actionData.hasSubMenu && (
+                                                    <div className={`${styles.subMenuIndicator} ${
+                                                        isActive ? styles.active : ''
+                                                    }`}
+                                                    >
+                                                        ›
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
                             </div>
 
-                            {/* 右侧子菜单tabsFlow */}
+                            {/* 右侧子菜单tabsFlow - 显示项目或操作的次级菜单 */}
                             <div className={styles.tabsFlowRight}>
-                                {showSecondFlow && (
-                                    somniumNexusStore.hoverSubCategories.length > 0 ? (
-                                        somniumNexusStore.hoverSubCategories.map((subCategory) => (
-                                            <div key={subCategory.key} className={styles.tabWrapper}>
-                                                <div
-                                                    className={`${styles.projectTab} ${
-                                                        somniumNexusStore.selectedSubCategory === subCategory.key ? styles.active : ''
-                                                    }`}
-                                                    onClick={() => handleSubCategoryClick(subCategory.key)}
-                                                    role="button"
-                                                    tabIndex={0}
-                                                    onKeyDown={(e) => {
-                                                        if (e.key === 'Enter' || e.key === ' ') {
-                                                            e.preventDefault();
-                                                            handleSubCategoryClick(subCategory.key);
-                                                        }
-                                                    }}
+                                {/* 项目次级菜单 */}
+                                {showSecondFlow && somniumNexusStore.hoverSubCategories.length > 0 && (
+                                    somniumNexusStore.hoverSubCategories.map((subCategory) => (
+                                        <div key={subCategory.key} className={styles.tabWrapper}>
+                                            <div
+                                                className={`${styles.projectTab} ${
+                                                    somniumNexusStore.selectedSubCategory === subCategory.key ? styles.active : ''
+                                                }`}
+                                                onClick={() => handleSubCategoryClick(subCategory.key)}
+                                                role="button"
+                                                tabIndex={0}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter' || e.key === ' ') {
+                                                        e.preventDefault();
+                                                        handleSubCategoryClick(subCategory.key);
+                                                    }
+                                                }}
+                                            >
+                                                <span className={styles.tabText}
+                                                    data-active={somniumNexusStore.selectedSubCategory === subCategory.key}
                                                 >
-                                                    <span className={styles.tabText}
-                                                        data-active={somniumNexusStore.selectedSubCategory === subCategory.key}
-                                                    >
-                                                        {subCategory.title}
-                                                    </span>
-                                                </div>
+                                                    {subCategory.title}
+                                                </span>
                                             </div>
-                                        ))
-                                    ) : (
-                                        // 空子菜单状态显示
-                                        <div className={styles.emptySubMenu}>
-                                            <span className={styles.emptyText}>-</span>
                                         </div>
-                                    )
+                                    ))
+                                )}
+
+                                {/* 操作次级菜单 */}
+                                {actionStore.showActionSecondFlow && actionStore.hoverActionSubCategories.length > 0 && (
+                                    actionStore.hoverActionSubCategories.map((subCategory) => (
+                                        <div key={`action-sub-${subCategory.key}`} className={styles.tabWrapper}>
+                                            <div
+                                                className={`${styles.projectTab} ${
+                                                    actionStore.selectedActionSubCategory === subCategory.key ? styles.active : ''
+                                                }`}
+                                                onClick={() => {
+                                                    actionStore.setSelectedActionSubCategory(subCategory.key);
+                                                    // 执行完子操作后，可以自动收起操作菜单
+                                                    setTimeout(() => {
+                                                        actionStore.setShowActionSecondFlow(false);
+                                                        actionStore.clearActionSelection();
+                                                    }, 200);
+                                                }}
+                                                role="button"
+                                                tabIndex={0}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter' || e.key === ' ') {
+                                                        e.preventDefault();
+                                                        actionStore.setSelectedActionSubCategory(subCategory.key);
+                                                        setTimeout(() => {
+                                                            actionStore.setShowActionSecondFlow(false);
+                                                            actionStore.clearActionSelection();
+                                                        }, 200);
+                                                    }
+                                                }}
+                                            >
+                                                <span className={styles.tabText}
+                                                    data-active={actionStore.selectedActionSubCategory === subCategory.key}
+                                                >
+                                                    {subCategory.title}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+
+                                {/* 空子菜单状态显示 */}
+                                {((showSecondFlow && somniumNexusStore.hoverSubCategories.length === 0) ||
+                                 (actionStore.showActionSecondFlow && actionStore.hoverActionSubCategories.length === 0)) && (
+                                    <div className={styles.emptySubMenu}>
+                                        <span className={styles.emptyText}>-</span>
+                                    </div>
                                 )}
                             </div>
                         </div>
