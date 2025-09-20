@@ -337,11 +337,13 @@ const SomniumNexus = observer(() => {
                                     );
                                 })}
 
-                                {/* 操作分类分隔线 */}
-                                <div className={styles.actionTabsDivider}></div>
+                                {/* 操作分类分隔线 - 仅对user_level为-1的登录用户显示 */}
+                                {userStore.canAccessActionTabs && (
+                                    <div className={styles.actionTabsDivider}></div>
+                                )}
 
-                                {/* 操作分类 - 使用相同的tabWrapper结构，但独立的状态管理 */}
-                                {actionStore.actionCategoryKeys.map((actionKey) => {
+                                {/* 操作分类 - 仅对user_level为-1的登录用户显示 */}
+                                {userStore.canAccessActionTabs && actionStore.actionCategoryKeys.map((actionKey) => {
                                     const actionData = actionStore.actionCategories[actionKey];
                                     const isActive = actionStore.selectedActionCategory === actionKey;
                                     const isHovered = hoveredActionCategory === actionKey;
@@ -436,8 +438,8 @@ const SomniumNexus = observer(() => {
                                     ))
                                 )}
 
-                                {/* 操作次级菜单 */}
-                                {actionStore.showActionSecondFlow && actionStore.hoverActionSubCategories.length > 0 && (
+                                {/* 操作次级菜单 - 仅对user_level为-1的登录用户显示 */}
+                                {userStore.canAccessActionTabs && actionStore.showActionSecondFlow && actionStore.hoverActionSubCategories.length > 0 && (
                                     actionStore.hoverActionSubCategories.map((subCategory) => (
                                         <div key={`action-sub-${subCategory.key}`} className={styles.tabWrapper}>
                                             <div
@@ -477,7 +479,7 @@ const SomniumNexus = observer(() => {
 
                                 {/* 空子菜单状态显示 */}
                                 {((showSecondFlow && somniumNexusStore.hoverSubCategories.length === 0) ||
-                                 (actionStore.showActionSecondFlow && actionStore.hoverActionSubCategories.length === 0)) && (
+                                 (userStore.canAccessActionTabs && actionStore.showActionSecondFlow && actionStore.hoverActionSubCategories.length === 0)) && (
                                     <div className={styles.emptySubMenu}>
                                         <span className={styles.emptyText}>-</span>
                                     </div>

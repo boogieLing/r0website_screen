@@ -122,6 +122,10 @@ class UserStore {
         return this.username || this.email || '用户';
     }
 
+    get canAccessActionTabs() {
+        return this.isLoggedIn && this.userLevel === -1;
+    }
+
     clearUserData() {
         this.setToken('');
         this.setUserInfo('', '', '', '', -1);
