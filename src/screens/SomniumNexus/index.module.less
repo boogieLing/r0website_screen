@@ -229,7 +229,7 @@
         padding-right: 32px; // 为分级指示器预留空间
     }
 
-    // 更细的纯伪元素L型边框 - 左上角使用clip-path
+    // 更细的纯伪元素L型边框 - 左上角使用clip-path (默认透明)
     &::before {
         content: '';
         position: absolute;
@@ -243,19 +243,9 @@
         z-index: 1;
     }
 
-    // 更细的纯伪元素L型边框 - 右下角使用clip-path
+    // 右下角边框已移除 - 符合日系极简美学
     &::after {
-        content: '';
-        position: absolute;
-        bottom: 6px;
-        right: 6px;
-        width: 40px;
-        height: 10px;
-        background: linear-gradient(22deg, transparent 0%, transparent 100%);
-        clip-path: polygon(90% 100%, 100% 100%, 100% 0, 90% 0, 90% 90%, 0 90%, 0 100%);
-        transition: all 0.3s ease;
-        z-index: 1;
-      opacity: 0; // TODO：暂时隐藏
+        content: none; // 完全禁用右下角边框
     }
 
     // Hover状态 - 纯边框focus动画（无背景色）
@@ -267,19 +257,14 @@
             opacity: 1;
         }
 
-        // 左上角L型边框动画 - 更细的渐变色
+        // 左上角L型边框动画 - 使用青竹色，增加辨识度
         &::before {
-            background: linear-gradient(33deg, #a0aec0 0%, #263040 60%, transparent 100%);
+            background: linear-gradient(33deg, #4a7c59 0%, #5a8c69 60%, transparent 100%);
             width: 14px;
             height: 14px;
         }
 
-        // 右下角L型边框动画 - 更细的渐变色
-        &::after {
-            background: linear-gradient(22deg, transparent 0%, #a0aec0 40%, #c9dbf3 100%);
-            width: 14px;
-            height: 14px;
-        }
+        // 右下角边框已移除 - 符合日系极简美学
     }
 
     // 选中状态 - 常亮边框与渐变效果
@@ -288,19 +273,16 @@
         background: none;
 
         .tabText {
-            color: #b83e09;
+            color: #033aa1;
             font-weight: 500;
         }
 
-        // 使用纯背景创建L型渐变边框 - 左上角
+        // 使用纯背景创建L型渐变边框 - 左上角 (仅保留左上角) - 与hover对齐颜色
         &::before {
-            background: linear-gradient(33deg, #f48585 0%, #f4896c 70%, transparent 100%);
+            background: linear-gradient(33deg, #4a7c59 0%, #5a8c69 70%, transparent 100%);
         }
 
-        // 使用纯背景创建L型渐变边框 - 右下角
-        &::after {
-            background: linear-gradient(22deg, transparent 0%, #00cec9 40%, #04ffcb 100%);
-        }
+        // 右下角边框已移除 - 符合日系极简美学
     }
 
     // 移除了hover背景色效果，仅保留边框动画
@@ -330,7 +312,7 @@
             }
 
             &::before {
-                background: linear-gradient(33deg, #cbd5e0 0%, #cbd5e0 60%, transparent 100%);
+                background: linear-gradient(33deg, #4a7b9d 0%, #5a8bad 60%, transparent 100%);
                 width: 14px;
                 height: 14px;
             }
@@ -347,10 +329,11 @@
 
             .tabText {
                 color: #4a5568;
+                font-weight: 500;
             }
 
             &::before {
-                background: linear-gradient(33deg, #fed7d7 0%, #fbb6b6 70%, transparent 100%);
+                background: linear-gradient(33deg, #4a7b9d 0%, #5a8bad 70%, transparent 100%);
             }
 
             &::after {
@@ -1627,6 +1610,241 @@
 
     .subMenuIndicator.active {
         font-size: 0.8rem;
+    }
+}
+
+// 操作Tab样式 - 日系简约风格，鉄紺色主题
+.actionTab {
+    // 操作Tab基础样式 - 鉄紺色系 (日式传统色彩)
+    color: #3a4a5c; // 鉄紺色 - 如铁器般冷静沉稳
+
+    .tabText {
+        color: #3a4a5c; // 鉄紺色文本
+        font-weight: 350; // 稍微加粗，体现功能性但不张扬
+    }
+
+    // 操作Tab特有的L型边框 - 默认透明，hover时显示
+    &::before {
+        background: linear-gradient(33deg, transparent 0%, transparent 100%);
+    }
+
+    &::after {
+        background: linear-gradient(22deg, transparent 0%, transparent 100%);
+    }
+
+    // Hover状态 - 日系简约强调，薄墨色
+    &:hover {
+        .tabText {
+            color: #2a3a4c; // 薄墨色 - 轻微加深
+            font-weight: 400;
+        }
+
+        // 左上角L型边框动画 - hover时使用青竹色，更有辨识度
+        &::before {
+            background: linear-gradient(33deg, #4a7c59 0%, #5a8c69 60%, transparent 100%);
+            width: 14px;
+            height: 14px;
+        }
+
+        // 右下角边框已移除 - 符合日系极简美学
+    }
+
+    // 选中状态 - 日系深邃，漆黒色
+    &.active {
+        .tabText {
+            color: #1a2a3c; // 漆黒色 - 深邃如漆
+            font-weight: 450; // 适度强调，不张扬
+        }
+
+        // 选中时显示边框 (仅左上角) - 与hover对齐颜色
+        &::before {
+            background: linear-gradient(33deg, #4a7c59 0%, #5a8c69 70%, transparent 100%);
+            width: 14px;
+            height: 14px;
+        }
+
+        // 右下角边框已移除 - 符合日系极简美学
+    }
+
+    // 右侧子菜单中的操作Tab
+    .tabsFlowRight & {
+        padding-left: 28px;
+
+        &::before {
+            left: 18px;
+        }
+
+        &.active {
+            .tabText {
+                color: #1a2a3c;
+            }
+
+            &::before {
+                background: linear-gradient(33deg, #4a7b9d 0%, #5a8bad 70%, transparent 100%);
+            }
+
+
+            // 右下角边框已移除 - 符合日系极简美学
+        }
+    }
+}
+
+// 项目分类Tab样式 - 日系简约风格，墨灰色主题
+.projectCategoryTab {
+    // 项目Tab基础样式 - 墨灰色系 (日式传统色彩)
+    color: #4a4a4a; // 墨灰色 - 如墨汁般沉稳内敛
+
+    .tabText {
+        color: #4a4a4a; // 墨灰色文本
+    }
+
+    // 子项目Tab特有的L型边框 - 默认透明，hover时显示
+    &::before {
+        background: linear-gradient(33deg, transparent 0%, transparent 100%);
+    }
+
+    &::after {
+        background: linear-gradient(22deg, transparent 0%, transparent 100%);
+    }
+
+    // Hover状态 - 日系简约强调，薄墨色
+    &:hover {
+        .tabText {
+            color: #3a3a3a; // 薄墨色 - 轻微加深
+        }
+
+        // 左上角L型边框动画 - hover时使用焦茶色，更有辨识度
+        &::before {
+            background: linear-gradient(33deg, #8b4513 0%, #a0522d 60%, transparent 100%);
+            width: 14px;
+            height: 14px;
+        }
+
+        // 右下角边框已移除 - 符合日系极简美学
+    }
+
+    // 选中状态 - 日系深邃，漆黒色
+    &.active {
+        .tabText {
+            color: #2a2a2a; // 漆黒色 - 深邃如漆
+            font-weight: 450; // 适度强调，不张扬
+        }
+
+        // 选中时显示边框 (仅左上角) - 与hover对齐颜色
+        &::before {
+            background: linear-gradient(33deg, #8b4513 0%, #a0522d 70%, transparent 100%);
+            width: 14px;
+            height: 14px;
+        }
+
+        // 右下角边框已移除 - 符合日系极简美学
+    }
+}
+
+// 项目子分类Tab样式 - 日系简约风格，鼠色主题
+.projectSubCategoryTab {
+    // 子项目Tab基础样式 - 鼠色系 (日式传统色彩)
+    color: #6a6a6a; // 鼠色 - 低调内敛，体现子层级
+
+    .tabText {
+        color: #6a6a6a; // 鼠色文本
+        font-size: 0.75rem; // 稍小字体，体现层级关系
+    }
+
+    // 子项目Tab特有的L型边框 - 默认透明，hover时显示
+    &::before {
+        background: linear-gradient(33deg, transparent 0%, transparent 100%);
+    }
+
+    &::after {
+        background: linear-gradient(22deg, transparent 0%, transparent 100%);
+    }
+
+    // Hover状态 - 日系简约强调，薄墨色
+    &:hover {
+        .tabText {
+            color: #5a5a5a; // 薄墨色 - 轻微加深
+        }
+
+        // 左上角L型边框动画 - hover时使用薄墨色，更有辨识度
+        &::before {
+            background: linear-gradient(33deg, #5a5a5a 0%, #6a6a6a 60%, transparent 100%);
+            width: 14px;
+            height: 14px;
+        }
+
+        // 右下角边框已移除 - 符合日系极简美学
+    }
+
+    // 选中状态 - 日系深邃，漆黒色
+    &.active {
+        .tabText {
+            color: #4a4a4a; // 漆黒色 - 深邃如漆
+            font-weight: 450; // 适度强调，不张扬
+        }
+
+        // 选中时显示边框 (仅左上角) - 与hover对齐颜色
+        &::before {
+            background: linear-gradient(33deg, #5a5a5a 0%, #6a6a6a 70%, transparent 100%);
+            width: 14px;
+            height: 14px;
+        }
+
+        // 右下角边框已移除 - 符合日系极简美学
+    }
+}
+
+// 操作子分类Tab样式 - 日系简约风格，消炭色主题
+.actionSubCategoryTab {
+    // 子操作Tab基础样式 - 消炭色系 (日式传统色彩)
+    color: #5a5a5a; // 消炭色 - 温润内敛，体现子层级
+
+    .tabText {
+        color: #5a5a5a; // 消炭色文本
+        font-size: 0.75rem; // 稍小字体，体现层级关系
+        font-weight: 350;
+    }
+
+    // 子操作Tab特有的L型边框 - 默认透明，hover时显示
+    &::before {
+        background: linear-gradient(33deg, transparent 0%, transparent 100%);
+    }
+
+    &::after {
+        background: linear-gradient(22deg, transparent 0%, transparent 100%);
+    }
+
+    // Hover状态 - 日系简约强调，薄墨色
+    &:hover {
+        .tabText {
+            color: #4a4a4a; // 薄墨色 - 轻微加深
+        }
+
+        // 左上角L型边框动画 - hover时使用浅葱色，更有辨识度
+        &::before {
+            background: linear-gradient(33deg, #4a7b9d 0%, #5a8bad 60%, transparent 100%);
+            width: 14px;
+            height: 14px;
+        }
+
+        // 右下角边框已移除 - 符合日系极简美学
+    }
+
+    // 选中状态 - 日系深邃，漆黒色
+    &.active {
+        .tabText {
+            color: #3a3a3a; // 漆黒色 - 深邃如漆
+            font-weight: 450; // 适度强调，不张扬
+        }
+
+        // 选中时显示边框 (仅左上角) - 与hover对齐颜色
+        &::before {
+            background: linear-gradient(33deg, #4a7b9d 0%, #5a8bad 70%, transparent 100%);
+            width: 14px;
+            height: 14px;
+        }
+
+        // 右下角边框已移除 - 符合日系极简美学
     }
 }
 

@@ -134,26 +134,10 @@
 .tabsFlow::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.15);
 }
-.actionTabsSection {
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
-}
 .actionTabsDivider {
   height: 1px;
   background: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.1) 50%, transparent 100%);
   margin: 0 20px 16px 20px;
-}
-.actionTabsContainer {
-  display: block;
-  width: 100%;
-  padding: 0 20px;
-}
-.actionTabsFlowRight {
-  display: block;
-  width: 100%;
-  margin-top: 8px;
-  padding: 0 20px;
 }
 .projectTab {
   background: none;
@@ -201,17 +185,7 @@
   z-index: 1;
 }
 .projectTab::after {
-  content: '';
-  position: absolute;
-  bottom: 6px;
-  right: 6px;
-  width: 40px;
-  height: 10px;
-  background: linear-gradient(22deg, transparent 0%, transparent 100%);
-  clip-path: polygon(90% 100%, 100% 100%, 100% 0, 90% 0, 90% 90%, 0 90%, 0 100%);
-  transition: all 0.3s ease;
-  z-index: 1;
-  opacity: 0;
+  content: none;
 }
 .projectTab:hover {
   background: none;
@@ -221,12 +195,7 @@
   opacity: 1;
 }
 .projectTab:hover::before {
-  background: linear-gradient(33deg, #a0aec0 0%, #263040 60%, transparent 100%);
-  width: 14px;
-  height: 14px;
-}
-.projectTab:hover::after {
-  background: linear-gradient(22deg, transparent 0%, #a0aec0 40%, #c9dbf3 100%);
+  background: linear-gradient(33deg, #4a7c59 0%, #5a8c69 60%, transparent 100%);
   width: 14px;
   height: 14px;
 }
@@ -234,14 +203,11 @@
   background: none;
 }
 .projectTab.active .tabText {
-  color: #b83e09;
+  color: #033aa1;
   font-weight: 500;
 }
 .projectTab.active::before {
-  background: linear-gradient(33deg, #f48585 0%, #f4896c 70%, transparent 100%);
-}
-.projectTab.active::after {
-  background: linear-gradient(22deg, transparent 0%, #00cec9 40%, #04ffcb 100%);
+  background: linear-gradient(33deg, #4a7c59 0%, #5a8c69 70%, transparent 100%);
 }
 .tabsFlowRight .projectTab {
   padding-left: 24px;
@@ -261,7 +227,7 @@
   color: #4a5568;
 }
 .tabsFlowRight .projectTab:hover::before {
-  background: linear-gradient(33deg, #cbd5e0 0%, #cbd5e0 60%, transparent 100%);
+  background: linear-gradient(33deg, #4a7b9d 0%, #5a8bad 60%, transparent 100%);
   width: 14px;
   height: 14px;
 }
@@ -275,9 +241,10 @@
 }
 .tabsFlowRight .projectTab.active .tabText {
   color: #4a5568;
+  font-weight: 500;
 }
 .tabsFlowRight .projectTab.active::before {
-  background: linear-gradient(33deg, #fed7d7 0%, #fbb6b6 70%, transparent 100%);
+  background: linear-gradient(33deg, #4a7b9d 0%, #5a8bad 70%, transparent 100%);
 }
 .tabsFlowRight .projectTab.active::after {
   background: linear-gradient(22deg, transparent 0%, #63b3ed 30%, #4299e1 100%);
@@ -1394,6 +1361,139 @@
   .subMenuIndicator.active {
     font-size: 0.8rem;
   }
+}
+.actionTab {
+  color: #3a4a5c;
+}
+.actionTab .tabText {
+  color: #3a4a5c;
+  font-weight: 350;
+}
+.actionTab::before {
+  background: linear-gradient(33deg, transparent 0%, transparent 100%);
+}
+.actionTab::after {
+  background: linear-gradient(22deg, transparent 0%, transparent 100%);
+}
+.actionTab:hover .tabText {
+  color: #2a3a4c;
+  font-weight: 400;
+}
+.actionTab:hover::before {
+  background: linear-gradient(33deg, #4a7c59 0%, #5a8c69 60%, transparent 100%);
+  width: 14px;
+  height: 14px;
+}
+.actionTab.active .tabText {
+  color: #1a2a3c;
+  font-weight: 450;
+}
+.actionTab.active::before {
+  background: linear-gradient(33deg, #c0c4c8 0%, #a0a4a8 70%, transparent 100%);
+  width: 14px;
+  height: 14px;
+}
+.tabsFlowRight .actionTab {
+  padding-left: 28px;
+}
+.tabsFlowRight .actionTab::before {
+  left: 18px;
+}
+.tabsFlowRight .actionTab.active .tabText {
+  color: #1a2a3c;
+}
+.tabsFlowRight .actionTab.active::before {
+  background: linear-gradient(33deg, #a8b4c0 0%, #8594a8 70%, transparent 100%);
+}
+.projectCategoryTab {
+  color: #4a4a4a;
+}
+.projectCategoryTab .tabText {
+  color: #4a4a4a;
+}
+.projectCategoryTab::before {
+  background: linear-gradient(33deg, transparent 0%, transparent 100%);
+}
+.projectCategoryTab::after {
+  background: linear-gradient(22deg, transparent 0%, transparent 100%);
+}
+.projectCategoryTab:hover .tabText {
+  color: #3a3a3a;
+}
+.projectCategoryTab:hover::before {
+  background: linear-gradient(33deg, #8b4513 0%, #a0522d 60%, transparent 100%);
+  width: 14px;
+  height: 14px;
+}
+.projectCategoryTab.active .tabText {
+  color: #2a2a2a;
+  font-weight: 450;
+}
+.projectCategoryTab.active::before {
+  background: linear-gradient(33deg, #c0c4c8 0%, #a0a4a8 70%, transparent 100%);
+  width: 14px;
+  height: 14px;
+}
+.projectSubCategoryTab {
+  color: #6a6a6a;
+}
+.projectSubCategoryTab .tabText {
+  color: #6a6a6a;
+  font-size: 0.75rem;
+}
+.projectSubCategoryTab::before {
+  background: linear-gradient(33deg, transparent 0%, transparent 100%);
+}
+.projectSubCategoryTab::after {
+  background: linear-gradient(22deg, transparent 0%, transparent 100%);
+}
+.projectSubCategoryTab:hover .tabText {
+  color: #5a5a5a;
+}
+.projectSubCategoryTab:hover::before {
+  background: linear-gradient(33deg, #5a5a5a 0%, #6a6a6a 60%, transparent 100%);
+  width: 14px;
+  height: 14px;
+}
+.projectSubCategoryTab.active .tabText {
+  color: #4a4a4a;
+  font-weight: 450;
+}
+.projectSubCategoryTab.active::before {
+  background: linear-gradient(33deg, #c0c4c8 0%, #a0a4a8 70%, transparent 100%);
+  width: 14px;
+  height: 14px;
+}
+.actionSubCategoryTab {
+  color: #5a5a5a;
+}
+.actionSubCategoryTab .tabText {
+  color: #5a5a5a;
+  font-size: 0.75rem;
+  font-weight: 350;
+}
+.actionSubCategoryTab::before {
+  background: linear-gradient(33deg, transparent 0%, transparent 100%);
+}
+.actionSubCategoryTab::after {
+  background: linear-gradient(22deg, transparent 0%, transparent 100%);
+}
+.actionSubCategoryTab:hover .tabText {
+  color: #4a4a4a;
+}
+.actionSubCategoryTab:hover::before {
+  background: linear-gradient(33deg, #4a7b9d 0%, #5a8bad 60%, transparent 100%);
+  width: 14px;
+  height: 14px;
+}
+.actionSubCategoryTab.active .tabText {
+  color: #3a3a3a;
+  font-weight: 450;
+}
+.actionSubCategoryTab.active::before {
+  background: linear-gradient(33deg, #c0c4c8 0%, #a0a4a8 70%, transparent 100%);
+  width: 14px;
+  height: 14px;
 }
 @media (max-width: 480px) {
   .subMenuIndicator {

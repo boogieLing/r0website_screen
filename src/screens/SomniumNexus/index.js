@@ -302,11 +302,13 @@ const SomniumNexus = observer(() => {
                                     return (
                                         <div key={categoryKey} className={styles.tabWrapper}>
                                             <div
-                                                className={`${styles.projectTab} ${
+                                                className={`${styles.projectTab} ${styles.projectCategoryTab} ${
                                                     somniumNexusStore.selectedCategory === categoryKey ? styles.active : ''
                                                 } ${
                                                     hoveredCategory === categoryKey ? styles.hovered : ''
                                                 }`}
+                                                data-tab-type="project"
+                                                data-project-key={categoryKey}
                                                 onClick={() => handleProjectClick(categoryKey)}
                                                 onMouseEnter={() => handleCategoryHover(categoryKey)}
                                                 onMouseLeave={handleCategoryLeave}
@@ -351,11 +353,13 @@ const SomniumNexus = observer(() => {
                                     return (
                                         <div key={`action-${actionKey}`} className={styles.tabWrapper}>
                                             <div
-                                                className={`${styles.projectTab} ${
+                                                className={`${styles.projectTab} ${styles.actionTab} ${
                                                     isActive ? styles.active : ''
                                                 } ${
                                                     isHovered ? styles.hovered : ''
                                                 }`}
+                                                data-tab-type="action"
+                                                data-action-key={actionKey}
                                                 onClick={() => {
                                                     // 操作tab的点击逻辑
                                                     if (actionData.hasSubMenu) {
@@ -415,9 +419,11 @@ const SomniumNexus = observer(() => {
                                     somniumNexusStore.hoverSubCategories.map((subCategory) => (
                                         <div key={subCategory.key} className={styles.tabWrapper}>
                                             <div
-                                                className={`${styles.projectTab} ${
+                                                className={`${styles.projectTab} ${styles.projectSubCategoryTab} ${
                                                     somniumNexusStore.selectedSubCategory === subCategory.key ? styles.active : ''
                                                 }`}
+                                                data-tab-type="project-sub"
+                                                data-sub-category-key={subCategory.key}
                                                 onClick={() => handleSubCategoryClick(subCategory.key)}
                                                 role="button"
                                                 tabIndex={0}
@@ -443,9 +449,11 @@ const SomniumNexus = observer(() => {
                                     actionStore.hoverActionSubCategories.map((subCategory) => (
                                         <div key={`action-sub-${subCategory.key}`} className={styles.tabWrapper}>
                                             <div
-                                                className={`${styles.projectTab} ${
+                                                className={`${styles.projectTab} ${styles.actionSubCategoryTab} ${
                                                     actionStore.selectedActionSubCategory === subCategory.key ? styles.active : ''
                                                 }`}
+                                                data-tab-type="action-sub"
+                                                data-action-sub-key={subCategory.key}
                                                 onClick={() => {
                                                     actionStore.setSelectedActionSubCategory(subCategory.key);
                                                     // 执行完子操作后，可以自动收起操作菜单
