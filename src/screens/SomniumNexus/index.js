@@ -436,6 +436,7 @@ const SomniumNexus = observer(() => {
                             {showActionTempSubMenu && actionStore.hoverActionSubCategories.length > 0 && (
                                 <div className={styles.actionTempSubMenu}>
                                     <div className={styles.actionTabsDivider}></div>
+                                    {/* 操作子分类列表 */}
                                     {actionStore.hoverActionSubCategories.map((subCategory) => (
                                         <div key={`action-sub-${subCategory.key}`} className={styles.tabWrapper}>
                                             <div
@@ -474,6 +475,31 @@ const SomniumNexus = observer(() => {
                                             </div>
                                         </div>
                                     ))}
+                                    {/* 退出选项 - 什么都不选 */}
+                                    <div className={styles.tabWrapper}>
+                                        <div
+                                            className={`${styles.projectTab} ${styles.actionExitTab}`}
+                                            data-tab-type="action-exit"
+                                            onClick={() => {
+                                                // 退出操作：清除选中状态并隐藏子菜单
+                                                actionStore.clearActionSelection();
+                                                setShowActionTempSubMenu(false);
+                                            }}
+                                            role="button"
+                                            tabIndex={0}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter' || e.key === ' ') {
+                                                    e.preventDefault();
+                                                    actionStore.clearActionSelection();
+                                                    setShowActionTempSubMenu(false);
+                                                }
+                                            }}
+                                        >
+                                            <span className={styles.tabText}>
+                                                退出
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
                             )}
 

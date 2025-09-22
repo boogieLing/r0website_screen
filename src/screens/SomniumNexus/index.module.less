@@ -1878,6 +1878,46 @@
     }
 }
 
+// 退出选项样式 - 特殊的视觉处理
+.actionExitTab {
+    // 基础样式继承自projectTab，这里添加特殊样式
+    color: #718096; // 中性灰色，表示非主要操作
+    font-style: italic; // 斜体，表示辅助性质
+    opacity: 0.8; // 轻微透明度，降低视觉重量
+
+    .tabText {
+        color: #718096;
+        font-style: italic;
+        opacity: 0.8;
+    }
+
+    // Hover效果 - 轻微高亮
+    &:hover {
+        opacity: 1;
+
+        .tabText {
+            color: #4a5568;
+            opacity: 1;
+        }
+
+        // 退出选项的L型边框 - 使用淡灰色
+        &::before {
+            background: linear-gradient(33deg, #cbd5e0 0%, #a0aec0 60%, transparent 100%);
+            width: 14px;
+            height: 14px;
+        }
+    }
+
+    // 响应式调整
+    @media (max-width: 768px) {
+        font-size: 0.7rem;
+    }
+
+    @media (max-width: 480px) {
+        font-size: 0.65rem;
+    }
+}
+
 @keyframes slideDown {
     from {
         opacity: 0;
