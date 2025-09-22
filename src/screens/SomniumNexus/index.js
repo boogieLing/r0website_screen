@@ -30,6 +30,7 @@ const SomniumNexus = observer(() => {
     const [hoveredActionCategory, setHoveredActionCategory] = useState(null); // 跟踪hover的操作类别
     const [currentLayout, setCurrentLayout] = useState(environmentManager.getCurrentLayoutType()); // 当前布局类型
     const [showLoginModal, setShowLoginModal] = useState(false); // 登录模态框状态
+    const [showActionTempSubMenu, setShowActionTempSubMenu] = useState(false); // 临时action子菜单显示状态
 
     const categories = somniumNexusStore.categories;
     const currentImages = somniumNexusStore.currentCategoryImages;
@@ -151,19 +152,23 @@ const SomniumNexus = observer(() => {
             if (currentCategoryData && currentCategoryData.hasSubMenu) {
                 somniumNexusStore.setSubCategoriesForHover(currentCategoryData.subCategories || []);
                 setShowSecondFlow(true); // 保持次级菜单显示
+                setShowActionTempSubMenu(false); // 隐藏临时action子菜单
                 actionStore.setShowActionSecondFlow(false); // 隐藏操作次级菜单
             } else {
                 somniumNexusStore.setSubCategoriesForHover([]);
                 setShowSecondFlow(false); // 隐藏次级菜单
+                setShowActionTempSubMenu(false); // 隐藏临时action子菜单
             }
         } else if (currentActionCategory) {
             const currentActionData = actionStore.getActionCategory(currentActionCategory);
             if (currentActionData && currentActionData.hasSubMenu) {
                 actionStore.setActionSubCategoriesForHover(currentActionData.subCategories || []);
-                actionStore.setShowActionSecondFlow(true); // 显示操作次级菜单
+                setShowActionTempSubMenu(true); // 显示临时action子菜单
                 setShowSecondFlow(false); // 隐藏项目次级菜单
+                actionStore.setShowActionSecondFlow(false); // 隐藏操作次级菜单
             } else {
                 actionStore.setActionSubCategoriesForHover([]);
+                setShowActionTempSubMenu(false); // 隐藏临时action子菜单
                 actionStore.setShowActionSecondFlow(false); // 隐藏操作次级菜单
             }
         } else {
@@ -171,6 +176,7 @@ const SomniumNexus = observer(() => {
             somniumNexusStore.setSubCategoriesForHover([]);
             actionStore.setActionSubCategoriesForHover([]);
             setShowSecondFlow(false); // 关键：隐藏次级菜单容器
+            setShowActionTempSubMenu(false); // 隐藏临时action子菜单
             actionStore.setShowActionSecondFlow(false); // 隐藏操作次级菜单
         }
     }, [sidebarExpanded]);
@@ -361,14 +367,21 @@ const SomniumNexus = observer(() => {
                                                 data-tab-type="action"
                                                 data-action-key={actionKey}
                                                 onClick={() => {
-                                                    // 操作tab的点击逻辑
+                                                    // 操作tab的点击逻辑 - 使用临时子菜单避免与project子菜单冲突
                                                     if (actionData.hasSubMenu) {
+                                                        // 清除项目的选中状态，确保操作tab优先
+                                                        somniumNexusStore.clearSelectedCategory();
+                                                        somniumNexusStore.setSubCategoriesForHover([]);
+                                                        setShowSecondFlow(false); // 隐藏项目子菜单
+
+                                                        // 设置操作tab状态并显示临时子菜单
                                                         actionStore.setSelectedActionCategory(actionKey);
                                                         actionStore.setActionSubCategoriesForHover(actionData.subCategories || []);
-                                                        actionStore.setShowActionSecondFlow(true);
+                                                        setShowActionTempSubMenu(true); // 显示临时action子菜单
                                                     } else {
                                                         // 没有子菜单的操作，执行后不保持选中态
                                                         actionStore.executeAction(actionKey);
+                                                        setShowActionTempSubMenu(false); // 隐藏临时子菜单
                                                     }
                                                 }}
                                                 onMouseEnter={() => {
@@ -384,11 +397,18 @@ const SomniumNexus = observer(() => {
                                                     if (e.key === 'Enter' || e.key === ' ') {
                                                         e.preventDefault();
                                                         if (actionData.hasSubMenu) {
+                                                            // 清除项目的选中状态，确保操作tab优先
+                                                            somniumNexusStore.clearSelectedCategory();
+                                                            somniumNexusStore.setSubCategoriesForHover([]);
+                                                            setShowSecondFlow(false); // 隐藏项目子菜单
+
+                                                            // 设置操作tab状态并显示临时子菜单
                                                             actionStore.setSelectedActionCategory(actionKey);
                                                             actionStore.setActionSubCategoriesForHover(actionData.subCategories || []);
-                                                            actionStore.setShowActionSecondFlow(true);
+                                                            setShowActionTempSubMenu(true); // 显示临时action子菜单
                                                         } else {
                                                             actionStore.executeAction(actionKey);
+                                                            setShowActionTempSubMenu(false); // 隐藏临时子菜单
                                                         }
                                                     }
                                                 }}
@@ -411,6 +431,51 @@ const SomniumNexus = observer(() => {
                                     );
                                 })}
                             </div>
+
+                            {/* 临时action子菜单 - 避免与项目子菜单冲突 */}
+                            {showActionTempSubMenu && actionStore.hoverActionSubCategories.length > 0 && (
+                                <div className={styles.actionTempSubMenu}>
+                                    <div className={styles.actionTabsDivider}></div>
+                                    {actionStore.hoverActionSubCategories.map((subCategory) => (
+                                        <div key={`action-sub-${subCategory.key}`} className={styles.tabWrapper}>
+                                            <div
+                                                className={`${styles.projectTab} ${styles.actionSubCategoryTab} ${
+                                                    actionStore.selectedActionSubCategory === subCategory.key ? styles.active : ''
+                                                }`}
+                                                data-tab-type="action-sub"
+                                                data-action-sub-key={subCategory.key}
+                                                onClick={() => {
+                                                    actionStore.setSelectedActionSubCategory(subCategory.key);
+                                                    // 执行完子操作后，隐藏临时action子菜单
+                                                    setTimeout(() => {
+                                                        setShowActionTempSubMenu(false);
+                                                        actionStore.clearActionSelection();
+                                                    }, 200);
+                                                }}
+                                                role="button"
+                                                tabIndex={0}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter' || e.key === ' ') {
+                                                        e.preventDefault();
+                                                        actionStore.setSelectedActionSubCategory(subCategory.key);
+                                                        // 执行完子操作后，隐藏临时action子菜单
+                                                        setTimeout(() => {
+                                                            setShowActionTempSubMenu(false);
+                                                            actionStore.clearActionSelection();
+                                                        }, 200);
+                                                    }
+                                                }}
+                                            >
+                                                <span className={styles.tabText}
+                                                    data-active={actionStore.selectedActionSubCategory === subCategory.key}
+                                                >
+                                                    {subCategory.title}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
 
                             {/* 右侧子菜单tabsFlow - 显示项目或操作的次级菜单 */}
                             <div className={styles.tabsFlowRight}>
@@ -456,9 +521,9 @@ const SomniumNexus = observer(() => {
                                                 data-action-sub-key={subCategory.key}
                                                 onClick={() => {
                                                     actionStore.setSelectedActionSubCategory(subCategory.key);
-                                                    // 执行完子操作后，可以自动收起操作菜单
+                                                    // 执行完子操作后，隐藏临时action子菜单
                                                     setTimeout(() => {
-                                                        actionStore.setShowActionSecondFlow(false);
+                                                        setShowActionTempSubMenu(false);
                                                         actionStore.clearActionSelection();
                                                     }, 200);
                                                 }}
@@ -468,8 +533,9 @@ const SomniumNexus = observer(() => {
                                                     if (e.key === 'Enter' || e.key === ' ') {
                                                         e.preventDefault();
                                                         actionStore.setSelectedActionSubCategory(subCategory.key);
+                                                        // 执行完子操作后，隐藏临时action子菜单
                                                         setTimeout(() => {
-                                                            actionStore.setShowActionSecondFlow(false);
+                                                            setShowActionTempSubMenu(false);
                                                             actionStore.clearActionSelection();
                                                         }, 200);
                                                     }

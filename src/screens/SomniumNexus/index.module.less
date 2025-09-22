@@ -1856,3 +1856,35 @@
         height: 12px;
     }
 }
+
+// 临时action子菜单样式 - 避免与项目子菜单冲突
+.actionTempSubMenu {
+    width: 100%;
+    background-color: rgba(254, 254, 254, 0.95); // 轻微透明背景
+    border-top: 1px solid rgba(0, 0, 0, 0.05); // 日系细线分隔
+    padding: 8px 10px; // 减少内边距，紧凑设计
+    margin-top: 4px; // 轻微间距
+
+    // 动画效果
+    animation: slideDown 0.3s ease-out;
+
+    // 响应式调整
+    @media (max-width: 768px) {
+        padding: 6px 8px;
+    }
+
+    @media (max-width: 480px) {
+        padding: 4px 6px;
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
