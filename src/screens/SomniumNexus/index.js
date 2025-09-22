@@ -370,7 +370,7 @@ const SomniumNexus = observer(() => {
                                                     // 操作tab的点击逻辑 - 使用临时子菜单避免与project子菜单冲突
                                                     if (actionData.hasSubMenu) {
                                                         // 清除项目的选中状态，确保操作tab优先
-                                                        somniumNexusStore.clearSelectedCategory();
+                                                        somniumNexusStore.setSelectedCategory(null);
                                                         somniumNexusStore.setSubCategoriesForHover([]);
                                                         setShowSecondFlow(false); // 隐藏项目子菜单
 
@@ -398,7 +398,7 @@ const SomniumNexus = observer(() => {
                                                         e.preventDefault();
                                                         if (actionData.hasSubMenu) {
                                                             // 清除项目的选中状态，确保操作tab优先
-                                                            somniumNexusStore.clearSelectedCategory();
+                                                            somniumNexusStore.setSelectedCategory(null);
                                                             somniumNexusStore.setSubCategoriesForHover([]);
                                                             setShowSecondFlow(false); // 隐藏项目子菜单
 

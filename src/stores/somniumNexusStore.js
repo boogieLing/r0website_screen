@@ -189,7 +189,14 @@ class SomniumNexusStore {
     // UI状态管理方法
     setSelectedCategory = (category) => {
         const data = this.galleryCategories;
-        if (data && data[category]) {
+        if (category === null || category === undefined) {
+            // 清除选中状态
+            this._selectedCategory = null;
+            this._selectedSubCategory = null;
+            this._hasSubMenu = false;
+            this._subCategories = [];
+            this._hoverSubCategories = [];
+        } else if (data && data[category]) {
             this._selectedCategory = category;
             this._selectedSubCategory = null;
 
