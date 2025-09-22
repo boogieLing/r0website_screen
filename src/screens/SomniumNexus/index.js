@@ -435,7 +435,6 @@ const SomniumNexus = observer(() => {
                             {/* 临时action子菜单 - 避免与项目子菜单冲突 */}
                             {showActionTempSubMenu && actionStore.hoverActionSubCategories.length > 0 && (
                                 <div className={styles.actionTempSubMenu}>
-                                    <div className={styles.actionTabsDivider}></div>
                                     {/* 操作子分类列表 */}
                                     {actionStore.hoverActionSubCategories.map((subCategory) => (
                                         <div key={`action-sub-${subCategory.key}`} className={styles.tabWrapper}>
