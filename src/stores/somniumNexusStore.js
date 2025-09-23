@@ -65,14 +65,38 @@ class SomniumNexusStore {
 
     get galleryCategories() {
         // 根据环境返回相应的数据
+        let baseData;
         if (this._useTestData && testDataStore.isTestEnvironment) {
-            return testDataStore.getTestGalleryData();
+            baseData = testDataStore.getTestGalleryData();
+        } else {
+            // 合并正式环境数据和用户创建的项目数据
+            baseData = {
+                ...this._productionGalleryData,
+                ...this._userProjects
+            };
         }
-        // 合并正式环境数据和用户创建的项目数据
-        return {
-            ...this._productionGalleryData,
-            ...this._userProjects
-        };
+
+        // 不再添加"全部"分类，只返回基础数据
+        return baseData;
+    }
+
+    // 辅助方法：从数据对象中提取所有图片
+    getAllImagesFromData(data) {
+        if (!data) return [];
+
+        const allImages = [];
+        Object.values(data).forEach(category => {
+            if (category.images && Array.isArray(category.images)) {
+                allImages.push(...category.images);
+            }
+        });
+
+        // 为全部分类的图片添加特殊标记
+        return allImages.map(image => ({
+            ...image,
+            fromAllCategory: true, // 标记图片来自"全部"分类
+            originalCategory: image.category // 保留原始分类信息
+        }));
     }
 
     get selectedSubCategory() {
@@ -93,7 +117,10 @@ class SomniumNexusStore {
 
     get categories() {
         const data = this.galleryCategories;
-        return data ? Object.keys(data) : [];
+        if (!data) return [];
+
+        // 直接返回所有分类键，不再特殊处理"all"分类
+        return Object.keys(data);
     }
 
     get currentCategory() {
@@ -104,6 +131,11 @@ class SomniumNexusStore {
     get currentCategoryImages() {
         const category = this.currentCategory;
         if (!category) return [];
+
+        // 如果是"全部"分类，直接返回其包含的所有图片
+        if (category.isAllCategory) {
+            return category.images || [];
+        }
 
         // 如果有子菜单且选择了子分类，只显示匹配的子分类图片
         if (this._selectedSubCategory && category.hasSubMenu) {

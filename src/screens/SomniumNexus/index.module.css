@@ -503,9 +503,17 @@
   padding: 30px 30px 0;
   margin-bottom: 0;
   flex-shrink: 0;
-  pointer-events: none;
   user-select: none;
   height: 15vh;
+  transition: all 0.3s ease;
+}
+.sidebarHeader:hover {
+  opacity: 0.8;
+  transform: scale(0.98);
+}
+.sidebarHeader:active {
+  opacity: 0.6;
+  transform: scale(0.95);
 }
 @media (max-width: 768px) {
   .sidebarHeader {
@@ -1389,7 +1397,7 @@
   font-weight: 450;
 }
 .actionTab.active::before {
-  background: linear-gradient(33deg, #c0c4c8 0%, #a0a4a8 70%, transparent 100%);
+  background: linear-gradient(33deg, #4a7c59 0%, #5a8c69 70%, transparent 100%);
   width: 14px;
   height: 14px;
 }
@@ -1403,7 +1411,7 @@
   color: #1a2a3c;
 }
 .tabsFlowRight .actionTab.active::before {
-  background: linear-gradient(33deg, #a8b4c0 0%, #8594a8 70%, transparent 100%);
+  background: linear-gradient(33deg, #4a7b9d 0%, #5a8bad 70%, transparent 100%);
 }
 .projectCategoryTab {
   color: #4a4a4a;
@@ -1430,7 +1438,7 @@
   font-weight: 450;
 }
 .projectCategoryTab.active::before {
-  background: linear-gradient(33deg, #c0c4c8 0%, #a0a4a8 70%, transparent 100%);
+  background: linear-gradient(33deg, #8b4513 0%, #a0522d 70%, transparent 100%);
   width: 14px;
   height: 14px;
 }
@@ -1460,7 +1468,7 @@
   font-weight: 450;
 }
 .projectSubCategoryTab.active::before {
-  background: linear-gradient(33deg, #c0c4c8 0%, #a0a4a8 70%, transparent 100%);
+  background: linear-gradient(33deg, #5a5a5a 0%, #6a6a6a 70%, transparent 100%);
   width: 14px;
   height: 14px;
 }
@@ -1491,7 +1499,7 @@
   font-weight: 450;
 }
 .actionSubCategoryTab.active::before {
-  background: linear-gradient(33deg, #c0c4c8 0%, #a0a4a8 70%, transparent 100%);
+  background: linear-gradient(33deg, #4a7b9d 0%, #5a8bad 70%, transparent 100%);
   width: 14px;
   height: 14px;
 }
@@ -1501,6 +1509,64 @@
     right: 6px;
     min-width: 12px;
     height: 12px;
+  }
+}
+.actionTempSubMenu {
+  width: 100%;
+  background-color: transparent;
+  padding: 4px 10px;
+  animation: slideDown 0.3s ease-out;
+}
+@media (max-width: 768px) {
+  .actionTempSubMenu {
+    padding: 2px 8px;
+  }
+}
+@media (max-width: 480px) {
+  .actionTempSubMenu {
+    padding: 1px 6px;
+  }
+}
+.actionExitTab {
+  color: #718096;
+  font-style: italic;
+  opacity: 0.8;
+}
+.actionExitTab .tabText {
+  color: #718096;
+  font-style: italic;
+  opacity: 0.8;
+}
+.actionExitTab:hover {
+  opacity: 1;
+}
+.actionExitTab:hover .tabText {
+  color: #4a5568;
+  opacity: 1;
+}
+.actionExitTab:hover::before {
+  background: linear-gradient(33deg, #cbd5e0 0%, #a0aec0 60%, transparent 100%);
+  width: 14px;
+  height: 14px;
+}
+@media (max-width: 768px) {
+  .actionExitTab {
+    font-size: 0.7rem;
+  }
+}
+@media (max-width: 480px) {
+  .actionExitTab {
+    font-size: 0.65rem;
+  }
+}
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 /*# sourceMappingURL=index.module.css.map */

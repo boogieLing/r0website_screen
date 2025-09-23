@@ -1,4 +1,10 @@
 import {makeAutoObservable, runInAction} from 'mobx';
+import flexGalleryStore from './flexGalleryStore';
+import galleryStore from './galleryStore';
+import {environmentManager, LAYOUT_TYPES} from '@/utils/environment';
+import somniumNexusStore from './somniumNexusStore';
+import testDataStore from './testDataStore';
+import {dataMigrationManager} from '@/utils/dataMigration';
 
 /**
  * 操作管理Store
@@ -17,6 +23,25 @@ class ActionStore {
                 { key: 'recent', title: '最近使用' }
             ]
         },
+        'layout': {
+            title: '布局',
+            key: 'layout',
+            hasSubMenu: true,
+            subCategories: [
+                { key: 'flex', title: 'Flex网格' },
+                { key: 'freeform', title: '自由布局' }
+            ]
+        },
+        'data': {
+            title: '数据',
+            key: 'data',
+            hasSubMenu: true,
+            subCategories: [
+                { key: 'test', title: '测试数据' },
+                { key: 'production', title: '正式数据' },
+                { key: 'migrate', title: '数据迁移' }
+            ]
+        },
         'settings': {
             title: '设置',
             key: 'settings',
@@ -24,7 +49,9 @@ class ActionStore {
             subCategories: [
                 { key: 'preferences', title: '偏好设置' },
                 { key: 'account', title: '账户设置' },
-                { key: 'appearance', title: '外观设置' }
+                { key: 'appearance', title: '外观设置' },
+                { key: 'edit-toggle', title: '编辑模式' },
+                { key: 'clear-storage', title: '清除存储' }
             ]
         },
         'tools': {
@@ -111,6 +138,19 @@ class ActionStore {
     }
 
     /**
+     * 重置所有操作状态（用于注销时）
+     */
+    resetAllActionStates() {
+        this.selectedActionCategory = null;
+        this.selectedActionSubCategory = null;
+        this.hoverActionSubCategories = [];
+        this.showActionSecondFlow = false;
+        this.isEditModeActive = false;
+        this.currentLayoutType = 'flex';
+        console.log('所有操作状态已重置');
+    }
+
+    /**
      * 清除操作子分类选中态
      */
     clearSelectedActionSubCategory() {
@@ -178,6 +218,33 @@ class ActionStore {
                         break;
                     case 'settings-account':
                         console.log('打开账户设置');
+                        break;
+                    case 'settings-appearance':
+                        console.log('打开外观设置');
+                        break;
+                    case 'settings-edit-toggle':
+                        console.log('切换编辑模式');
+                        this.toggleEditMode();
+                        break;
+                    case 'layout-flex':
+                        console.log('切换到Flex网格布局');
+                        this.switchToFlexLayout();
+                        break;
+                    case 'layout-freeform':
+                        console.log('切换到自由布局');
+                        this.switchToFreeformLayout();
+                        break;
+                    case 'data-test':
+                        console.log('切换到测试数据');
+                        this.switchToTestData();
+                        break;
+                    case 'data-production':
+                        console.log('切换到正式数据');
+                        this.switchToProductionData();
+                        break;
+                    case 'data-migrate':
+                        console.log('执行数据迁移');
+                        this.migrateData();
                         break;
                     case 'help-docs':
                         console.log('打开文档');
@@ -285,6 +352,109 @@ class ActionStore {
             });
             return false;
         }
+    }
+
+    /**
+     * 切换编辑模式
+     * 根据当前布局类型切换对应的编辑模式
+     */
+    toggleEditMode() {
+        const currentLayout = environmentManager.getCurrentLayoutType();
+
+        if (currentLayout === LAYOUT_TYPES.FLEX) {
+            // 切换Flex布局的编辑模式
+            flexGalleryStore.toggleEditMode();
+            const newMode = flexGalleryStore.editMode ? '编辑模式' : '展示模式';
+            console.log(`Flex布局已切换到${newMode}`);
+        } else {
+            // 切换Freeform布局的编辑模式
+            galleryStore.toggleEditMode();
+            const newMode = galleryStore.editMode ? '编辑模式' : '展示模式';
+            console.log(`Freeform布局已切换到${newMode}`);
+        }
+    }
+
+    /**
+     * 获取当前编辑模式状态
+     */
+    get isEditModeActive() {
+        const currentLayout = environmentManager.getCurrentLayoutType();
+
+        if (currentLayout === LAYOUT_TYPES.FLEX) {
+            return flexGalleryStore.editMode;
+        } else {
+            return galleryStore.editMode;
+        }
+    }
+
+    /**
+     * 切换到Flex布局
+     */
+    switchToFlexLayout() {
+        environmentManager.switchToFlexLayout();
+        console.log('已切换到Flex网格布局');
+    }
+
+    /**
+     * 切换到自由布局
+     */
+    switchToFreeformLayout() {
+        environmentManager.switchToFreeformLayout();
+        console.log('已切换到自由布局');
+    }
+
+    /**
+     * 获取当前布局类型
+     */
+    get currentLayoutType() {
+        return environmentManager.getCurrentLayoutType();
+    }
+
+    /**
+     * 切换到测试数据
+     */
+    switchToTestData() {
+        environmentManager.switchToTestEnvironment();
+        console.log('已切换到测试数据环境');
+    }
+
+    /**
+     * 切换到正式数据
+     */
+    switchToProductionData() {
+        environmentManager.switchToProductionEnvironment();
+        console.log('已切换到正式数据环境');
+    }
+
+    /**
+     * 执行数据迁移
+     */
+    async migrateData() {
+        try {
+            console.log('开始数据迁移...');
+            await dataMigrationManager.performFullMigration({
+                includeLayoutData: true,
+                backupTestData: true,
+                clearAfterMigration: false
+            });
+            console.log('数据迁移完成');
+        } catch (error) {
+            console.error('数据迁移失败:', error);
+        }
+    }
+
+    /**
+     * 获取当前环境类型
+     */
+    get currentEnvironmentType() {
+        return environmentManager.getCurrentEnvironment();
+    }
+
+    /**
+     * 检查是否使用测试数据
+     */
+    get isUsingTestData() {
+        return somniumNexusStore.useTestData;
     }
 }
 

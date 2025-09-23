@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import GalleryItem from '@/components/GalleryItem/GalleryItem';
 import flexGalleryStore from '@/stores/flexGalleryStore';
@@ -119,11 +119,6 @@ const FlexGalleryContainer = observer(({
         }
     }, [images.length, categoryId, currentColumns]); // 列数变化时重新初始化
 
-    // 切换编辑模式
-    const toggleEditMode = useCallback(() => {
-        flexGalleryStore.toggleEditMode();
-    }, []);
-
     // 更新项目（flex布局下只允许调整大小，简化逻辑）
     const updateItem = useCallback((itemId, updates) => {
         // flex布局下，只允许调整大小，位置由flex容器自动处理
@@ -158,15 +153,6 @@ const FlexGalleryContainer = observer(({
                         className={styles[`galleryItem-${safeColumns}col`]} // 传入列数相关的CSS类名
                     />
                 ))}
-            </div>
-
-            {/* 编辑模式切换按钮 - 右下角 */}
-            <div
-                className={styles.editToggle}
-                onClick={toggleEditMode}
-                title={flexGalleryStore.editMode ? '切换到展示模式' : '切换到编辑模式'}
-            >
-                <div className={`${styles.triangle} ${flexGalleryStore.editMode ? styles.active : ''}`} />
             </div>
         </div>
     );

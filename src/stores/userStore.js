@@ -1,5 +1,6 @@
 import {makeAutoObservable, runInAction} from 'mobx';
 import {login as loginApi} from '@/request/userApi';
+import actionStore from './actionStore';
 
 class UserStore {
     token = localStorage.getItem('token') || '';
@@ -93,6 +94,25 @@ class UserStore {
         this.setToken('');
         this.setUserInfo('', '');
         this.clearError();
+
+        // 清除Somnium Nexus相关的本地存储数据（这些是缓存的增量数据）
+        try {
+            // 清除用户项目数据
+            localStorage.removeItem('somnium_user_projects');
+
+            // 清除环境配置
+            localStorage.removeItem('somnium_environment_config');
+
+            // 清除测试数据备份
+            localStorage.removeItem('somnium_test_data_backup');
+
+            // 重置操作状态
+            actionStore.resetAllActionStates();
+
+            console.log('用户注销时清除了Somnium Nexus本地存储数据和操作状态');
+        } catch (error) {
+            console.error('清除Somnium Nexus本地存储数据失败:', error);
+        }
     }
 
     async validateCurrentUser() {

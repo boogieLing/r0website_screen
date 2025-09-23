@@ -70,6 +70,42 @@ const SomniumNexus = observer(() => {
         };
     }, []);
 
+    // 取消自动选择"全部"分类，让用户手动选择
+    useEffect(() => {
+        // 不再自动选择任何分类，让用户手动选择
+        // 这样可以避免强制用户从"全部"tab开始
+        console.log('项目分类已加载，等待用户手动选择');
+    }, [categories]); // 依赖categories，确保在数据加载完成后执行
+
+    // 点击sidebarHeader取消所有选择，回到初始状态
+    const handleSidebarHeaderClick = useCallback(() => {
+        console.log('点击sidebarHeader，清除所有选择状态');
+
+        // 清除项目相关状态
+        somniumNexusStore.setSelectedCategory(null);
+        somniumNexusStore.clearSelectedSubCategory();
+        somniumNexusStore.setSubCategoriesForHover([]);
+        somniumNexusStore.clearSelectedImage();
+
+        // 清除操作相关状态
+        actionStore.clearActionSelection();
+
+        // 清除UI状态
+        setShowSecondFlow(false);
+        setShowActionTempSubMenu(false);
+        setHoveredCategory(null);
+        setHoveredActionCategory(null);
+        setHasSelected(false);
+
+        // 收缩侧边栏
+        setSidebarExpanded(false);
+
+        console.log('已重置到初始状态');
+    }, []); // 无依赖，因为只操作当前状态
+
+    // 处理sidebarHeader悬停，显示提示
+    const [isHeaderHovered, setIsHeaderHovered] = useState(false);
+
     // 清理数据
     useEffect(() => {
         return () => {
@@ -207,6 +243,49 @@ const SomniumNexus = observer(() => {
         }, 200); // 稍微延迟，让用户看到选择反馈
     }, []);
 
+    const handleActionSubCategoryClick = useCallback((subCategoryKey) => {
+        // 处理清除存储的特殊逻辑
+        if (subCategoryKey === 'clear-storage') {
+            if (window.confirm('确定要清除所有本地存储数据吗？这将删除所有用户项目、环境配置等数据，此操作不可恢复。')) {
+                try {
+                    // 清除所有相关的本地存储数据
+                    localStorage.removeItem('somnium_user_projects');
+                    localStorage.removeItem('somnium_environment_config');
+                    localStorage.removeItem('somnium_test_data_backup');
+
+                    // 清除用户登录信息
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('username');
+                    localStorage.removeItem('email');
+                    localStorage.removeItem('phone');
+                    localStorage.removeItem('brief');
+                    localStorage.removeItem('userLevel');
+
+                    // 重置store中的数据
+                    somniumNexusStore.clearUserProjects();
+                    somniumNexusStore.clearProductionData();
+
+                    // 清除环境配置
+                    environmentManager.clearEnvironmentConfig();
+
+                    alert('本地存储数据已清除成功！');
+                    console.log('所有本地存储数据已清除');
+                } catch (error) {
+                    console.error('清除本地存储数据失败:', error);
+                    alert('清除本地存储数据失败，请查看控制台错误信息。');
+                }
+            }
+        }
+
+        actionStore.setSelectedActionSubCategory(subCategoryKey);
+
+        // 执行完子操作后，隐藏临时action子菜单
+        setTimeout(() => {
+            setShowActionTempSubMenu(false);
+            actionStore.clearActionSelection();
+        }, 200);
+    }, []);
+
     const handleImageClick = useCallback((image) => {
         somniumNexusStore.setSelectedImage(image);
     }, []);
@@ -284,7 +363,12 @@ const SomniumNexus = observer(() => {
             {/* 侧边栏组件 - 两个组件始终存在，通过 CSS 控制动画 */}
             {/* 展开状态侧边栏 - 始终存在，通过 visible 类控制动画 */}
             <aside className={`${styles.expandedSidebar} ${sidebarExpanded ? styles.visible : styles.hiding}`}>
-                <div className={styles.sidebarHeader}>
+                <div className={styles.sidebarHeader}
+                     onClick={handleSidebarHeaderClick}
+                     onMouseEnter={() => setIsHeaderHovered(true)}
+                     onMouseLeave={() => setIsHeaderHovered(false)}
+                     style={{cursor: 'pointer'}}
+                     title={isHeaderHovered ? "点击重置所有选择" : ""}>
                     <div className={styles.headerTopRow}>
                         <h1 className={styles.mainTitle}>Somnium Nexus</h1>
                     </div>
@@ -445,32 +529,27 @@ const SomniumNexus = observer(() => {
                                                 }`}
                                                 data-tab-type="action-sub"
                                                 data-action-sub-key={subCategory.key}
-                                                onClick={() => {
-                                                    actionStore.setSelectedActionSubCategory(subCategory.key);
-                                                    // 执行完子操作后，隐藏临时action子菜单
-                                                    setTimeout(() => {
-                                                        setShowActionTempSubMenu(false);
-                                                        actionStore.clearActionSelection();
-                                                    }, 200);
-                                                }}
+                                                onClick={() => handleActionSubCategoryClick(subCategory.key)}
                                                 role="button"
                                                 tabIndex={0}
                                                 onKeyDown={(e) => {
                                                     if (e.key === 'Enter' || e.key === ' ') {
                                                         e.preventDefault();
-                                                        actionStore.setSelectedActionSubCategory(subCategory.key);
-                                                        // 执行完子操作后，隐藏临时action子菜单
-                                                        setTimeout(() => {
-                                                            setShowActionTempSubMenu(false);
-                                                            actionStore.clearActionSelection();
-                                                        }, 200);
+                                                        handleActionSubCategoryClick(subCategory.key);
                                                     }
                                                 }}
                                             >
                                                 <span className={styles.tabText}
                                                     data-active={actionStore.selectedActionSubCategory === subCategory.key}
                                                 >
-                                                    {subCategory.title}
+                                                    {subCategory.key === 'edit-toggle'
+                                                        ? `${subCategory.title} (${actionStore.isEditModeActive ? '开启' : '关闭'})`
+                                                        : subCategory.key === 'flex' || subCategory.key === 'freeform'
+                                                        ? `${subCategory.title} ${actionStore.currentLayoutType === subCategory.key ? '(当前)' : ''}`
+                                                        : subCategory.key === 'test' || subCategory.key === 'production'
+                                                        ? `${subCategory.title} ${actionStore.isUsingTestData === (subCategory.key === 'test') ? '(当前)' : ''}`
+                                                        : subCategory.title
+                                                    }
                                                 </span>
                                             </div>
                                         </div>
@@ -545,25 +624,13 @@ const SomniumNexus = observer(() => {
                                                 }`}
                                                 data-tab-type="action-sub"
                                                 data-action-sub-key={subCategory.key}
-                                                onClick={() => {
-                                                    actionStore.setSelectedActionSubCategory(subCategory.key);
-                                                    // 执行完子操作后，隐藏临时action子菜单
-                                                    setTimeout(() => {
-                                                        setShowActionTempSubMenu(false);
-                                                        actionStore.clearActionSelection();
-                                                    }, 200);
-                                                }}
+                                                onClick={() => handleActionSubCategoryClick(subCategory.key)}
                                                 role="button"
                                                 tabIndex={0}
                                                 onKeyDown={(e) => {
                                                     if (e.key === 'Enter' || e.key === ' ') {
                                                         e.preventDefault();
-                                                        actionStore.setSelectedActionSubCategory(subCategory.key);
-                                                        // 执行完子操作后，隐藏临时action子菜单
-                                                        setTimeout(() => {
-                                                            setShowActionTempSubMenu(false);
-                                                            actionStore.clearActionSelection();
-                                                        }, 200);
+                                                        handleActionSubCategoryClick(subCategory.key);
                                                     }
                                                 }}
                                             >

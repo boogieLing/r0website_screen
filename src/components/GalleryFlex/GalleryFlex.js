@@ -1,8 +1,8 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useRef, useCallback, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import GalleryItem from '../GalleryItem/GalleryItem';
 import galleryStore from '@/stores/galleryStore';
-import { calculateNonOverlappingPosition, getOverlappingItems } from '@/utils/magneticLayout';
+import { calculateNonOverlappingPosition } from '@/utils/magneticLayout';
 import styles from './GalleryFlex.module.less';
 
 /**
@@ -25,43 +25,6 @@ const GalleryFlex = observer(({
             galleryStore.initializeItems(categoryId, images, columns);
         }
     }, [images, columns, categoryId]);
-
-    // 切换编辑模式 - 使用GalleryStore
-    const toggleEditMode = useCallback(() => {
-        galleryStore.toggleEditMode();
-    }, []);
-
-    // 检查是否需要扩展容器边界 - 独立实现，避免循环引用
-    const checkBoundaryExpansion = useCallback((item) => {
-        const items = galleryStore.getItemsByCategory(categoryId);
-        if (items.length === 0) return { needsUpdate: false, newHeight: '100vh' };
-
-        // 重新计算当前边界
-        let minY = 0;
-        let maxY = 0;
-        items.forEach(item => {
-            minY = Math.min(minY, item.y);
-            maxY = Math.max(maxY, item.y + item.height);
-        });
-
-        const currentContentHeight = maxY - minY;
-        const itemBottom = item.y + item.height;
-        const itemTop = item.y;
-
-        // 如果item扩展了边界，需要更新容器
-        const expansionThreshold = 100;
-        let needsUpdate = false;
-        let newHeight = Math.max(window.innerHeight, currentContentHeight + 200);
-
-        // 检查是否需要扩展
-        if (itemBottom > maxY - expansionThreshold || itemTop < minY + expansionThreshold) {
-            const newContentHeight = Math.max(maxY, itemBottom) - Math.min(minY, itemTop);
-            newHeight = Math.max(window.innerHeight, newContentHeight + expansionThreshold * 2);
-            needsUpdate = true;
-        }
-
-        return { needsUpdate, newHeight };
-    }, [categoryId, galleryStore]);
 
     // 更新项目 - 使用GalleryStore，添加磁吸和防重叠功能
     const updateItem = useCallback((itemId, updates) => {
@@ -183,14 +146,6 @@ const GalleryFlex = observer(({
                 })}
             </div>
 
-            {/* 编辑模式切换按钮 - 右下角三角 */}
-            <div
-                className={styles.editToggle}
-                onClick={toggleEditMode}
-                title={galleryStore.editMode ? '切换到展示模式' : '切换到编辑模式'}
-            >
-                <div className={`${styles.triangle} ${galleryStore.editMode ? styles.active : ''}`} />
-            </div>
         </div>
     );
 });
