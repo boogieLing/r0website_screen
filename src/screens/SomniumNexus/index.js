@@ -14,6 +14,7 @@ import SimpleWelcomeModule from "./SimpleWelcomeModule";
 import CollapsedSidebar from "./CollapsedSidebar";
 import SomniumLogin from "@/components/SomniumLogin/SomniumLogin";
 import TriangleLoginIcon from "@/components/SomniumLogin/TriangleLoginIcon";
+import NewProjectModal from "@/components/NewProjectModal/NewProjectModal";
 import signLineImg from "@/static/pic/sign_line.png";
 import styles from "./index.module.less";
 import {environmentManager, LAYOUT_TYPES} from "@/utils/environment";
@@ -688,6 +689,9 @@ const SomniumNexus = observer(() => {
                 isOpen={showLoginModal}
                 onClose={() => setShowLoginModal(false)}
             />
+
+            {/* 新建项目模态框 */}
+            <NewProjectModal />
         </div>
     );
 });

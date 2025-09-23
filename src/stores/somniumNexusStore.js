@@ -18,6 +18,9 @@ class SomniumNexusStore {
     // 正式环境的图片数据（初始为空，需要从外部加载）
     _productionGalleryData = {};
 
+    // 用户创建的项目数据（增量数据）
+    _userProjects = {};
+
     // 使用测试数据的标识
     _useTestData = false;
 
@@ -38,6 +41,9 @@ class SomniumNexusStore {
             isUsingTestData: computed,
             isProductionEnvironment: computed
         });
+
+        // 初始化时从本地存储加载用户项目
+        this.loadUserProjectsFromLocal();
     }
 
     // 计算属性 | Computed properties
@@ -62,7 +68,11 @@ class SomniumNexusStore {
         if (this._useTestData && testDataStore.isTestEnvironment) {
             return testDataStore.getTestGalleryData();
         }
-        return this._productionGalleryData;
+        // 合并正式环境数据和用户创建的项目数据
+        return {
+            ...this._productionGalleryData,
+            ...this._userProjects
+        };
     }
 
     get selectedSubCategory() {
@@ -138,6 +148,122 @@ class SomniumNexusStore {
 
     addProductionCategory(categoryKey, categoryData) {
         this._productionGalleryData[categoryKey] = { ...categoryData };
+    }
+
+    /**
+     * 添加用户创建的项目（增量数据）
+     * 支持用户自定义项目名称和内容
+     */
+    addUserProject(categoryKey, categoryData) {
+        const projectData = {
+            ...categoryData,
+            isUserProject: true,  // 标记为用户创建的项目
+            createdAt: categoryData.createdAt || new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            projectType: 'user-created'
+        };
+
+        this._userProjects[categoryKey] = projectData;
+        console.log(`用户项目 "${categoryData.title}" 已添加到增量数据`, projectData);
+
+        // 自动保存到本地存储（如果可用）
+        this.saveUserProjectsToLocal();
+
+        return projectData;
+    }
+
+    /**
+     * 更新用户项目
+     */
+    updateUserProject(categoryKey, updates) {
+        if (this._userProjects[categoryKey]) {
+            this._userProjects[categoryKey] = {
+                ...this._userProjects[categoryKey],
+                ...updates,
+                updatedAt: new Date().toISOString()
+            };
+            this.saveUserProjectsToLocal();
+            console.log(`用户项目 "${categoryKey}" 已更新`);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 删除用户项目
+     */
+    removeUserProject(categoryKey) {
+        if (this._userProjects[categoryKey]) {
+            delete this._userProjects[categoryKey];
+            this.saveUserProjectsToLocal();
+            console.log(`用户项目 "${categoryKey}" 已删除`);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 获取所有用户创建的项目
+     */
+    getUserProjects() {
+        return { ...this._userProjects };
+    }
+
+    /**
+     * 获取用户项目的数量
+     */
+    getUserProjectCount() {
+        return Object.keys(this._userProjects).length;
+    }
+
+    /**
+     * 检查是否是用户项目
+     */
+    isUserProject(categoryKey) {
+        return !!(this._userProjects[categoryKey]);
+    }
+
+    /**
+     * 保存用户项目到本地存储
+     */
+    saveUserProjectsToLocal() {
+        try {
+            if (typeof localStorage !== 'undefined') {
+                localStorage.setItem('somnium_user_projects', JSON.stringify(this._userProjects));
+                console.log('用户项目已保存到本地存储');
+            }
+        } catch (error) {
+            console.warn('保存用户项目到本地存储失败:', error);
+        }
+    }
+
+    /**
+     * 从本地存储加载用户项目
+     */
+    loadUserProjectsFromLocal() {
+        try {
+            if (typeof localStorage !== 'undefined') {
+                const saved = localStorage.getItem('somnium_user_projects');
+                if (saved) {
+                    const loadedProjects = JSON.parse(saved);
+                    this._userProjects = loadedProjects;
+                    console.log('用户项目已从本地存储加载:', Object.keys(loadedProjects).length, '个项目');
+                    return true;
+                }
+            }
+        } catch (error) {
+            console.warn('从本地存储加载用户项目失败:', error);
+        }
+        return false;
+    }
+
+    /**
+     * 清除所有用户项目
+     */
+    clearUserProjects() {
+        this._userProjects = {};
+        this.saveUserProjectsToLocal();
+        console.log('所有用户项目已清除');
     }
 
     removeProductionCategory(categoryKey) {

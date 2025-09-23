@@ -59,6 +59,11 @@ class ActionStore {
     // 操作加载状态
     isActionLoading = false;
 
+    // 新建项目对话框状态
+    isNewProjectModalOpen = false;
+    newProjectName = '';
+    isCreatingProject = false;
+
     constructor() {
         makeAutoObservable(this);
     }
@@ -163,6 +168,7 @@ class ActionStore {
                 switch (actionKey) {
                     case 'workspace-new-project':
                         console.log('创建新项目');
+                        this.openNewProjectModal();
                         break;
                     case 'workspace-open-project':
                         console.log('打开项目');
@@ -213,6 +219,72 @@ class ActionStore {
      */
     getActionCategory(key) {
         return this.actionCategories[key] || null;
+    }
+
+    /**
+     * 新建项目对话框相关方法
+     */
+    openNewProjectModal() {
+        this.isNewProjectModalOpen = true;
+        this.newProjectName = '';
+        this.isCreatingProject = false;
+    }
+
+    closeNewProjectModal() {
+        this.isNewProjectModalOpen = false;
+        this.newProjectName = '';
+        this.isCreatingProject = false;
+    }
+
+    setNewProjectName(name) {
+        this.newProjectName = name;
+    }
+
+    /**
+     * 创建新项目
+     */
+    async createNewProject() {
+        if (!this.newProjectName.trim()) {
+            console.warn('项目名称不能为空');
+            return false;
+        }
+
+        runInAction(() => {
+            this.isCreatingProject = true;
+        });
+
+        try {
+            // 模拟异步创建过程
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            // 创建新项目数据
+            const newProjectData = {
+                title: this.newProjectName.trim(),
+                key: `project-${Date.now()}`,
+                hasSubMenu: true,
+                subCategories: [],
+                images: [],
+                isNewProject: true,
+                createdAt: new Date().toISOString()
+            };
+
+            // 这里应该调用 somniumNexusStore 的方法来添加新项目
+            // 暂时通过事件或回调的方式处理
+            console.log('新项目创建成功:', newProjectData);
+
+            runInAction(() => {
+                this.isCreatingProject = false;
+                this.closeNewProjectModal();
+            });
+
+            return newProjectData;
+        } catch (error) {
+            console.error('创建项目失败:', error);
+            runInAction(() => {
+                this.isCreatingProject = false;
+            });
+            return false;
+        }
     }
 }
 
