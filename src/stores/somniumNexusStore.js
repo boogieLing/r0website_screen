@@ -1,5 +1,10 @@
 import {makeAutoObservable, computed} from "mobx";
 import testDataStore from "./testDataStore";
+import {listCategories, getCategoryImages, addImageToCategory} from "@/request/categoryApi";
+import {deleteImage} from '@/request/imageApi';
+
+// 正式环境图片分页大小
+const DEFAULT_PAGE_SIZE = 60;
 
 /**
  * SomniumNexusStore - 正式环境图片数据管理
@@ -20,6 +25,9 @@ class SomniumNexusStore {
 
     // 用户创建的项目数据（增量数据）
     _userProjects = {};
+
+    // 每个分类的分页状态
+    _categoryPageState = {};
 
     // 使用测试数据的标识
     _useTestData = false;
@@ -45,6 +53,387 @@ class SomniumNexusStore {
         // 初始化时从本地存储加载用户项目
         this.loadUserProjectsFromLocal();
     }
+
+    /**
+     * 统一标准化分类 settings，兼容后端 Settings/LayoutMode 大小写
+     */
+    normalizeSettings(rawSettings = {}) {
+        const layoutModeFromServer = rawSettings.layoutMode || rawSettings.LayoutMode;
+        let normalizedSettings = {...rawSettings};
+
+        if (layoutModeFromServer) {
+            const normalized = String(layoutModeFromServer).trim().toLowerCase();
+            const storedLayoutMode = normalized === 'freeform' ? 'freedom' : normalized;
+            normalizedSettings = {
+                ...normalizedSettings,
+                layoutMode: storedLayoutMode,
+                LayoutMode: storedLayoutMode
+            };
+        }
+
+        return normalizedSettings;
+    }
+
+    normalizeKeyForCompare(value) {
+        return String(value || '').trim().toLowerCase();
+    }
+
+    /**
+     * 根据分类名称推导二级菜单：按斜杠分割，首段为主标题，其余为子菜单
+     */
+    parseCategoryNameForMenu(rawName) {
+        const name = (rawName || '').trim();
+        if (!name) {
+            return {
+                title: rawName,
+                hasSubMenu: false,
+                subCategories: []
+            };
+        }
+
+        const parts = name.split('/').map((part) => part.trim()).filter(Boolean);
+        if (parts.length <= 1) {
+            return {
+                title: name,
+                hasSubMenu: false,
+                subCategories: []
+            };
+        }
+
+        const [mainTitle, ...subParts] = parts;
+        const subCategories = subParts.map((sub, index) => ({
+            key: sub || `sub-${index + 1}`,
+            title: sub || `子分类 ${index + 1}`
+        }));
+
+        return {
+            title: mainTitle || name,
+            hasSubMenu: true,
+            subCategories
+        };
+    }
+
+    /**
+     * 将名称解析出的二级菜单信息合并到分类数据中
+     */
+    applyNameDerivedMenu(categoryKey, categoryData) {
+        const nameForParse = categoryData.title || categoryData.name || categoryData.Name || categoryKey;
+        const parsed = this.parseCategoryNameForMenu(nameForParse);
+
+        const mergedSubCategories =
+            (Array.isArray(categoryData.subCategories) && categoryData.subCategories.length > 0)
+                ? categoryData.subCategories
+                : parsed.subCategories;
+
+        const hasSubMenu = parsed.hasSubMenu || categoryData.hasSubMenu || (mergedSubCategories && mergedSubCategories.length > 0);
+
+        const aliasCategoryIds = Array.isArray(categoryData.aliasCategoryIds)
+            ? [...categoryData.aliasCategoryIds]
+            : [];
+        if (categoryData.originalKey && !aliasCategoryIds.includes(categoryData.originalKey)) {
+            aliasCategoryIds.push(categoryData.originalKey);
+        }
+        if (categoryData.remoteId && !aliasCategoryIds.includes(categoryData.remoteId)) {
+            aliasCategoryIds.push(categoryData.remoteId);
+        }
+
+        return {
+            ...categoryData,
+            title: parsed.title || categoryData.title || categoryKey,
+            hasSubMenu,
+            subCategories: mergedSubCategories,
+            rawTitle: categoryData.rawTitle || nameForParse,
+            originalKey: categoryData.originalKey || categoryKey,
+            aliasCategoryIds,
+            remoteId: categoryData.remoteId || categoryKey
+        };
+    }
+
+    /**
+     * 折叠名称包含斜杠的分类：将 A/B 这样的分类合并到父级 A，并生成子菜单 B
+     */
+    mergeImages(existingImages = [], newImages = []) {
+        const merged = Array.isArray(existingImages) ? [...existingImages] : [];
+        const seen = new Set(merged.map((img) => img && img.id));
+        (Array.isArray(newImages) ? newImages : []).forEach((img) => {
+            const id = img && img.id;
+            const key = id || JSON.stringify(img);
+            if (!seen.has(key)) {
+                merged.push(img);
+                seen.add(key);
+            }
+        });
+        return merged;
+    }
+
+    collapseNestedCategories(galleryData = {}) {
+        const merged = {};
+        const debugEvents = [];
+        const canonicalParentKeyMap = {};
+
+        Object.entries(galleryData).forEach(([key, category]) => {
+            const safeKey = key || '';
+            const nameCandidate = category.rawTitle || category.title || category.Name || category.name || safeKey;
+            const incomingRemoteId = category.remoteId || category.ID || category.id || safeKey;
+
+            const nameParts = String(nameCandidate || '').split('/').map((p) => p.trim()).filter(Boolean);
+            const keyParts = String(safeKey || '').split('/').map((p) => p.trim()).filter(Boolean);
+
+            const hasPath = (nameParts.length > 1) || (keyParts.length > 1);
+            const rawParentKey = hasPath ? (keyParts[0] || nameParts[0] || safeKey) : safeKey;
+            const normalizedParentKey = this.normalizeKeyForCompare(rawParentKey);
+            const canonicalParentKey = canonicalParentKeyMap[normalizedParentKey] || rawParentKey;
+
+            if (!canonicalParentKeyMap[normalizedParentKey]) {
+                canonicalParentKeyMap[normalizedParentKey] = canonicalParentKey;
+            }
+
+            if (!merged[canonicalParentKey]) {
+                const title = nameParts[0] || keyParts[0] || nameCandidate || canonicalParentKey;
+                merged[canonicalParentKey] = {
+                    ...category,
+                    title,
+                    rawTitle: nameCandidate,
+                    aliasRemoteMap: {},
+                    aliasCategoryDetails: []
+                };
+            }
+            const baseParent = merged[canonicalParentKey];
+
+            // 如果没有路径，直接写入/覆盖父级
+            if (!hasPath) {
+                merged[canonicalParentKey] = {
+                    ...baseParent,
+                    ...category,
+                    title: nameCandidate || canonicalParentKey,
+                    rawTitle: nameCandidate || baseParent.rawTitle,
+                    // 保持已有子菜单信息
+                    subCategories: Array.isArray(baseParent.subCategories) ? baseParent.subCategories : [],
+                    hasSubMenu: baseParent.hasSubMenu || false,
+                    aliasRemoteMap: baseParent.aliasRemoteMap || {},
+                    aliasCategoryDetails: baseParent.aliasCategoryDetails || []
+                };
+                return;
+            }
+
+            const subPathParts = nameParts.length > 1 ? nameParts.slice(1) : (keyParts.length > 1 ? keyParts.slice(1) : []);
+            const subKey = subPathParts.join('/') || keyParts.slice(1).join('/') || `sub-${(baseParent.subCategories || []).length + 1}`;
+            const subTitle = subPathParts.join('/') || category.title || subKey;
+
+            const subCategories = Array.isArray(baseParent.subCategories) ? [...baseParent.subCategories] : [];
+            if (subKey && !subCategories.some((sub) => sub && sub.key === subKey)) {
+                subCategories.push({
+                    key: subKey,
+                    title: subTitle
+                });
+                debugEvents.push({
+                    type: 'merge-sub',
+                    parent: canonicalParentKey,
+                    source: safeKey,
+                    subKey,
+                    subTitle
+                });
+            }
+
+            const aliasCategoryIds = Array.isArray(baseParent.aliasCategoryIds) ? [...baseParent.aliasCategoryIds] : [];
+            const safeKeyNormalized = this.normalizeKeyForCompare(safeKey);
+            const parentKeyNormalized = this.normalizeKeyForCompare(canonicalParentKey);
+
+            if (!aliasCategoryIds.some((alias) => this.normalizeKeyForCompare(alias) === parentKeyNormalized)) {
+                aliasCategoryIds.push(canonicalParentKey);
+            }
+            if (!aliasCategoryIds.some((alias) => this.normalizeKeyForCompare(alias) === safeKeyNormalized)) {
+                aliasCategoryIds.push(safeKey);
+                debugEvents.push({
+                    type: 'alias',
+                    parent: canonicalParentKey,
+                    alias: safeKey
+                });
+            }
+
+            const aliasRemoteMap = {...(baseParent.aliasRemoteMap || {})};
+            if (incomingRemoteId) {
+                aliasRemoteMap[safeKeyNormalized] = incomingRemoteId;
+            }
+
+            const aliasCategoryDetails = Array.isArray(baseParent.aliasCategoryDetails) ? [...baseParent.aliasCategoryDetails] : [];
+            if (subKey && !aliasCategoryDetails.some((detail) => this.normalizeKeyForCompare(detail.key) === safeKeyNormalized)) {
+                aliasCategoryDetails.push({
+                    key: safeKey,
+                    title: subTitle,
+                    remoteId: incomingRemoteId,
+                    parentKey: canonicalParentKey
+                });
+            }
+
+            const mergedImages = this.mergeImages(baseParent.images, category.images);
+            const countFromParent = typeof baseParent.imageCount === 'number' ? baseParent.imageCount : (Array.isArray(baseParent.images) ? baseParent.images.length : 0);
+            const countFromChild = typeof category.imageCount === 'number' ? category.imageCount : (Array.isArray(category.images) ? category.images.length : 0);
+
+            merged[canonicalParentKey] = {
+                ...baseParent,
+                ...category,
+                title: baseParent.title || nameParts[0] || keyParts[0] || nameCandidate || canonicalParentKey,
+                rawTitle: baseParent.rawTitle || nameCandidate || keyParts.join('/'),
+                hasSubMenu: true,
+                subCategories,
+                aliasCategoryIds,
+                aliasRemoteMap,
+                aliasCategoryDetails,
+                images: mergedImages,
+                imageCount: Math.max(countFromParent, countFromChild, mergedImages.length),
+                // 避免子分类覆盖父级 remoteId
+                remoteId: baseParent.remoteId || category.remoteId || incomingRemoteId || canonicalParentKey
+            };
+        });
+
+        if (debugEvents.length > 0) {
+            console.groupCollapsed('[SomniumNexus] 折叠斜杠分类');
+            console.log('输入分类键:', Object.keys(galleryData || {}));
+            console.log('输出分类键:', Object.keys(merged));
+            console.table(debugEvents);
+            console.groupEnd();
+        } else {
+            console.groupCollapsed('[SomniumNexus] 无需折叠，当前分类');
+            const tableData = Object.entries(galleryData || {}).map(([k, cat]) => ({
+                key: k,
+                title: cat && cat.title,
+                rawTitle: cat && cat.rawTitle
+            }));
+            console.table(tableData);
+            console.groupEnd();
+        }
+
+        return merged;
+    }
+
+    normalizeProductionData() {
+        this._productionGalleryData = this.collapseNestedCategories(this._productionGalleryData);
+
+        const currentKey = this._selectedCategory;
+        if (currentKey && !this._productionGalleryData[currentKey]) {
+            const mapped = Object.entries(this._productionGalleryData).find(([, cat]) =>
+                Array.isArray(cat.aliasCategoryIds) && cat.aliasCategoryIds.includes(currentKey)
+            );
+            if (mapped) {
+                this._selectedCategory = mapped[0];
+                console.info(`[SomniumNexus] 选中分类从别名映射: ${currentKey} -> ${mapped[0]}`);
+            }
+        }
+    }
+
+    resolveCategoryKey(inputKey) {
+        if (!inputKey) {
+            return inputKey;
+        }
+        const data = this.galleryCategories || {};
+        if (data[inputKey]) return inputKey;
+        const normalizedInput = this.normalizeKeyForCompare(inputKey);
+        const found = Object.entries(data).find(([key, cat]) => {
+            if (!cat) return false;
+            const keyMatch = this.normalizeKeyForCompare(key) === normalizedInput;
+            return keyMatch
+                || this.normalizeKeyForCompare(cat.rawTitle) === normalizedInput
+                || this.normalizeKeyForCompare(cat.remoteId) === normalizedInput
+                || this.normalizeKeyForCompare(cat.originalKey) === normalizedInput
+                || (cat.aliasCategoryIds && cat.aliasCategoryIds.some((alias) =>
+                    this.normalizeKeyForCompare(alias) === normalizedInput
+                ));
+        });
+        return found ? found[0] : inputKey;
+    }
+
+    getRemoteId(categoryKey) {
+        const normalizedInput = this.normalizeKeyForCompare(categoryKey);
+        const resolvedKey = this.resolveCategoryKey(categoryKey);
+        const data = this.galleryCategories || {};
+        const cat = data[resolvedKey];
+        if (cat) {
+            if (cat.aliasRemoteMap && cat.aliasRemoteMap[normalizedInput]) {
+                return cat.aliasRemoteMap[normalizedInput];
+            }
+            if (cat.remoteId) return cat.remoteId;
+        }
+
+        const found = Object.values(data).find((item) =>
+            item && (
+                (item.aliasCategoryIds && item.aliasCategoryIds.some((alias) =>
+                    this.normalizeKeyForCompare(alias) === normalizedInput
+                )) ||
+                (item.aliasRemoteMap && item.aliasRemoteMap[normalizedInput]) ||
+                this.normalizeKeyForCompare(item.originalKey) === normalizedInput ||
+                this.normalizeKeyForCompare(item.rawTitle) === normalizedInput ||
+                this.normalizeKeyForCompare(item.remoteId) === normalizedInput
+            )
+        );
+        if (found && found.remoteId) return found.remoteId;
+        if (found && found.aliasRemoteMap && found.aliasRemoteMap[normalizedInput]) return found.aliasRemoteMap[normalizedInput];
+        return categoryKey;
+    }
+
+    /**
+     * 获取分类的布局模式（已标准化，返回 flex / freedom / null）
+     */
+    getCategoryLayoutMode(category) {
+        if (!category) return null;
+        const settings = category.settings || category.Settings || {};
+        const layoutMode = settings.layoutMode || settings.LayoutMode;
+        if (!layoutMode) return null;
+        const normalized = String(layoutMode).trim().toLowerCase();
+        return normalized === 'freeform' ? 'freedom' : normalized;
+    }
+
+    /**
+     * 确保指定分类具备 settings.layoutMode（当首次通过路由直接访问时，可能先加载了图片但未加载分类配置）
+     */
+    ensureCategorySettings = async (categoryId) => {
+        if (!categoryId || this._useTestData) {
+            return false;
+        }
+
+        const resolvedKey = this.resolveCategoryKey(categoryId);
+        const existing = this._productionGalleryData[resolvedKey] || this._userProjects[resolvedKey];
+        if (existing && this.getCategoryLayoutMode(existing)) {
+            return false; // already has layout info
+        }
+
+        try {
+            const resp = await listCategories();
+            const payload = resp && resp.data;
+            if (!payload || !Array.isArray(payload.categories)) {
+                return false;
+            }
+
+            const remoteId = this.getRemoteId(resolvedKey);
+            const match = payload.categories.find((item) =>
+                item && (item.ID === remoteId || item.Name === resolvedKey)
+            );
+            if (!match) {
+                return false;
+            }
+
+            const normalizedSettings = this.normalizeSettings(match.Settings || match.settings || {});
+            const prev = this._productionGalleryData[resolvedKey] || {};
+            const merged = this.applyNameDerivedMenu(resolvedKey, {
+                ...prev,
+                settings: normalizedSettings,
+                Settings: normalizedSettings,
+                title: prev.title || match.Name || resolvedKey,
+                rawTitle: prev.rawTitle || match.Name || resolvedKey,
+                description: prev.description || match.Description || "",
+                remoteId: prev.remoteId || match.ID || resolvedKey,
+                originalKey: prev.originalKey || match.ID || resolvedKey,
+                aliasCategoryIds: [...(prev.aliasCategoryIds || []), match.ID].filter(Boolean)
+            });
+            this._productionGalleryData[resolvedKey] = merged;
+            this.normalizeProductionData();
+            console.log('SomniumNexusStore: 分类设置已补全', {categoryId: resolvedKey, remoteId, layoutMode: normalizedSettings.layoutMode});
+            return true;
+        } catch (error) {
+            console.warn('SomniumNexusStore: 补全分类设置失败', categoryId, error);
+            return false;
+        }
+    };
 
     // 计算属性 | Computed properties
     get selectedCategory() {
@@ -76,8 +465,9 @@ class SomniumNexusStore {
             };
         }
 
-        // 不再添加"全部"分类，只返回基础数据
-        return baseData;
+        // 折叠斜杠分类，避免 A 与 A/B 重复
+        const collapsed = this.collapseNestedCategories(baseData);
+        return collapsed;
     }
 
     // 辅助方法：从数据对象中提取所有图片
@@ -123,9 +513,60 @@ class SomniumNexusStore {
         return Object.keys(data);
     }
 
+    /**
+     * 获取用于“添加到分类”下拉的选项，保留折叠后父级与包含斜杠的子分类选项
+     */
+    getCategoryAssignOptions() {
+        const data = this.galleryCategories || {};
+        const options = [];
+        const seen = new Set();
+
+        Object.entries(data).forEach(([key, cat]) => {
+            const normalized = this.normalizeKeyForCompare(key);
+            if (!seen.has(normalized)) {
+                options.push({
+                    key,
+                    title: cat.title || key,
+                    assignKeys: [key]
+                });
+                seen.add(normalized);
+            }
+
+            // 为包含斜杠的别名生成独立选项（添加时需同时作用于父级和别名）
+            if (Array.isArray(cat.aliasCategoryDetails)) {
+                cat.aliasCategoryDetails.forEach((detail) => {
+                    const detailNormalized = this.normalizeKeyForCompare(detail.key);
+                    if (seen.has(detailNormalized)) {
+                        return;
+                    }
+                    const displayTitle = detail.key.includes('/')
+                        ? detail.key
+                        : `${cat.title || key}/${detail.title || detail.key}`;
+                    options.push({
+                        key: detail.key,
+                        title: displayTitle,
+                        assignKeys: [key, detail.key]
+                    });
+                    seen.add(detailNormalized);
+                });
+            }
+        });
+
+        return options;
+    }
+
     get currentCategory() {
         const data = this.galleryCategories;
-        return data && this._selectedCategory ? data[this._selectedCategory] : null;
+        if (!data || !this._selectedCategory) return null;
+
+        const direct = data[this._selectedCategory];
+        if (direct) return direct;
+
+        // 兼容折叠后的别名（例如选择了 A/B，但实际只保留父级 A）
+        const mapped = Object.entries(data).find(([, cat]) =>
+            Array.isArray(cat.aliasCategoryIds) && cat.aliasCategoryIds.includes(this._selectedCategory)
+        );
+        return mapped ? mapped[1] : null;
     }
 
     get currentCategoryImages() {
@@ -157,10 +598,73 @@ class SomniumNexusStore {
         return !this._useTestData;
     }
 
+    // 从服务器加载分类列表（正式环境）
+    loadCategoriesFromServer = async () => {
+        if (this._useTestData) {
+            return false;
+        }
+
+        try {
+            const response = await listCategories();
+            const payload = response && response.data;
+
+            if (!payload || !Array.isArray(payload.categories)) {
+                console.warn("SomniumNexusStore: 无法从服务器获取分类列表");
+                return false;
+            }
+
+            console.groupCollapsed('[SomniumNexus] 分类接口返回');
+            console.table(payload.categories.map((c) => ({
+                id: c && c.ID,
+                name: c && (c.Name || c.name),
+                description: c && c.Description
+            })));
+            console.groupEnd();
+
+            const serverData = {};
+
+            payload.categories.forEach((category) => {
+                if (!category || !category.ID) return;
+
+                // 兼容后端 settings/Settings 字段并标准化布局模式
+                const settings = this.normalizeSettings(category.Settings || category.settings || {});
+
+                const nameKey = category.Name || category.ID;
+                const baseCategory = {
+                    title: nameKey,
+                    description: category.Description || "",
+                    hasSubMenu: false,
+                    subCategories: [],
+                    images: [],
+                    imageCount: category.ImageCount || 0,
+                    coverImageId: category.CoverImage || null,
+                    settings,
+                    createdAt: category.CreatedAt,
+                    updatedAt: category.UpdatedAt,
+                    source: "server",
+                    remoteId: category.ID,
+                    originalKey: category.ID,
+                    rawTitle: category.Name || category.ID,
+                    aliasCategoryIds: [category.ID]
+                };
+
+                serverData[nameKey] = this.applyNameDerivedMenu(nameKey, baseCategory);
+            });
+
+            this.setProductionData(serverData);
+            console.log("SomniumNexusStore: 分类数据已从服务器加载");
+            return true;
+        } catch (error) {
+            console.error("SomniumNexusStore: 加载分类数据失败:", error);
+            return false;
+        }
+    };
+
     // 环境管理方法 | Environment management
     enableTestEnvironment() {
         testDataStore.enableTestEnvironment();
         this._useTestData = true;
+        this._categoryPageState = {};
         this._productionGalleryData = {};
         console.log('SomniumNexusStore: 测试环境已启用');
     }
@@ -168,18 +672,147 @@ class SomniumNexusStore {
     disableTestEnvironment() {
         testDataStore.disableTestEnvironment();
         this._useTestData = false;
+        this._categoryPageState = {};
         console.log('SomniumNexusStore: 测试环境已禁用');
     }
 
-    // 正式环境数据管理 | Production data management
+    // 正式环境数据管理 | Production data管理
     setProductionData(galleryData) {
-        this._productionGalleryData = { ...galleryData };
+        const normalizedData = {};
+        Object.keys(galleryData || {}).forEach((key) => {
+            const category = galleryData[key] || {};
+            const normalizedSettings = this.normalizeSettings(category.settings || category.Settings || {});
+            const merged = this.applyNameDerivedMenu(key, {
+                ...category,
+                settings: normalizedSettings,
+                Settings: normalizedSettings
+            });
+            normalizedData[key] = merged;
+        });
+
+        console.groupCollapsed('[SomniumNexus] 接口分类键');
+        console.table(Object.entries(galleryData || {}).map(([k, v]) => ({
+            key: k,
+            title: v && v.title,
+            rawTitle: v && v.rawTitle
+        })));
+        console.groupEnd();
+        this._productionGalleryData = this.collapseNestedCategories(normalizedData);
+        console.groupCollapsed('[SomniumNexus] 折叠后分类键');
+        console.table(Object.entries(this._productionGalleryData || {}).map(([k, v]) => ({
+            key: k,
+            title: v && v.title,
+            rawTitle: v && v.rawTitle,
+            subCount: v && Array.isArray(v.subCategories) ? v.subCategories.length : 0,
+            aliases: v && v.aliasCategoryIds ? v.aliasCategoryIds.join(',') : ''
+        })));
+        console.groupEnd();
+        this.normalizeProductionData();
         this._useTestData = false;
         console.log('SomniumNexusStore: 正式数据已加载');
     }
 
     addProductionCategory(categoryKey, categoryData) {
-        this._productionGalleryData[categoryKey] = { ...categoryData };
+        const normalizedSettings = this.normalizeSettings(categoryData.settings || categoryData.Settings || {});
+        const merged = this.applyNameDerivedMenu(categoryKey, {
+            ...categoryData,
+            settings: normalizedSettings,
+            Settings: normalizedSettings
+        });
+        this._productionGalleryData[categoryKey] = merged;
+        this.normalizeProductionData();
+    }
+
+    /**
+     * 获取分类的分页状态
+     */
+    getCategoryPageState(categoryId) {
+        const resolvedKey = this.resolveCategoryKey(categoryId);
+        const existing = this._categoryPageState[resolvedKey];
+        const categoryData = this._productionGalleryData[resolvedKey] || this._userProjects[resolvedKey] || {};
+        const currentCount = Array.isArray(categoryData.images) ? categoryData.images.length : 0;
+        const total = typeof categoryData.imageCount === 'number' ? categoryData.imageCount : currentCount;
+
+        if (existing) {
+            const normalizedHasMore = typeof existing.total === 'number'
+                ? currentCount < existing.total
+                : existing.hasMore;
+
+            return {
+                ...existing,
+                hasMore: normalizedHasMore
+            };
+        }
+
+        return {
+            page: 0,
+            pageSize: DEFAULT_PAGE_SIZE,
+            total,
+            hasMore: total ? currentCount < total : true,
+            isLoading: false
+        };
+    }
+
+    resetCategoryPagination(categoryId) {
+        if (!categoryId) {
+            return;
+        }
+        delete this._categoryPageState[categoryId];
+    }
+
+    /**
+     * 更新指定分类的布局模式（settings.layoutMode / Settings.LayoutMode）
+     * layoutMode 来自服务端，取值 flex / freedom
+     */
+    setCategoryLayoutMode(categoryId, layoutMode) {
+        if (!categoryId || !layoutMode) {
+            return;
+        }
+
+        const normalized = String(layoutMode).trim().toLowerCase();
+        // 统一将自由布局保存为 freedom，兼容后端约定
+        let storedLayoutMode = normalized;
+        if (normalized === 'freeform') {
+            storedLayoutMode = 'freedom';
+        }
+
+        if (this._productionGalleryData[categoryId]) {
+            const prev = this._productionGalleryData[categoryId];
+            const prevSettings = prev.settings || prev.Settings || {};
+            this._productionGalleryData[categoryId] = {
+                ...prev,
+                settings: {
+                    ...prevSettings,
+                    layoutMode: storedLayoutMode,
+                    LayoutMode: storedLayoutMode
+                },
+                // 保留一份 Settings 兼容后续可能的外部使用
+                Settings: {
+                    ...prevSettings,
+                    layoutMode: storedLayoutMode,
+                    LayoutMode: storedLayoutMode
+                }
+            };
+        }
+
+        if (this._userProjects[categoryId]) {
+            const prev = this._userProjects[categoryId];
+            const prevSettings = prev.settings || prev.Settings || {};
+            this._userProjects[categoryId] = {
+                ...prev,
+                settings: {
+                    ...prevSettings,
+                    layoutMode: storedLayoutMode,
+                    LayoutMode: storedLayoutMode
+                },
+                Settings: {
+                    ...prevSettings,
+                    layoutMode: storedLayoutMode,
+                    LayoutMode: storedLayoutMode
+                }
+            };
+            this.saveUserProjectsToLocal();
+        }
     }
 
     /**
@@ -192,16 +825,18 @@ class SomniumNexusStore {
             isUserProject: true,  // 标记为用户创建的项目
             createdAt: categoryData.createdAt || new Date().toISOString(),
             updatedAt: new Date().toISOString(),
-            projectType: 'user-created'
+            projectType: 'user-created',
+            remoteId: categoryData.remoteId || categoryData.originalKey || categoryKey,
+            originalKey: categoryData.originalKey || categoryKey,
+            rawTitle: categoryData.rawTitle || categoryData.title || categoryKey
         };
 
-        this._userProjects[categoryKey] = projectData;
+        const merged = this.applyNameDerivedMenu(categoryKey, projectData);
+
+        this._userProjects[categoryKey] = merged;
         console.log(`用户项目 "${categoryData.title}" 已添加到增量数据`, projectData);
 
-        // 自动保存到本地存储（如果可用）
-        this.saveUserProjectsToLocal();
-
-        return projectData;
+        return merged;
     }
 
     /**
@@ -278,7 +913,22 @@ class SomniumNexusStore {
                 const saved = localStorage.getItem('somnium_user_projects');
                 if (saved) {
                     const loadedProjects = JSON.parse(saved);
+                    // 兼容性修复：早期版本可能错误标记 hasSubMenu=true 但没有子菜单
+                    Object.keys(loadedProjects).forEach((key) => {
+                        const project = loadedProjects[key];
+                        if (project && project.hasSubMenu && (!project.subCategories || project.subCategories.length === 0)) {
+                            project.hasSubMenu = false;
+                        }
+                        loadedProjects[key] = this.applyNameDerivedMenu(key, {
+                            ...project,
+                            remoteId: project.remoteId || project.originalKey || key,
+                            originalKey: project.originalKey || key,
+                            rawTitle: project.rawTitle || project.title || key
+                        });
+                    });
                     this._userProjects = loadedProjects;
+                    // 回写一次，避免下次再修复
+                    this.saveUserProjectsToLocal();
                     console.log('用户项目已从本地存储加载:', Object.keys(loadedProjects).length, '个项目');
                     return true;
                 }
@@ -300,11 +950,373 @@ class SomniumNexusStore {
 
     removeProductionCategory(categoryKey) {
         delete this._productionGalleryData[categoryKey];
+        const resolvedKey = this.resolveCategoryKey(categoryKey);
+        delete this._categoryPageState[resolvedKey];
     }
 
     clearProductionData() {
         this._productionGalleryData = {};
+        this._categoryPageState = {};
     }
+
+    /**
+     * 将一张图片添加到指定分类下
+     * 仅在正式环境下调用后端接口，测试环境直接给出提示
+     */
+    async addImageToCategory(categoryId, imageId, sortOrder = 0) {
+        if (!categoryId || !imageId) {
+            console.warn('addImageToCategory: 缺少分类ID或图片ID', {categoryId, imageId});
+            return false;
+        }
+
+        const resolvedKey = this.resolveCategoryKey(categoryId);
+        const remoteId = this.getRemoteId(resolvedKey);
+
+        if (this.isUsingTestData) {
+            alert('当前为测试数据环境，无法将图片添加到分类（仅正式环境可用）');
+            return false;
+        }
+
+        try {
+            const payload = {
+                imageId: imageId,
+                sortOrder: sortOrder || 0 // 0 或不指定表示自动递增排序
+            };
+            const resp = await addImageToCategory(remoteId, payload);
+            console.log('图片已添加到分类:', {
+                categoryId: resolvedKey,
+                remoteId,
+                imageId,
+                response: resp && resp.data
+            });
+            return true;
+        } catch (error) {
+            console.error('将图片添加到分类失败:', categoryId, imageId, error);
+            const message =
+                (error && error.response && error.response.data && error.response.data.data) ||
+                '添加失败，请稍后重试';
+            alert(`添加到分类失败：${message}`);
+            return false;
+        }
+    }
+
+    /**
+     * 从本地状态中移除指定图片，返回移除的数量
+     */
+    removeImageFromLocalState(imageId) {
+        if (!imageId) {
+            return 0;
+        }
+
+        const removeFromCollection = (collection) => {
+            let removed = 0;
+
+            Object.keys(collection).forEach((categoryKey) => {
+                const category = collection[categoryKey];
+                if (!category || !Array.isArray(category.images)) {
+                    return;
+                }
+
+                const filteredImages = category.images.filter((img) => img.id !== imageId);
+                if (filteredImages.length !== category.images.length) {
+                    const delta = category.images.length - filteredImages.length;
+                    removed += delta;
+
+                    const nextImageCount = typeof category.imageCount === 'number'
+                        ? Math.max(0, category.imageCount - delta)
+                        : filteredImages.length;
+
+                    collection[categoryKey] = {
+                        ...category,
+                        images: filteredImages,
+                        imageCount: nextImageCount
+                    };
+
+                    const pageState = this._categoryPageState[categoryKey];
+                    if (pageState) {
+                        const nextTotal = typeof pageState.total === 'number'
+                            ? Math.max(0, pageState.total - delta)
+                            : pageState.total;
+                        const hasMore = typeof nextTotal === 'number'
+                            ? filteredImages.length < nextTotal
+                            : pageState.hasMore;
+
+                        this._categoryPageState[categoryKey] = {
+                            ...pageState,
+                            total: nextTotal,
+                            hasMore
+                        };
+                    }
+                }
+            });
+
+            return removed;
+        };
+
+        let totalRemoved = removeFromCollection(this._productionGalleryData);
+        totalRemoved += removeFromCollection(this._userProjects);
+
+        if (this._selectedImage && this._selectedImage.id === imageId) {
+            this.clearSelectedImage();
+        }
+
+        return totalRemoved;
+    }
+
+    /**
+     * 删除图片（正式环境），成功后同步本地状态
+     */
+    async deleteImageById(imageId) {
+        if (!imageId) {
+            console.warn('deleteImageById: 缺少图片ID');
+            return false;
+        }
+
+        if (this.isUsingTestData) {
+            alert('当前为测试数据环境，无法删除图片（仅正式环境可用）');
+            return false;
+        }
+
+        try {
+            const resp = await deleteImage(imageId);
+            const payload = resp && resp.data;
+            const success = payload && (
+                payload.code === '001001200' ||
+                payload.code === 200 ||
+                payload.code === '200'
+            );
+
+            if (!success) {
+                const message = (payload && (payload.data || payload.msg)) || '删除失败';
+                alert(`删除失败：${message}`);
+                return false;
+            }
+
+            const removed = this.removeImageFromLocalState(imageId);
+            console.log('图片已删除', {imageId, removed});
+            return true;
+        } catch (error) {
+            console.error('删除图片失败:', error);
+            const message =
+                (error && error.response && error.response.data && error.response.data.data) ||
+                '删除失败，请稍后重试';
+            alert(`删除失败：${message}`);
+            return false;
+        }
+    }
+
+    // 加载指定分类下指定页的图片（仅正式环境）
+    loadCategoryPage = async (categoryId, page = 1, options = {}) => {
+        if (this._useTestData || !categoryId) {
+            return false;
+        }
+
+        const resolvedKey = this.resolveCategoryKey(categoryId);
+        const remoteId = this.getRemoteId(resolvedKey);
+        const {pageSize = DEFAULT_PAGE_SIZE, reset = false, forceAlias = false} = options;
+        const existing = this._productionGalleryData[resolvedKey] || {};
+        const pagination = this.getCategoryPageState(resolvedKey);
+
+        // 确保分类设置已补全（避免布局模式缺失）
+        if (!this.getCategoryLayoutMode(existing)) {
+            const ensured = await this.ensureCategorySettings(resolvedKey);
+            if (ensured) {
+                this._categoryPageState[categoryId] = {
+                    ...pagination,
+                    settingsEnsured: true
+                };
+            }
+        }
+
+        // 避免重复请求
+        if (pagination.isLoading) {
+            return false;
+        }
+
+        const targetPage = page || (pagination.page + 1);
+        const effectivePageSize = pageSize || pagination.pageSize || DEFAULT_PAGE_SIZE;
+
+        // 已加载完所有数据时不再重复请求
+        if (!reset && !pagination.hasMore && pagination.page >= targetPage) {
+            return false;
+        }
+
+        // 标记加载中
+        this._categoryPageState[resolvedKey] = {
+            ...pagination,
+            page: pagination.page,
+            pageSize: effectivePageSize,
+            isLoading: true
+        };
+
+        // 如果需要重置，先清空已有图片
+        if (reset) {
+            this._productionGalleryData[resolvedKey] = {
+                ...existing,
+                images: []
+            };
+        }
+
+        try {
+            const categoryMeta = this._productionGalleryData[resolvedKey] || {};
+            const targets = [{remoteId, subCategoryKey: null}];
+
+            // 首次页面加载时，将折叠的斜杠分类远端ID也加入请求队列，便于展示 A/B 等别名的图片
+            if (targetPage === 1 && (forceAlias || !pagination.aliasesLoaded) && Array.isArray(categoryMeta.aliasCategoryDetails)) {
+                const normalizedMap = categoryMeta.aliasRemoteMap || {};
+                categoryMeta.aliasCategoryDetails.forEach((detail) => {
+                    const detailKeyNormalized = this.normalizeKeyForCompare(detail.key);
+                    const detailRemoteId = detail.remoteId || normalizedMap[detailKeyNormalized];
+                    if (!detailRemoteId) return;
+
+                    // 避免重复相同的 remoteId
+                    if (targets.some((t) => String(t.remoteId) === String(detailRemoteId))) {
+                        return;
+                    }
+
+                    const subCategoryKey = detail.key.includes('/')
+                        ? detail.key.split('/').pop()
+                        : detail.title || detail.key;
+
+                    targets.push({remoteId: detailRemoteId, subCategoryKey});
+                });
+            }
+
+            const prevImages = Array.isArray(existing.images) ? existing.images : [];
+            const seen = new Set(prevImages.map((img) => img.id));
+            const mergedImages = [...prevImages];
+
+            let computedTotal = typeof pagination.total === "number" ? pagination.total : prevImages.length;
+            let computedHasMore = false;
+
+            for (const target of targets) {
+                try {
+                    const resp = await getCategoryImages(target.remoteId, {page: targetPage, pageSize: effectivePageSize});
+                    const payload = resp && resp.data;
+
+                    if (!payload || !Array.isArray(payload.images)) {
+                        console.warn(`SomniumNexusStore: 分类 ${categoryId}(${target.remoteId}) 第 ${targetPage} 页图片列表为空或格式不正确`);
+                        continue;
+                    }
+
+                    const newImages = payload.images.map((img) => {
+                        if (!img || !img.ID) return null;
+
+                        const position = img.positions && (img.positions[resolvedKey] || img.positions[target.remoteId]);
+                        const uploadedAt = img.UploadedAt || (position && position.addedAt);
+                        const year = uploadedAt ? String(uploadedAt).slice(0, 4) : "";
+
+                        const fullSrc = img.CosURL || img.ThumbURL || "";
+                        const thumbSrc = img.ThumbURL || img.CosURL || "";
+
+                        return {
+                            id: img.ID,
+                            title: img.Name || "",
+                            src: fullSrc,
+                            fullSrc,
+                            thumbSrc,
+                            width: img.Width,
+                            height: img.Height,
+                            thumbWidth: img.ThumbWidth,
+                            thumbHeight: img.ThumbHeight,
+                            year,
+                            category: resolvedKey,
+                            subCategory: target.subCategoryKey || null,
+                            tags: img.Tags || [],
+                            position
+                        };
+                    }).filter(Boolean);
+
+                    newImages.forEach((img) => {
+                        if (!seen.has(img.id)) {
+                            mergedImages.push(img);
+                            seen.add(img.id);
+                        }
+                    });
+
+                    const remoteTotal = typeof payload.total === "number" ? payload.total : newImages.length;
+                    if (typeof remoteTotal === "number") {
+                        computedTotal = Math.max(computedTotal, mergedImages.length, remoteTotal);
+                    }
+                    const targetHasMore = typeof remoteTotal === "number"
+                        ? mergedImages.length < remoteTotal
+                        : newImages.length === effectivePageSize;
+                    computedHasMore = computedHasMore || targetHasMore;
+                } catch (err) {
+                    console.warn(`SomniumNexusStore: 加载分类 ${categoryId} 远端 ${target.remoteId} 第 ${targetPage} 页失败`, err);
+                }
+            }
+
+            const safeTitle = (existing && existing.title) || categoryId;
+            const safeDescription = (existing && existing.description) || "";
+
+            this._productionGalleryData[resolvedKey] = {
+                ...existing,
+                title: safeTitle,
+                description: safeDescription,
+                images: mergedImages,
+                imageCount: mergedImages.length
+            };
+            this.normalizeProductionData();
+
+            this._categoryPageState[resolvedKey] = {
+                page: targetPage,
+                pageSize: effectivePageSize,
+                total: computedTotal,
+                hasMore: computedHasMore,
+                isLoading: false,
+                aliasesLoaded: true
+            };
+
+            console.log(`SomniumNexusStore: 分类 ${categoryId} 第 ${targetPage} 页图片列表已加载，包含 ${targets.length} 个远端`);
+            return true;
+        } catch (error) {
+            console.error(`SomniumNexusStore: 加载分类 ${categoryId} 第 ${targetPage} 页图片列表失败:`, error);
+            this._categoryPageState[resolvedKey] = {
+                ...pagination,
+                page: pagination.page,
+                pageSize: effectivePageSize,
+                isLoading: false,
+                hasMore: pagination.hasMore
+            };
+            return false;
+        }
+    };
+
+    // 加载指定分类的下一页图片
+    loadNextCategoryPage = async (categoryId) => {
+        if (this._useTestData || !categoryId) {
+            return false;
+        }
+
+        const pagination = this.getCategoryPageState(categoryId);
+        if (pagination.isLoading || !pagination.hasMore) {
+            return false;
+        }
+
+        const nextPage = (pagination.page || 0) + 1;
+        return this.loadCategoryPage(categoryId, nextPage, {pageSize: pagination.pageSize || DEFAULT_PAGE_SIZE});
+    };
+
+    // 加载指定分类下的图片（仅正式环境，首屏使用）
+    loadCategoryDetail = async (categoryId, options = {}) => {
+        if (this._useTestData) {
+            return false;
+        }
+
+        const resolvedKey = this.resolveCategoryKey(categoryId);
+        const {force = false, reset = false, pageSize} = options;
+        const existing = this._productionGalleryData[resolvedKey] || {};
+        if (!force && Array.isArray(existing.images) && existing.images.length > 0) {
+            return false;
+        }
+
+        if (reset) {
+            this.resetCategoryPagination(resolvedKey);
+        }
+
+        return this.loadCategoryPage(resolvedKey, 1, {pageSize: pageSize || DEFAULT_PAGE_SIZE, reset});
+    };
 
     // 数据获取方法（兼容测试和正式环境）
     getImageById = (imageId) => {
@@ -331,7 +1343,9 @@ class SomniumNexusStore {
 
     getImagesByCategory = (category) => {
         const data = this.galleryCategories;
-        return data && data[category] ? data[category].images : [];
+        if (!category) return [];
+        const resolved = this.resolveCategoryKey(category);
+        return data && data[resolved] ? data[resolved].images : [];
     };
 
     // 统计信息
@@ -346,6 +1360,7 @@ class SomniumNexusStore {
 
     // UI状态管理方法
     setSelectedCategory = (category) => {
+        const resolved = this.resolveCategoryKey(category);
         const data = this.galleryCategories;
         if (category === null || category === undefined) {
             // 清除选中状态
@@ -354,25 +1369,37 @@ class SomniumNexusStore {
             this._hasSubMenu = false;
             this._subCategories = [];
             this._hoverSubCategories = [];
-        } else if (data && data[category]) {
-            this._selectedCategory = category;
+        } else if (data && data[resolved]) {
+            this._selectedCategory = resolved;
             this._selectedSubCategory = null;
 
             // 检查是否有子菜单
-            const hasSubMenu = data[category].hasSubMenu || false;
+            const hasSubMenu = data[resolved].hasSubMenu || false;
             this._hasSubMenu = hasSubMenu;
 
             // 设置子菜单数据
-            if (hasSubMenu && data[category].subCategories) {
-                this._subCategories = [...data[category].subCategories];
+            if (hasSubMenu && data[resolved].subCategories) {
+                this._subCategories = [...data[resolved].subCategories];
             } else {
                 this._subCategories = [];
+            }
+
+            // 在正式环境下，选中任意分类时都尝试加载详情和图片
+            if (!this._useTestData) {
+                // 优先补全分类设置，避免缺失 layoutMode 时回落到自由布局
+                this.ensureCategorySettings(resolved);
+                this.loadCategoryDetail(resolved);
             }
         }
     };
 
     setSelectedSubCategory = (subCategoryKey) => {
         this._selectedSubCategory = subCategoryKey;
+
+        // 选择子分类时，如果存在折叠别名，强制加载一次包含别名的首屏图片
+        if (!this._useTestData && this._selectedCategory) {
+            this.loadCategoryPage(this._selectedCategory, 1, {forceAlias: true});
+        }
     };
 
     clearSelectedSubCategory = () => {

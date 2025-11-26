@@ -28,9 +28,6 @@ const NewProjectModal = observer(() => {
         if (name.length > 50) {
             return '项目名称长度应在1-50个字符之间';
         }
-        if (!/^[\u4e00-\u9fa5a-zA-Z0-9\s\-_]+$/.test(name)) {
-            return '项目名称只能包含中文、英文、数字、空格、连字符和下划线';
-        }
         return '';
     };
 
@@ -49,30 +46,29 @@ const NewProjectModal = observer(() => {
             const projectData = await actionStore.createNewProject();
 
             if (projectData) {
-                // 添加到 somniumNexusStore 的用户项目（增量数据）
                 somniumNexusStore.addUserProject(projectData.key, {
                     title: projectData.title,
+                    description: projectData.description,
                     key: projectData.key,
-                    hasSubMenu: true,
+                    categoryId: projectData.categoryId,
+                    hasSubMenu: false,
                     subCategories: [],
                     images: [],
                     isNewProject: true,
-                    createdAt: projectData.createdAt
+                    createdAt: projectData.createdAt,
+                    settings: projectData.settings
                 });
 
-                // 显示成功消息（使用简单的alert代替message）
                 alert(`项目 "${projectData.title}" 创建成功`);
 
-                // 自动选中新创建的项目
                 somniumNexusStore.setSelectedCategory(projectData.key);
 
-                // 重置表单
                 setProjectName('');
                 setError('');
             }
         } catch (error) {
             console.error('创建项目失败:', error);
-            setError('创建项目失败，请重试');
+            setError(error && error.message ? error.message : '创建项目失败，请重试');
         } finally {
             setIsSubmitting(false);
         }

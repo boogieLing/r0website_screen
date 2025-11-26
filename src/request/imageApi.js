@@ -1,18 +1,38 @@
-import request from "@/request";
+import {del, get, post, put} from '@/request';
 
-const prefix = "/picbed/image";
+const prefix = '/api/base/picbed/image';
 
-export const uploadImage = (formData) =>
-  request.post(`${prefix}`, formData); // Content-Type: multipart/form-data
+export const uploadImage = (file, options = {}) => {
+    const formData = new FormData();
+    formData.append('file', file);
 
-export const getImageDetail = (id) => request.get(`${prefix}/${id}`);
+    if (options.name) {
+        formData.append('name', options.name);
+    }
 
-export const listImages = () => request.get(`${prefix}`);
+    if (options.tags) {
+        formData.append('tags', options.tags);
+    }
 
-export const findImagesByTag = (tag) => request.get(`${prefix}/tag/${tag}`);
+    // 图片上传可能耗时较长，这里单独关闭超时限制并显式使用 multipart/form-data
+    return post(prefix, formData, {
+        timeout: 0, // 0 表示不限制超时时间，让后端自行控制
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+};
 
-export const searchImageByName = (kw) => request.get(`${prefix}/search/${kw}`);
+export const getImageDetail = (id) => get(`${prefix}/${id}`);
 
-export const getImageAlbums = (id) => request.get(`${prefix}/${id}/albums`);
+export const listImages = () => get(prefix);
 
-export const deleteImage = (id) => request.delete(`${prefix}/${id}`);
+export const findImagesByTag = (tag) => get(`${prefix}/tag/${tag}`);
+
+export const searchImageByName = (kw) => get(`${prefix}/search/${kw}`);
+
+// 更新图片在某个分类下的位置与布局信息
+export const updateImagePosition = (id, data) => put(`${prefix}/${id}/position`, data);
+
+// 删除图片
+export const deleteImage = (id) => del(`${prefix}/${id}`);

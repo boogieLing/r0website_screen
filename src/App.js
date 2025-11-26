@@ -84,7 +84,7 @@ color: rgb(30,152,255);
     var content = `
 版 本 号：2.1.0    
 🚮官网: ${offiUrl}
-📫电邮：boogieLing_o@qq.com
+📫电邮：ushouldknowr0@gmail.com
 `
     console.log(`%c${title1} %c${title2}\n%c${content}`, styleTitle1, styleTitle2, styleContent);
     console.info(`

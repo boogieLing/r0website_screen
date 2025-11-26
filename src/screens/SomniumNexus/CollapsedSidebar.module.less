@@ -91,7 +91,7 @@
     align-items: center;
     justify-content: center;
     width: 60px; // 增加宽度，避免文字挤压
-    height: 200px; // 增加高度，提升可点击区域
+    min-height: 200px; // 基础高度，允许内容按需增加
     // background: rgba(255, 255, 255, 0.9);
     // border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 8px;
@@ -102,7 +102,7 @@
     cursor: pointer;
     user-select: none;
     position: relative;
-    overflow: hidden;
+    overflow: visible; // 竖向不设限，允许内容自然延展
 
     // 进入动画
     // animation: slideInFromTop 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -127,10 +127,8 @@
     padding-bottom: 8px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     text-align: center;
-    white-space: nowrap; // 防止换行
-    overflow: hidden; // 超出部分隐藏
-    text-overflow: ellipsis; // 超出显示省略号
-    max-width: 100%; // 限制最大宽度
+    // 保持单行（竖向一列字符），但不裁剪长度
+    white-space: nowrap;
 }
 
 .subProject {
@@ -141,10 +139,8 @@
     line-height: 1.1;
     margin-top: 8px;
     text-align: center;
-    white-space: nowrap; // 防止换行
-    overflow: hidden; // 超出部分隐藏
-    text-overflow: ellipsis; // 超出显示省略号
-    max-width: 100%; // 限制最大宽度
+    // 同样保持单行竖排，不做裁剪
+    white-space: nowrap;
 }
 
 // 底部简约标识

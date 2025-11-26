@@ -5,7 +5,7 @@
     overflow: hidden;
     display: inline-block;
     width: 100%;
-    height: 100%;
+    height: 100%; // 由外层容器控制高度，内部图片铺满
 }
 
 .skeletonWrapper {
@@ -28,8 +28,7 @@
 
 .actualImage {
     width: 100%;
-    height: 100%;
-    object-fit: contain;
+    height: 100%; // 让图片铺满容器，高度跟随容器
     display: block;
     z-index: 3;
     position: relative;

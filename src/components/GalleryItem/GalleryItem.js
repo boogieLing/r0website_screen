@@ -1,8 +1,9 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { observer } from 'mobx-react-lite';
 import GracefulImage from '@/components/SkeletonImage/GracefulImage';
 import { calculateNonOverlappingPosition } from '@/utils/magneticLayout';
 import { createRatioSelectorOptions, applyAspectRatio, flipAspectRatio } from '@/utils/aspectRatios';
+import somniumNexusStore from '@/stores/somniumNexusStore';
 import styles from './GalleryItem.module.less';
 
 /**
@@ -25,6 +26,9 @@ const GalleryItem = observer(({
     const [isResizing, setIsResizing] = useState(false);
     const [isMagnetic, setIsMagnetic] = useState(false); // 磁吸状态
     const [showRatioMenu, setShowRatioMenu] = useState(false); // 比例菜单显示状态
+    const [showCategoryMenu, setShowCategoryMenu] = useState(false); // 添加到分类菜单显示状态
+    const [isAddingToCategory, setIsAddingToCategory] = useState(false); // 添加到分类的加载状态
+    const [isDeleting, setIsDeleting] = useState(false); // 删除中的状态
     const [currentRatio, setCurrentRatio] = useState('5:7'); // 当前比例
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
     const [resizeStart, setResizeStart] = useState({ width: 0, height: 0, x: 0, y: 0 });
@@ -234,13 +238,59 @@ const GalleryItem = observer(({
         }
     }, [isDragging, isResizing, handleMouseMove, handleMouseUp]);
 
+    // 比例选项（包含“原图比例”）
+    const ratioOptions = useMemo(() => {
+        const options = createRatioSelectorOptions();
+
+        if (originalImage && originalImage.width && originalImage.height) {
+            const originalRatio = calculateAspectRatio(
+                originalImage.width,
+                originalImage.height
+            );
+
+            options.unshift({
+                key: 'original',
+                name: '原图比例',
+                ratio: originalRatio,
+                width: originalImage.width,
+                height: originalImage.height
+            });
+        }
+
+        return options;
+    }, [originalImage, calculateAspectRatio]);
+
     // 处理比例选择
-    const handleRatioSelect = useCallback((ratio) => {
-        const newSize = applyAspectRatio(item, ratio);
+    const handleRatioSelect = useCallback((ratioKey) => {
+        let newSize;
+
+        if (ratioKey === 'original' && originalImage && originalImage.width && originalImage.height) {
+            const originalRatio = originalImage.width / originalImage.height;
+            const gridSize = 10;
+            const baseWidth = typeof width === 'number' ? width : 160;
+            const baseHeight = Math.round(baseWidth / originalRatio);
+
+            const alignedWidth = Math.round(baseWidth / gridSize) * gridSize;
+            const alignedHeight = Math.round(baseHeight / gridSize) * gridSize;
+
+            newSize = {
+                width: Math.max(100, alignedWidth),
+                height: Math.max(100, alignedHeight)
+            };
+        } else {
+            newSize = applyAspectRatio(item, ratioKey);
+        }
+
         onUpdate(id, newSize);
-        setCurrentRatio(ratio);
+
+        if (ratioKey === 'original' && originalImage && originalImage.width && originalImage.height) {
+            setCurrentRatio(calculateAspectRatio(originalImage.width, originalImage.height));
+        } else {
+            setCurrentRatio(ratioKey);
+        }
+
         setShowRatioMenu(false);
-    }, [item, id, onUpdate]);
+    }, [item, id, onUpdate, originalImage, width, calculateAspectRatio]);
 
     // 处理长宽调转
     const handleFlipRatio = useCallback(() => {
@@ -254,19 +304,22 @@ const GalleryItem = observer(({
         setShowRatioMenu(!showRatioMenu);
     }, [showRatioMenu]);
 
-    // 点击外部关闭菜单
+    // 点击外部关闭各类菜单
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (showRatioMenu && !event.target.closest(`.${styles.ratioMenu}`) && !event.target.closest(`.${styles.ratioButton}`)) {
                 setShowRatioMenu(false);
             }
+            if (showCategoryMenu && !event.target.closest(`.${styles.categoryMenu}`) && !event.target.closest(`.${styles.categoryButton}`)) {
+                setShowCategoryMenu(false);
+            }
         };
 
-        if (showRatioMenu) {
+        if (showRatioMenu || showCategoryMenu) {
             document.addEventListener('click', handleClickOutside);
             return () => document.removeEventListener('click', handleClickOutside);
         }
-    }, [showRatioMenu]);
+    }, [showRatioMenu, showCategoryMenu]);
 
     // 处理点击
     const handleClick = useCallback(() => {
@@ -274,6 +327,82 @@ const GalleryItem = observer(({
             onClick(originalImage);
         }
     }, [editMode, onClick, originalImage]);
+
+    // 切换“添加到分类”菜单
+    const toggleCategoryMenu = useCallback((e) => {
+        e.stopPropagation();
+        setShowCategoryMenu(!showCategoryMenu);
+    }, [showCategoryMenu]);
+
+    // 执行“添加到分类”操作
+    const handleAddToCategory = useCallback(async (option) => {
+        if (!originalImage || !originalImage.id || !option) {
+            return;
+        }
+
+        const targets = Array.isArray(option.assignKeys) && option.assignKeys.length > 0
+            ? option.assignKeys
+            : [option.key];
+
+        setIsAddingToCategory(true);
+        try {
+            let successCount = 0;
+            for (const targetKey of targets) {
+                const success = await somniumNexusStore.addImageToCategory(targetKey, originalImage.id);
+                if (success) {
+                    successCount += 1;
+                }
+            }
+            if (successCount > 0) {
+                alert(`已将图片添加到分类：${option.title || option.key}（成功 ${successCount} 项）`);
+            }
+        } finally {
+            setIsAddingToCategory(false);
+            setShowCategoryMenu(false);
+        }
+    }, [originalImage]);
+
+    // 删除图片
+    const handleDeleteImage = useCallback(async (event) => {
+        if (event) {
+            event.stopPropagation();
+        }
+
+        if (!editMode || !originalImage || !originalImage.id) {
+            return;
+        }
+
+        if (somniumNexusStore.isUsingTestData) {
+            alert('当前为测试数据环境，无法删除图片（仅正式环境可用）');
+            return;
+        }
+
+        if (isDeleting) {
+            return;
+        }
+
+        const title = originalImage.title ? `「${originalImage.title}」` : '这张图片';
+        const confirmed = window.confirm(`确定删除${title}吗？删除后不可恢复。`);
+        if (!confirmed) {
+            return;
+        }
+
+        setIsDeleting(true);
+        try {
+            const ok = await somniumNexusStore.deleteImageById(originalImage.id);
+            if (ok) {
+                console.log('图片已删除', originalImage.id);
+            }
+        } finally {
+            setIsDeleting(false);
+        }
+    }, [editMode, originalImage, isDeleting]);
+
+    // 列表展示时优先使用缩略图，减少带宽；大图在详情模态框中按需加载
+    const displaySrc = originalImage.thumbSrc || originalImage.src;
+
+    // 可用分类列表（用于“添加到分类”，包含折叠前的斜杠分类选项）
+    const availableCategories = somniumNexusStore.getCategoryAssignOptions();
 
     return (
         <div
@@ -296,9 +425,10 @@ const GalleryItem = observer(({
         >
             <div className={styles.imageWrapper}>
                 <GracefulImage
-                    src={originalImage.src}
+                    src={displaySrc}
                     alt={originalImage.title}
                     className={styles.galleryImage}
+                    objectFit="cover"
                     aspectRatio="4:3"
                     skeletonSize="none"
                     showRetry={false}
@@ -347,14 +477,61 @@ const GalleryItem = observer(({
                             </div>
                         </div>
 
+                        {/* 添加到分类按钮 */}
+                        <div className={styles.categoryControls}>
+                            <div
+                                className={styles.categoryButton}
+                                onClick={toggleCategoryMenu}
+                                title={isAddingToCategory ? '正在添加到分类...' : '添加到分类'}
+                                role="button"
+                                tabIndex={0}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        toggleCategoryMenu(e);
+                                    }
+                                }}
+                            >
+                                +
+                            </div>
+                            {showCategoryMenu && (
+                                <div className={styles.categoryMenu}>
+                                    {availableCategories.map((option) => {
+                                        const categoryData = somniumNexusStore.galleryCategories[option.assignKeys[0]];
+                                        if (!categoryData) return null;
+                                        return (
+                                            <div
+                                                key={option.key}
+                                                className={styles.categoryOption}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleAddToCategory(option);
+                                                }}
+                                            >
+                                                {option.title || categoryData.title || option.key}
+                                            </div>
+                                        );
+                                    })}
+                                    {availableCategories.length === 0 && (
+                                        <div className={styles.categoryOptionDisabled}>
+                                            暂无可用分类
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+
                         {/* 比例选择菜单 */}
                         {showRatioMenu && (
                             <div className={styles.ratioMenu}>
-                                {createRatioSelectorOptions().map((option) => (
+                                {ratioOptions.map((option) => (
                                     <div
                                         key={option.key}
                                         className={`${styles.ratioOption} ${
-                                            currentRatio === option.key ? styles.active : ''
+                                            currentRatio === option.key ||
+                                            (option.key === 'original' && currentRatio === option.ratio)
+                                                ? styles.active
+                                                : ''
                                         }`}
                                         onClick={() => handleRatioSelect(option.key)}
                                     >
@@ -371,6 +548,24 @@ const GalleryItem = observer(({
                             title="调整大小"
                         >
                             <div className={styles.resizeIcon} />
+                        </div>
+
+                        {/* 删除图片按钮 */}
+                        <div
+                            className={`${styles.deleteButton} ${isDeleting ? styles.deleting : ''}`}
+                            onClick={handleDeleteImage}
+                            title={isDeleting ? '正在删除...' : '删除图片'}
+                            role="button"
+                            tabIndex={0}
+                            onMouseDown={(e) => e.stopPropagation()}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    handleDeleteImage(e);
+                                }
+                            }}
+                        >
+                            {isDeleting ? '…' : '×'}
                         </div>
 
                         {/* 编辑状态指示器 - 显示有价值的信息 */}

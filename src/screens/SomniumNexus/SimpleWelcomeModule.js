@@ -1,117 +1,212 @@
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
+import somniumNexusStore from '@/stores/somniumNexusStore';
 import styles from './SimpleWelcomeModule.module.less';
 
-// 预设的展示图片数据 - 模拟图集
-const DEFAULT_IMAGES = [
+// 当后端接口不可用或暂无数据时的兜底图片
+const FALLBACK_IMAGES = [
     {
-        id: 1,
-        src: 'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&h=600&fit=crop',
-        title: '静物之美',
-        description: '发现日常物品的诗意瞬间'
+        id: 'fallback-1',
+        src: 'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=1600&h=900&fit=crop'
     },
     {
-        id: 2,
-        src: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop',
-        title: '光影交響',
-        description: '捕捉光与影的和谐舞蹈'
+        id: 'fallback-2',
+        src: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600&h=900&fit=crop'
     },
     {
-        id: 3,
-        src: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=600&fit=crop',
-        title: '自然之美',
-        description: '探索大自然的宁静力量'
-    },
-    {
-        id: 4,
-        src: 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=800&h=600&fit=crop',
-        title: '城市印象',
-        description: '记录都市生活的诗意瞬间'
-    },
-    {
-        id: 5,
-        src: 'https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?w=800&h=600&fit=crop',
-        title: '时光印记',
-        description: '时间在影像中留下的痕迹'
+        id: 'fallback-3',
+        src: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1600&h=900&fit=crop'
     }
 ];
 
-const SimpleWelcomeModule = ({ onGetStarted }) => {
-    const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const [isTransitioning, setIsTransitioning] = useState(false);
+const SimpleWelcomeModule = ({prefetchedImages = []}) => {
+    const [images, setImages] = useState([]);
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [overlayIndex, setOverlayIndex] = useState(null);
+    const [isFading, setIsFading] = useState(false);
 
-    // 随机选择初始图片
+    // 从 nexus 分类（全部图片）接口加载图片
     useEffect(() => {
-        const randomIndex = Math.floor(Math.random() * DEFAULT_IMAGES.length);
-        setCurrentImageIndex(randomIndex);
-    }, []);
+        let isMounted = true;
 
-    // 自动切换图片
+        const useImages = (list) => {
+            if (!isMounted || !list || list.length === 0) return false;
+            setImages(list);
+            const initialIndex = Math.floor(Math.random() * list.length);
+            setCurrentIndex(initialIndex);
+            return true;
+        };
+
+        const loadImages = async () => {
+            try {
+                // 如果父组件已传入预取的图片，直接使用
+                if (prefetchedImages && prefetchedImages.length > 0) {
+                    const normalizedPrefetch = prefetchedImages
+                        .map((img) => {
+                            if (!img) return null;
+                            const fullSrc =
+                                img.fullSrc ||
+                                img.src ||
+                                img.CosURL ||
+                                img.ThumbURL ||
+                                '';
+                            if (!fullSrc) return null;
+                            return {
+                                id: img.id || img.ID || fullSrc,
+                                src: fullSrc
+                            };
+                        })
+                        .filter(Boolean);
+
+                    if (useImages(normalizedPrefetch)) {
+                        return;
+                    }
+                }
+
+                // 使用 SomniumNexusStore 的分类图片加载逻辑，请求 nexus 分类的图片列表
+                await somniumNexusStore.loadCategoryDetail('nexus', {force: true});
+
+                const storeImages = somniumNexusStore.getImagesByCategory('nexus') || [];
+
+                const normalized = storeImages
+                    .map((img) => {
+                        if (!img) return null;
+                        const fullSrc =
+                            img.fullSrc ||
+                            img.src ||
+                            img.CosURL ||
+                            img.ThumbURL ||
+                            '';
+                        if (!fullSrc) return null;
+                        return {
+                            id: img.id || img.ID || fullSrc,
+                            src: fullSrc
+                        };
+                    })
+                    .filter(Boolean);
+
+                const finalImages =
+                    normalized && normalized.length > 0
+                        ? normalized
+                        : FALLBACK_IMAGES;
+
+                useImages(finalImages);
+            } catch (error) {
+                console.error('加载 nexus 图片失败，将使用兜底图片:', error);
+                useImages(FALLBACK_IMAGES);
+            }
+        };
+
+        loadImages();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [prefetchedImages]);
+
+    // 随机播放：定时准备下一张图片（仅选择索引，不直接切换）
     useEffect(() => {
+        if (!images || images.length === 0) {
+            return;
+        }
+
         const interval = setInterval(() => {
-            setIsTransitioning(true);
-            setTimeout(() => {
-                setCurrentImageIndex((prevIndex) =>
-                    (prevIndex + 1) % DEFAULT_IMAGES.length
-                );
-                setIsTransitioning(false);
-            }, 500); // 过渡动画时间
-        }, 4000); // 每4秒切换一次
+            if (!images || images.length <= 1) {
+                return;
+            }
 
-        return () => clearInterval(interval);
-    }, []);
+            setOverlayIndex((prevOverlay) => {
+                let next = Math.floor(Math.random() * images.length);
 
-    const currentImage = DEFAULT_IMAGES[currentImageIndex];
+                // 避免和当前或者上一次预备的相同
+                if (next === currentIndex || next === prevOverlay) {
+                    next = (next + 1) % images.length;
+                }
+
+                return next;
+            });
+        }, 12000); // 每 12 秒切换一次，避免变动过快
+
+        return () => {
+            clearInterval(interval);
+        };
+    }, [images, currentIndex]);
+
+    // 预加载 overlayIndex 对应图片，并在加载完成后触发淡入淡出动画
+    useEffect(() => {
+        if (overlayIndex === null || !images || !images[overlayIndex]) {
+            return;
+        }
+
+        let canceled = false;
+        const target = images[overlayIndex];
+        const preloadImg = new Image();
+        preloadImg.src = target.src;
+
+        const startFade = () => {
+            if (canceled) return;
+
+            // 确保从透明开始
+            setIsFading(false);
+
+            // 下一帧再开启淡入，确保浏览器能捕捉到 opacity 的变更
+            requestAnimationFrame(() => {
+                if (canceled) return;
+                setIsFading(true);
+
+                // 等动画结束后，切换当前图片，并移除覆盖层
+                setTimeout(() => {
+                    if (canceled) return;
+                    setCurrentIndex(overlayIndex);
+                    setOverlayIndex(null);
+                    setIsFading(false);
+                }, 800);
+            });
+        };
+
+        if (preloadImg.complete) {
+            startFade();
+        } else {
+            preloadImg.onload = startFade;
+            preloadImg.onerror = startFade;
+        }
+
+        return () => {
+            canceled = true;
+            preloadImg.onload = null;
+            preloadImg.onerror = null;
+        };
+    }, [overlayIndex, images]);
+
+    const currentImage =
+        images && images.length > 0 ? images[currentIndex] : null;
+    const overlayImage =
+        overlayIndex !== null && images && images.length > 0
+            ? images[overlayIndex]
+            : null;
 
     return (
         <div className={styles.welcomeContainer}>
-            {/* 背景图片轮播 */}
             <div className={styles.backgroundImageWrapper}>
-                <img
-                    src={currentImage.src}
-                    alt={currentImage.title}
-                    className={`${styles.backgroundImage} ${isTransitioning ? styles.transitioning : ''}`}
-                />
-                <div className={styles.imageOverlay}></div>
-            </div>
-
-            {/* 日系文字介绍层 */}
-            <div className={styles.textOverlay}>
-                <div className={styles.mainTitleContainer}>
-                    <h1 className={styles.mainTitle}>
-                        夢幻結界
-                        <span className={styles.titleSub}>Somnium Nexus</span>
-                    </h1>
-                </div>
-
-                <div className={styles.descriptionContainer}>
-                    <p className={styles.description}>
-                        这是一个视觉图集项目
-                        <br />
-                        展示摄影作品的静谧之美
-                    </p>
-                    <p className={styles.subDescription}>
-                        让光影引领你进入诗意的视觉之旅
-                    </p>
-                </div>
-
-                <div className={styles.currentImageInfo}>
-                    <h3 className={styles.imageTitle}>{currentImage.title}</h3>
-                    <p className={styles.imageDesc}>{currentImage.description}</p>
-                </div>
-
-                <button className={styles.exploreButton} onClick={onGetStarted}>
-                    探索作品
-                </button>
-            </div>
-
-            {/* 图片指示器 */}
-            <div className={styles.imageIndicators}>
-                {DEFAULT_IMAGES.map((_, index) => (
-                    <div
-                        key={index}
-                        className={`${styles.indicator} ${index === currentImageIndex ? styles.active : ''}`}
+                {currentImage && (
+                    <img
+                        key={`current-${currentImage.id}`}
+                        src={currentImage.src}
+                        alt="Somnium Nexus"
+                        className={`${styles.backgroundImageBase} ${
+                            isFading ? styles.backgroundImageBaseFadingOut : ''
+                        }`}
                     />
-                ))}
+                )}
+                {overlayImage && (
+                    <img
+                        key={`overlay-${overlayImage.id}`}
+                        src={overlayImage.src}
+                        alt="Somnium Nexus"
+                        className={`${styles.backgroundImage} ${
+                            isFading ? styles.backgroundImageOverlayVisible : styles.backgroundImageOverlay
+                        }`}
+                    />
+                )}
             </div>
         </div>
     );

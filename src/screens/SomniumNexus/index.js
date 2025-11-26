@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useCallback} from "react";
+import React, {useEffect, useState, useCallback, useRef} from "react";
 import {observer} from "mobx-react-lite";
 import {useParams} from "react-router-dom";
 import globalStore from "@/stores/globalStore";
@@ -15,6 +15,7 @@ import CollapsedSidebar from "./CollapsedSidebar";
 import SomniumLogin from "@/components/SomniumLogin/SomniumLogin";
 import TriangleLoginIcon from "@/components/SomniumLogin/TriangleLoginIcon";
 import NewProjectModal from "@/components/NewProjectModal/NewProjectModal";
+import UploadImageModal from "@/components/UploadImageModal/UploadImageModal";
 import signLineImg from "@/static/pic/sign_line.png";
 import styles from "./index.module.less";
 import {environmentManager, LAYOUT_TYPES} from "@/utils/environment";
@@ -29,9 +30,15 @@ const SomniumNexus = observer(() => {
     const [hasSelected, setHasSelected] = useState(false); // 跟踪用户是否选择了项目
     const [hoveredCategory, setHoveredCategory] = useState(null); // 跟踪hover的类别
     const [hoveredActionCategory, setHoveredActionCategory] = useState(null); // 跟踪hover的操作类别
-    const [currentLayout, setCurrentLayout] = useState(environmentManager.getCurrentLayoutType()); // 当前布局类型
+    const [environmentLayout, setEnvironmentLayout] = useState(environmentManager.getCurrentLayoutType()); // 全局布局类型，用于无分类配置时回退
+    const [currentLayout, setCurrentLayout] = useState(environmentManager.getCurrentLayoutType()); // 当前实际应用的布局类型
+    const [isMobile, setIsMobile] = useState(false); // 是否为移动端竖屏小宽度设备
     const [showLoginModal, setShowLoginModal] = useState(false); // 登录模态框状态
     const [showActionTempSubMenu, setShowActionTempSubMenu] = useState(false); // 临时action子菜单显示状态
+    const [isLoadingMore, setIsLoadingMore] = useState(false); // 滚动加载状态
+    const galleryWrapperRef = useRef(null); // 主内容滚动容器
+    const [nexusPrefetchedImages, setNexusPrefetchedImages] = useState([]); // 欢迎页使用的 nexus 预取图片
+    const hasPrefetchedNexusRef = useRef(false); // 避免重复预取 nexus
 
     const categories = somniumNexusStore.categories;
     const currentImages = somniumNexusStore.currentCategoryImages;
@@ -41,34 +48,199 @@ const SomniumNexus = observer(() => {
         globalStore.setWebSiteTitle("Somnium Nexus - R0!");
 
         // 如果有URL参数，设置选中分类 | If URL param exists, set selected category
-        if (category && somniumNexusStore.galleryCategories[category]) {
+        if (category && somniumNexusStore.selectedCategory !== category) {
             somniumNexusStore.setSelectedCategory(category);
             setHasSelected(true);
 
             // 清除子分类选择，显示所有图片
             somniumNexusStore.clearSelectedSubCategory();
 
-            // 如果有子菜单，不自动展开侧边栏，但标记次级菜单可用
-            if (somniumNexusStore.galleryCategories[category].hasSubMenu) {
+            // 根据最新的分类数据决定是否展示子菜单
+            const targetCategory = somniumNexusStore.galleryCategories[category];
+            if (targetCategory && targetCategory.hasSubMenu) {
                 setSidebarExpanded(false); // 不自动展开侧边栏
                 setShowSecondFlow(true); // 但次级菜单可用
+            } else {
+                setShowSecondFlow(false);
             }
         }
-    }, [category]);
+    }, [category, categories]);
 
-    // 监听布局变化
+    // 加载正式环境的分类列表（项目分类）
+    useEffect(() => {
+        if (somniumNexusStore.isUsingTestData) {
+            return;
+        }
+
+        // 加载分类列表，确保 settings 在第一次访问时就位
+        somniumNexusStore.loadCategoriesFromServer();
+    }, []);
+
+    // 计算当前应使用的布局类型（优先使用分类 settings.layoutMode / Settings.LayoutMode，其次使用全局布局设置）
+    const computeLayoutType = () => {
+        // 移动端竖屏小宽度设备下，强制使用 Flex 网格布局
+        if (isMobile) {
+            return LAYOUT_TYPES.FLEX;
+        }
+
+        // 测试数据环境仍然使用全局布局设置
+        if (somniumNexusStore.isUsingTestData) {
+            return environmentLayout;
+        }
+
+        const currentCategory = somniumNexusStore.currentCategory;
+        const layoutMode = somniumNexusStore.getCategoryLayoutMode(currentCategory);
+
+        if (layoutMode) {
+            if (layoutMode === 'flex') {
+                return LAYOUT_TYPES.FLEX;
+            }
+            if (layoutMode === 'freedom' || layoutMode === 'freeform') {
+                return LAYOUT_TYPES.FREEFORM;
+            }
+        }
+
+        // 兼容旧数据：如果分类没有配置 layoutMode，则回退到全局布局设置
+        return environmentLayout;
+    };
+
+    // 记录分类布局模式用于依赖跟踪
+    const categoryLayoutModeKey = somniumNexusStore.getCategoryLayoutMode(somniumNexusStore.currentCategory);
+
+    // 当分类、环境或设备状态变化时，更新当前布局状态
+    useEffect(() => {
+        const computed = computeLayoutType();
+        const categoryId = somniumNexusStore.selectedCategory;
+        const currentCategory = somniumNexusStore.currentCategory;
+        console.log('[SomniumNexus] 布局更新', {
+            selectedCategory: categoryId,
+            categoryLayoutMode: categoryLayoutModeKey,
+            envLayout: environmentLayout,
+            isMobile,
+            isUsingTestData: somniumNexusStore.isUsingTestData,
+            hasCategorySettings: currentCategory && currentCategory.settings ? Object.keys(currentCategory.settings) : null,
+            computedLayout: computed
+        });
+        setCurrentLayout(computed);
+    }, [
+        categoryLayoutModeKey,
+        somniumNexusStore.selectedCategory,
+        somniumNexusStore.isUsingTestData,
+        environmentLayout,
+        isMobile
+    ]);
+
+    // 监听环境变化（包括布局变化），在全局布局改变或移动端状态变化时重新计算当前布局
     useEffect(() => {
         const handleLayoutChange = () => {
-            setCurrentLayout(environmentManager.getCurrentLayoutType());
+            setEnvironmentLayout(environmentManager.getCurrentLayoutType());
         };
 
-        // 监听环境变化（包括布局变化）
         environmentManager.addEnvironmentChangeListener(handleLayoutChange);
+
+        // 初始化时同步一次全局布局
+        handleLayoutChange();
 
         return () => {
             environmentManager.removeEnvironmentChangeListener(handleLayoutChange);
         };
     }, []);
+    // 计算当前布局（每次渲染基于最新的分类配置与全局布局）
+    const renderedLayout = currentLayout;
+
+    // 监听窗口尺寸和方向变化，判断是否为移动端竖屏小宽度设备
+    useEffect(() => {
+        const checkIsMobile = () => {
+            if (typeof window === 'undefined') return;
+            const isPortrait = window.matchMedia && window.matchMedia('(orientation: portrait)').matches;
+            const isNarrow = window.innerWidth <= 768;
+            setIsMobile(isPortrait && isNarrow);
+        };
+
+        checkIsMobile();
+
+        window.addEventListener('resize', checkIsMobile);
+        window.addEventListener('orientationchange', checkIsMobile);
+
+        return () => {
+            window.removeEventListener('resize', checkIsMobile);
+            window.removeEventListener('orientationchange', checkIsMobile);
+        };
+    }, []);
+
+    // 监听滚动以按需加载更多图片（正式环境）
+    const handleLoadMore = useCallback(async () => {
+        const categoryId = somniumNexusStore.selectedCategory;
+        if (!categoryId || somniumNexusStore.isUsingTestData) {
+            return;
+        }
+
+        const pagination = somniumNexusStore.getCategoryPageState(categoryId);
+        if (!pagination.hasMore || pagination.isLoading) {
+            return;
+        }
+
+        setIsLoadingMore(true);
+        try {
+            await somniumNexusStore.loadNextCategoryPage(categoryId);
+        } finally {
+            setIsLoadingMore(false);
+        }
+    }, [somniumNexusStore.selectedCategory, somniumNexusStore.isUsingTestData]);
+
+    useEffect(() => {
+        const wrapper = galleryWrapperRef.current;
+        if (!wrapper) return;
+
+        let ticking = false;
+        const onScroll = () => {
+            if (ticking) return;
+            ticking = true;
+            requestAnimationFrame(() => {
+                const {scrollTop, scrollHeight, clientHeight} = wrapper;
+                const distanceToBottom = scrollHeight - scrollTop - clientHeight;
+                if (distanceToBottom < 200) {
+                    handleLoadMore();
+                }
+                ticking = false;
+            });
+        };
+
+        wrapper.addEventListener('scroll', onScroll);
+        // 页面初始高度不足时主动尝试加载
+        onScroll();
+
+        return () => {
+            wrapper.removeEventListener('scroll', onScroll);
+        };
+    }, [handleLoadMore, currentImages.length]);
+
+    useEffect(() => {
+        setIsLoadingMore(false);
+    }, [somniumNexusStore.selectedCategory]);
+
+    // 未选择项目时，预取 nexus 分类图片供欢迎页随机展示
+    useEffect(() => {
+        if (somniumNexusStore.isUsingTestData || somniumNexusStore.selectedCategory) {
+            return;
+        }
+
+        const loadNexusForWelcome = async () => {
+            const ok = await somniumNexusStore.loadCategoryDetail('nexus', {force: true, reset: true});
+            const images = somniumNexusStore.getImagesByCategory('nexus') || [];
+            if (images.length > 0) {
+                setNexusPrefetchedImages(images);
+                hasPrefetchedNexusRef.current = true;
+            } else if (!ok) {
+                // 允许后续重试
+                hasPrefetchedNexusRef.current = false;
+            }
+        };
+
+        if (!hasPrefetchedNexusRef.current) {
+            loadNexusForWelcome();
+        }
+    }, [somniumNexusStore.selectedCategory, somniumNexusStore.isUsingTestData, categories.length]);
 
     // 取消自动选择"全部"分类，让用户手动选择
     useEffect(() => {
@@ -76,6 +248,21 @@ const SomniumNexus = observer(() => {
         // 这样可以避免强制用户从"全部"tab开始
         console.log('项目分类已加载，等待用户手动选择');
     }, [categories]); // 依赖categories，确保在数据加载完成后执行
+
+    // 分类切换后，确保布局配置已补全（防止缺失 settings.layoutMode 回落到错误布局）
+    useEffect(() => {
+        const categoryId = somniumNexusStore.selectedCategory;
+        if (!categoryId || somniumNexusStore.isUsingTestData) {
+            return;
+        }
+
+        const currentCategory = somniumNexusStore.currentCategory;
+        const layoutMode = somniumNexusStore.getCategoryLayoutMode(currentCategory);
+
+        if (!layoutMode) {
+            somniumNexusStore.ensureCategorySettings(categoryId);
+        }
+    }, [somniumNexusStore.selectedCategory, somniumNexusStore.currentCategory, somniumNexusStore.isUsingTestData]);
 
     // 点击sidebarHeader取消所有选择，回到初始状态
     const handleSidebarHeaderClick = useCallback(() => {
@@ -116,23 +303,30 @@ const SomniumNexus = observer(() => {
         };
     }, [category]);
 
-    // 当选择新的分类时，同步更新hover状态的子菜单
+    // 当选择新的分类时，同步更新子菜单并决定是否展示（点击后保持常驻）
     useEffect(() => {
-        // 只有在确实选择了分类的情况下才更新hover状态
         const currentCategory = somniumNexusStore.selectedCategory;
 
         if (currentCategory) {
             const categoryData = somniumNexusStore.galleryCategories[currentCategory];
-            if (categoryData && categoryData.hasSubMenu) {
-                somniumNexusStore.setSubCategoriesForHover(categoryData.subCategories || []);
+            const hasSub = categoryData && categoryData.hasSubMenu;
+            const subs = (categoryData && categoryData.subCategories) || [];
+
+            if (hasSub) {
+                somniumNexusStore.setSubCategoriesForHover(subs);
+                setHoveredCategory(currentCategory);
+                setShowSecondFlow(subs.length > 0);
             } else {
                 somniumNexusStore.setSubCategoriesForHover([]);
+                setShowSecondFlow(false);
+                setHoveredCategory(null);
             }
         } else {
-            // 如果没有选中任何分类，清空hover子菜单
             somniumNexusStore.setSubCategoriesForHover([]);
+            setShowSecondFlow(false);
+            setHoveredCategory(null);
         }
-    }, [categories]);
+    }, [somniumNexusStore.selectedCategory, categories]);
 
     const handleProjectClick = useCallback((projectKey) => {
         // 标记用户已选择项目
@@ -148,23 +342,11 @@ const SomniumNexus = observer(() => {
         // 清除子分类选择，显示项目的所有图片
         somniumNexusStore.clearSelectedSubCategory();
 
-        // 如果选中有子菜单的项目
         if (hasSubMenu) {
-            if (isNewSelection) {
-                // 新项目选择：收缩侧边栏，但标记需要显示次级菜单
-                setSidebarExpanded(false);
-                setShowSecondFlow(true); // 保持次级菜单状态为可用
-            } else {
-                // 同一个项目重复点击，切换侧边栏状态
-                const newExpandedState = !sidebarExpanded;
-                setSidebarExpanded(newExpandedState);
-                // 当展开时显示次级菜单，收缩时隐藏
-                if (newExpandedState) {
-                    setShowSecondFlow(true);
-                } else {
-                    setShowSecondFlow(false);
-                }
-            }
+            // 点击直接展示右侧子菜单并锁定当前hover
+            setHoveredCategory(projectKey);
+            somniumNexusStore.setSubCategoriesForHover(somniumNexusStore.galleryCategories[projectKey].subCategories || []);
+            setShowSecondFlow(true);
         } else {
             // 没有子菜单的项目，收缩侧栏并隐藏第二个flow
             setShowSecondFlow(false);
@@ -173,65 +355,40 @@ const SomniumNexus = observer(() => {
     }, [sidebarExpanded]);
 
     // 项目分类hover处理 - 清除操作分类的选中态
-    const handleCategoryLeave = useCallback(() => {
+    const handleCategoryLeave = useCallback((event) => {
         // 只有在侧栏展开状态下才响应
         if (!sidebarExpanded) return;
 
+        const toElement = event && event.relatedTarget;
+        if (toElement && toElement.closest && (
+            toElement.closest(`.${styles.tabsFlowRight}`) ||
+            toElement.closest(`.${styles.actionTempSubMenu}`)
+        )) {
+            // 移动到右侧子菜单时保持展开
+            return;
+        }
+
+        // 如果当前选中的分类有子菜单，离开左侧也保持展开
+        const currentCategory = somniumNexusStore.selectedCategory;
+        if (currentCategory && somniumNexusStore.galleryCategories[currentCategory]?.hasSubMenu) {
+            return;
+        }
+
         setHoveredCategory(null);
         setHoveredActionCategory(null); // 同时清除操作分类的hover状态
+        setShowSecondFlow(false);
 
-        // 当鼠标离开时，恢复到当前选中分类的子菜单（如果有选中分类的话）
-        const currentCategory = somniumNexusStore.selectedCategory;
-        const currentActionCategory = actionStore.selectedActionCategory;
-
-        if (currentCategory) {
-            const currentCategoryData = somniumNexusStore.galleryCategories[currentCategory];
-            if (currentCategoryData && currentCategoryData.hasSubMenu) {
-                somniumNexusStore.setSubCategoriesForHover(currentCategoryData.subCategories || []);
-                setShowSecondFlow(true); // 保持次级菜单显示
-                setShowActionTempSubMenu(false); // 隐藏临时action子菜单
-                actionStore.setShowActionSecondFlow(false); // 隐藏操作次级菜单
-            } else {
-                somniumNexusStore.setSubCategoriesForHover([]);
-                setShowSecondFlow(false); // 隐藏次级菜单
-                setShowActionTempSubMenu(false); // 隐藏临时action子菜单
-            }
-        } else if (currentActionCategory) {
-            const currentActionData = actionStore.getActionCategory(currentActionCategory);
-            if (currentActionData && currentActionData.hasSubMenu) {
-                actionStore.setActionSubCategoriesForHover(currentActionData.subCategories || []);
-                setShowActionTempSubMenu(true); // 显示临时action子菜单
-                setShowSecondFlow(false); // 隐藏项目次级菜单
-                actionStore.setShowActionSecondFlow(false); // 隐藏操作次级菜单
-            } else {
-                actionStore.setActionSubCategoriesForHover([]);
-                setShowActionTempSubMenu(false); // 隐藏临时action子菜单
-                actionStore.setShowActionSecondFlow(false); // 隐藏操作次级菜单
-            }
-        } else {
-            // 如果没有选中任何分类，清空子菜单并隐藏次级菜单容器
-            somniumNexusStore.setSubCategoriesForHover([]);
-            actionStore.setActionSubCategoriesForHover([]);
-            setShowSecondFlow(false); // 关键：隐藏次级菜单容器
-            setShowActionTempSubMenu(false); // 隐藏临时action子菜单
-            actionStore.setShowActionSecondFlow(false); // 隐藏操作次级菜单
-        }
+        // 当鼠标离开时，清空项目子菜单
+        somniumNexusStore.setSubCategoriesForHover([]);
+        // 当鼠标离开时，清空操作子菜单
+        actionStore.setActionSubCategoriesForHover([]);
+        setShowActionTempSubMenu(false);
+        actionStore.setShowActionSecondFlow(false);
     }, [sidebarExpanded]);
 
-    // 项目分类hover处理 - 清除操作分类的选中态
+    // 项目分类hover处理
     const handleCategoryHover = useCallback((categoryKey) => {
-        setHoveredCategory(categoryKey);
-        setHoveredActionCategory(null); // 清除操作分类的hover状态
-
-        // 清除操作分类的选中态，确保项目分类和操作分类互斥
-        actionStore.clearActionSelection();
-
-        const categoryData = somniumNexusStore.galleryCategories[categoryKey];
-        if (categoryData && categoryData.hasSubMenu) {
-            somniumNexusStore.setSubCategoriesForHover(categoryData.subCategories || []);
-        } else {
-            somniumNexusStore.setSubCategoriesForHover([]);
-        }
+        // hover 行为暂时停用
     }, [categories]);
 
     const handleSubCategoryClick = useCallback((subCategoryKey) => {
@@ -356,7 +513,18 @@ const SomniumNexus = observer(() => {
         }, 400);
     }, [isAnimating, sidebarExpanded]);
 
-    // 项目分类hover处理 - 清除操作分类的选中态
+    // 根据当前是否有右侧二级菜单内容，动态切换tabs容器布局宽度
+    const shouldShowProjectSubMenu = showSecondFlow && somniumNexusStore.hoverSubCategories.length > 0;
+    const hasRightSecondFlow = shouldShowProjectSubMenu;
+    const rightPanelStyle = hasRightSecondFlow ? {
+        display: 'block',
+        width: '280px',
+        maxWidth: '320px',
+        minWidth: '220px'
+    } : {
+        display: 'none'
+    };
+    const tabsContainerClassName = `${styles.tabsContainer} ${hasRightSecondFlow ? styles.expanded : styles.collapsed}`;
 
     return (
         <div className={styles.somniumNexusContainer}>
@@ -375,7 +543,7 @@ const SomniumNexus = observer(() => {
                     <p className={styles.subtitle}>
                         {userStore.isLoggedIn
                             ? `${userStore.username || userStore.email}`
-                            : "图集项目 | Image Collection"
+                            : "Ciallo～(∠・ω< )⌒★"
                         }
                     </p>
                     <div className={styles.signatureOverlay}>
@@ -384,7 +552,7 @@ const SomniumNexus = observer(() => {
                 </div>
 
                     <div className={styles.projectTabs}>
-                        <div className={`${styles.tabsContainer} ${styles.expanded}`}>
+                        <div className={tabsContainerClassName}>
                             {/* 左侧主tabsFlow - 项目分类和操作分类 */}
                             <div className={styles.tabsFlowLeft}>
                                 {/* 项目分类 */}
@@ -402,7 +570,7 @@ const SomniumNexus = observer(() => {
                                                 data-project-key={categoryKey}
                                                 onClick={() => handleProjectClick(categoryKey)}
                                                 onMouseEnter={() => handleCategoryHover(categoryKey)}
-                                                onMouseLeave={handleCategoryLeave}
+                                                onMouseLeave={(e) => handleCategoryLeave(e)}
                                                 role="button"
                                                 tabIndex={0}
                                                 onKeyDown={(e) => {
@@ -454,14 +622,11 @@ const SomniumNexus = observer(() => {
                                                 onClick={() => {
                                                     // 操作tab的点击逻辑 - 使用临时子菜单避免与project子菜单冲突
                                                     if (actionData.hasSubMenu) {
-                                                        // 清除项目的选中状态，确保操作tab优先
-                                                        somniumNexusStore.setSelectedCategory(null);
-                                                        somniumNexusStore.setSubCategoriesForHover([]);
-                                                        setShowSecondFlow(false); // 隐藏项目子菜单
-
-                                                        // 设置操作tab状态并显示临时子菜单
+                                                        // 设置操作tab状态并显示临时子菜单（不再清除项目选中态）
+                                                        setShowSecondFlow(false); // 隐藏项目子菜单，仅影响展示
                                                         actionStore.setSelectedActionCategory(actionKey);
                                                         actionStore.setActionSubCategoriesForHover(actionData.subCategories || []);
+                                                        actionStore.setShowActionSecondFlow(true);
                                                         setShowActionTempSubMenu(true); // 显示临时action子菜单
                                                     } else {
                                                         // 没有子菜单的操作，执行后不保持选中态
@@ -471,6 +636,7 @@ const SomniumNexus = observer(() => {
                                                 }}
                                                 onMouseEnter={() => {
                                                     setHoveredActionCategory(actionKey);
+                                                    // 悬停仅预备数据，不直接展开子菜单，避免误触
                                                     if (actionData.hasSubMenu) {
                                                         actionStore.setActionSubCategoriesForHover(actionData.subCategories || []);
                                                     }
@@ -482,14 +648,11 @@ const SomniumNexus = observer(() => {
                                                     if (e.key === 'Enter' || e.key === ' ') {
                                                         e.preventDefault();
                                                         if (actionData.hasSubMenu) {
-                                                            // 清除项目的选中状态，确保操作tab优先
-                                                            somniumNexusStore.setSelectedCategory(null);
-                                                            somniumNexusStore.setSubCategoriesForHover([]);
-                                                            setShowSecondFlow(false); // 隐藏项目子菜单
-
-                                                            // 设置操作tab状态并显示临时子菜单
+                                                            // 设置操作tab状态并显示临时子菜单（不再清除项目选中态）
+                                                            setShowSecondFlow(false); // 隐藏项目子菜单，仅影响展示
                                                             actionStore.setSelectedActionCategory(actionKey);
                                                             actionStore.setActionSubCategoriesForHover(actionData.subCategories || []);
+                                                            actionStore.setShowActionSecondFlow(true);
                                                             setShowActionTempSubMenu(true); // 显示临时action子菜单
                                                         } else {
                                                             actionStore.executeAction(actionKey);
@@ -545,7 +708,7 @@ const SomniumNexus = observer(() => {
                                                     {subCategory.key === 'edit-toggle'
                                                         ? `${subCategory.title} (${actionStore.isEditModeActive ? '开启' : '关闭'})`
                                                         : subCategory.key === 'flex' || subCategory.key === 'freeform'
-                                                        ? `${subCategory.title} ${actionStore.currentLayoutType === subCategory.key ? '(当前)' : ''}`
+                                                        ? `${subCategory.title} ${renderedLayout === subCategory.key ? '(当前)' : ''}`
                                                         : subCategory.key === 'test' || subCategory.key === 'production'
                                                         ? `${subCategory.title} ${actionStore.isUsingTestData === (subCategory.key === 'test') ? '(当前)' : ''}`
                                                         : subCategory.title
@@ -583,10 +746,13 @@ const SomniumNexus = observer(() => {
                             )}
 
                             {/* 右侧子菜单tabsFlow - 显示项目或操作的次级菜单 */}
-                            <div className={styles.tabsFlowRight}>
+                            <div
+                                className={styles.tabsFlowRight}
+                                style={rightPanelStyle}
+                            >
                                 {/* 项目次级菜单 */}
-                                {showSecondFlow && somniumNexusStore.hoverSubCategories.length > 0 && (
-                                    somniumNexusStore.hoverSubCategories.map((subCategory) => (
+                            {shouldShowProjectSubMenu && (
+                                somniumNexusStore.hoverSubCategories.map((subCategory) => (
                                         <div key={subCategory.key} className={styles.tabWrapper}>
                                             <div
                                                 className={`${styles.projectTab} ${styles.projectSubCategoryTab} ${
@@ -645,7 +811,7 @@ const SomniumNexus = observer(() => {
                                 )}
 
                                 {/* 空子菜单状态显示 */}
-                                {((showSecondFlow && somniumNexusStore.hoverSubCategories.length === 0) ||
+                                {((showSecondFlow && !shouldShowProjectSubMenu) ||
                                  (userStore.canAccessActionTabs && actionStore.showActionSecondFlow && actionStore.hoverActionSubCategories.length === 0)) && (
                                     <div className={styles.emptySubMenu}>
                                         <span className={styles.emptyText}>-</span>
@@ -691,27 +857,30 @@ const SomniumNexus = observer(() => {
                     />
                 )}
                 {(!hasSelected && !sidebarExpanded) ? (
-                    <SimpleWelcomeModule onGetStarted={handleGetStarted} />
+                    <SimpleWelcomeModule prefetchedImages={nexusPrefetchedImages} />
                 ) : (!hasSelected || !somniumNexusStore.selectedCategory) ? (
                     // 保持欢迎页面显示，即使侧栏展开但未选择项目
-                    <SimpleWelcomeModule onGetStarted={handleGetStarted} />
+                    <SimpleWelcomeModule prefetchedImages={nexusPrefetchedImages} />
                 ) : (
-                    <div className={styles.galleryWrapper}>
-                        {currentLayout === LAYOUT_TYPES.FLEX ? (
+                    <div className={styles.galleryWrapper} ref={galleryWrapperRef}>
+                        {renderedLayout === LAYOUT_TYPES.FLEX ? (
                             <FlexGalleryContainer
                                 images={currentImages}
                                 onImageClick={handleImageClick}
                                 itemSize="medium"
                                 gap={8}
-                                categoryId={category || 'flex'}
+                                categoryId={somniumNexusStore.selectedCategory || category || 'flex'}
                             />
                         ) : (
                             <GalleryFlex
                                 images={currentImages}
                                 onImageClick={handleImageClick}
                                 columns={3}
-                                categoryId={category || 'default'}
+                                categoryId={somniumNexusStore.selectedCategory || category || 'default'}
                             />
+                        )}
+                        {!somniumNexusStore.isUsingTestData && isLoadingMore && (
+                            <div className={styles.loadingMoreHint}>正在加载更多作品…</div>
                         )}
                     </div>
                 )}
@@ -723,7 +892,17 @@ const SomniumNexus = observer(() => {
                     className={styles.modalOverlay}
                     onClick={handleModalClose}
                 >
-                    <div className={styles.modalContent}>
+                    {/* 使用当前图片的缩略图作为模糊背景 */}
+                    <div
+                        className={styles.modalOverlayBg}
+                        style={{
+                            backgroundImage: `url(${somniumNexusStore.selectedImage.thumbSrc || somniumNexusStore.selectedImage.src})`
+                        }}
+                    />
+                    <div
+                        className={styles.modalContent}
+                        onClick={(e) => e.stopPropagation()}
+                    >
                         <GracefulImage
                             src={somniumNexusStore.selectedImage.src}
                             alt={somniumNexusStore.selectedImage.title}
@@ -741,12 +920,6 @@ const SomniumNexus = observer(() => {
                                 {somniumNexusStore.selectedImage.year}
                             </p>
                         </div>
-                        <button
-                            className={styles.closeButton}
-                            onClick={handleModalClose}
-                        >
-                            ×
-                        </button>
                     </div>
                 </div>
             )}
@@ -759,6 +932,45 @@ const SomniumNexus = observer(() => {
 
             {/* 新建项目模态框 */}
             <NewProjectModal />
+
+            {/* 上传图片模态框 */}
+            <UploadImageModal />
+
+            {/* 上传结果异步提示弹窗 */}
+            {actionStore.isUploadResultModalOpen && actionStore.uploadResult && (
+                <div
+                    className={styles.uploadResultOverlay}
+                    onClick={() => actionStore.closeUploadResultModal()}
+                >
+                    <div
+                        className={`${styles.uploadResultModal} ${
+                            actionStore.uploadResult.status === 'success'
+                                ? styles.uploadResultModalSuccess
+                                : styles.uploadResultModalError
+                        }`}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <h3 className={styles.uploadResultTitle}>
+                            {actionStore.uploadResult.status === 'success'
+                                ? '图片上传成功'
+                                : '图片上传失败'}
+                        </h3>
+                        <p className={styles.uploadResultMessage}>
+                            {actionStore.uploadResult.message ||
+                                (actionStore.uploadResult.status === 'success'
+                                    ? '图片已成功上传。'
+                                    : '上传过程中出现问题，请稍后重试。')}
+                        </p>
+                        <button
+                            type="button"
+                            className={styles.uploadResultButton}
+                            onClick={() => actionStore.closeUploadResultModal()}
+                        >
+                            知道了
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 });

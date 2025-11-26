@@ -31,19 +31,34 @@ class GalleryStore {
             if (existingItem) {
                 items.set(itemId, existingItem);
             } else {
+                const position = image.position || {};
+
+                const hasServerPosition =
+                    typeof position.x === 'number' &&
+                    typeof position.y === 'number' &&
+                    typeof position.width === 'number' &&
+                    typeof position.height === 'number';
+
                 const gridX = (index % columns) * (100 / columns);
                 const gridY = Math.floor(index / columns) * 280; // 调整为5:7比例的高度
+
+                const x = hasServerPosition ? position.x : gridX;
+                const y = hasServerPosition ? position.y : gridY;
+                const width = hasServerPosition ? position.width : 200;
+                const height = hasServerPosition ? position.height : 280;
+                const row = typeof position.row === 'number' ? position.row : Math.floor(index / columns);
+                const col = typeof position.col === 'number' ? position.col : index % columns;
 
                 items.set(itemId, {
                     id: itemId,
                     imageId: image.id,
                     categoryId: categoryId,
-                    x: gridX,
-                    y: gridY,
-                    width: 200, // 固定宽度200px，保持5:7比例
-                    height: 280, // 对应高度280px (200 * 1.4 = 280，接近5:7比例)
-                    row: Math.floor(index / columns),
-                    col: index % columns,
+                    x,
+                    y,
+                    width,
+                    height,
+                    row,
+                    col,
                     originalImage: image
                 });
             }

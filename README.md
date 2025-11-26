@@ -1,202 +1,95 @@
-# R0 Website - Personal Portfolio & Blog
+# R0 Website 个人网站与博客
 
-A React-based personal website featuring blog, image gallery, and interactive functionality.
-基于 React 的个人网站，包含博客、图片库和交互功能。
-
----
-
-## Technical Overview | 技术概览
-
-### Core Architecture | 核心架构
-- **React 18.2.0** - Modern functional components with hooks
-- **MobX 6.6.2** - Efficient state management with observable pattern
-- **React Router DOM 6.4.2** - Declarative routing with dynamic parameters
-- **CRACO** - Enhanced Create React App configuration with LESS support
-
-### Development Stack | 开发栈
-- **LESS** - CSS preprocessor with variables and mixins
-- **CSS Modules** - Scoped styling with hash-based class names
-- **Masonic** - High-performance masonry layout for image galleries
-- **use-sound** - Interactive audio feedback system
-
-### Content Processing | 内容处理
-- **React Markdown** - Markdown rendering with custom components
-- **react-syntax-highlighter** - Code syntax highlighting with themes
-- **react-image-zooom** - Smooth image zoom and pan functionality
+基于 React 和 MobX 的个人网站，包含博客、图片库与多种交互体验模块（Somnium Nexus 摄影集、自定义光标、侧边登录等）。
 
 ---
 
-## Project Structure | 项目结构
+## 技术栈概览
 
-```
+- 前端框架：`React 18`（函数组件 + Hooks）
+- 状态管理：`MobX` / `mobx-react-lite`
+- 路由：`react-router-dom 6`
+- 构建工具：`Create React App` + `CRACO`，支持 `LESS` 与 CSS Modules
+- 内容与媒体：`react-markdown`、`react-syntax-highlighter`、多种图片查看与缩放组件
+
+---
+
+## 目录结构（简要）
+
+```bash
 src/
-├── components/          # Reusable UI components | 可复用UI组件
-│   ├── cursor/         # Custom cursor system | 自定义光标系统
-│   ├── r0List/         # Advanced list container | 高级列表容器
-│   ├── sideLogin/      # Authentication interface | 认证界面
-│   ├── button/         # Button component collection | 按钮组件集
-│   ├── scrollBars/     # Custom scrollbar implementations | 自定义滚动条
-│   ├── template/       # Layout templates | 布局模板
-│   ├── sortController/ # Data sorting controls | 数据排序控制
-│   ├── filingInfo/     # File metadata display | 文件元信息展示
-│   ├── win10GridBox/   # Windows-style grid layout | Win10风格网格
-│   ├── InfiniteGallery/ # Masonry image gallery | 瀑布流图集
-│   └── SkeletonImage/  # Elegant loading placeholders | 优雅加载占位
-├── screens/            # Page-level components | 页面级组件
-│   ├── Home/           # Homepage with dynamic background | 动态背景主页
-│   ├── Blog/           # Blog system with categories | 分类博客系统
-│   ├── PicBed/         # Image management interface | 图片管理界面
-│   ├── SomniumNexus/   # Minimalist photography portfolio | 极简摄影集
-│   ├── More/           # Additional content pages | 附加内容页面
-│   └── Test/           # Development testing | 开发测试
-├── stores/             # MobX state management | MobX状态管理
-│   ├── globalStore.js  # Application-wide state | 应用级状态
-│   ├── colorStore.js   # Theme management | 主题管理
-│   ├── osuStore.js     # OSU integration | OSU集成
-│   ├── picBedStore.js  # Image gallery state | 图片库状态
-│   ├── curPostStore.js # Current post management | 当前文章管理
-│   ├── cursorTipsStore.js # Cursor tooltip state | 光标提示状态
-│   └── somniumNexusStore.js # Photography portfolio state | 摄影集状态
-├── hooks/              # Custom React hooks | 自定义React钩子
-│   ├── localStorage.js # Persistent storage | 持久化存储
-│   ├── windowSize.js   # Viewport dimensions | 视口尺寸
-│   ├── useNodeBoundingRect.js # DOM positioning | DOM定位
-│   └── useImageLoader.js # Progressive image loading | 渐进式图片加载
-├── utils/              # Utility functions | 工具函数
-├── static/             # Static assets | 静态资源
-└── request/            # API request handling | API请求处理
+├── components/      # 通用组件（光标、列表、登录、按钮、图集等）
+├── screens/         # 页面级组件（Home、Blog、PicBed、SomniumNexus 等）
+├── stores/          # MobX Store（全局状态、主题、图片库、SomniumNexus 等）
+├── hooks/           # 自定义 Hooks（窗口尺寸、本地存储、图片加载等）
+├── request/         # 请求与接口封装
+├── utils/           # 工具函数
+└── static/          # 静态资源
 ```
+
+更多架构细节可在 `docs/system/` 中查看相关设计文档。
 
 ---
 
-## Development Guide | 开发指南
+## 开发与构建
 
-### Prerequisites | 环境要求
-- Node.js >= 14.0.0
-- npm >= 6.0.0
+### 环境要求
+- Node.js >= 14
+- npm >= 6（或使用 `yarn`）
 
-### Installation | 安装依赖
+### 常用命令
 ```bash
+# 安装依赖
 npm install
-```
 
-### Development | 开发模式
-```bash
+# 本地开发，默认 http://localhost:3000
 npm start
-# Access at http://localhost:3000 | 访问 http://localhost:3000
-```
 
-### Production Build | 生产构建
-```bash
+# 生产构建，输出到 build/
 npm run build
-# Output to build/ directory | 输出到 build/ 目录
-```
 
-### Testing | 测试
-```bash
+# 运行测试（Jest + React Testing Library）
 npm test
 ```
 
 ---
 
-## Core Systems | 核心系统
+## 核心功能模块
 
-### Custom Cursor Architecture | 自定义光标架构
-Located in `src/components/cursor/`. Global cursor management with:
-- Context-based state distribution
-- Mouse position tracking with throttling
-- Touch device detection and fallbacks
-- Custom cursor styling and animations
-
-### R0List Container System | R0List容器系统
-Located in `src/components/r0List/`. High-performance list container featuring:
-- Dynamic item rendering with virtualization
-- Hover-based position tracking
-- Dynamic content display
-- Child component communication patterns
-
-### Side Login System | 侧边登录系统
-Located in `src/components/sideLogin/`. Complete authentication interface:
-- Form input components with validation
-- Custom button implementations
-- Option selection controls
-- Integrated validation logic
-
-### Somnium Nexus Photography Portfolio | Somnium Nexus摄影集
-Located in `src/screens/SomniumNexus/`. Minimalist photography portfolio inspired by rinkokawauchi.com:
-- Two-column layout with fixed sidebar
-- Borderless tab navigation
-- Sophisticated color logic (low-key unselected, gradient hover, animated selected)
-- True left-to-right flexbox gallery layout
-- Elegant skeleton loading with graceful error handling
+- 自定义光标系统：位于 `src/components/cursor/`，包含全局光标状态管理与多种光标样式。
+- R0List 容器系统：位于 `src/components/r0List/`，用于高性能列表与交互容器。
+- 侧边登录系统：位于 `src/components/sideLogin/`，提供登录表单、按钮与选项控制。
+- Somnium Nexus 摄影集：位于 `src/screens/SomniumNexus/`，支持两列布局、Tab 导航、渐进式图片加载与骨架屏。
 
 ---
 
-## Styling Architecture | 样式架构
+## 部署
 
-### CSS Modules Implementation
-All components utilize `.module.less` files for scoped styling:
-```javascript
-import styles from "./Component.module.less";
-```
-
-### LESS Preprocessor Features
-Advanced CSS capabilities including:
-```less
-@primary-color: #1890ff;
-@spacing-unit: 8px;
-
-.button {
-  .primary-button();
-  margin: @spacing-unit * 2;
-}
-```
-
-### Path Resolution
-Standardized import aliases using `@` for src directory:
-```javascript
-import Component from "@/components/Component";
-import Store from "@/stores/store";
-```
-
----
-
-## State Management | 状态管理
-
-### MobX Integration
-All components implement observer pattern for reactive updates:
-```javascript
-import { observer } from "mobx-react-lite";
-export default observer(Component);
-```
-
-### Store Architecture
-Modular state management with clear separation of concerns:
-- **Global Store**: Application-wide state and configuration
-- **Feature Stores**: Domain-specific state (blog, gallery, authentication)
-- **UI Stores**: Interface state (cursors, themes, notifications)
-
----
-
-## Deployment | 部署
-
-### Docker Deployment | Docker部署
+### Docker 部署
 ```bash
-# Build image | 构建镜像
+# 构建镜像
 docker build -t r0-website .
 
-# Run container | 运行容器
+# 运行容器
 docker run -p 3000:3000 r0-website
 ```
 
-### Static Deployment | 静态部署
-Build artifacts suitable for any static file server:
+### 静态部署
 ```bash
 npm run build
-# Deploy build/ directory | 部署 build/ 目录
+# 部署 build/ 目录到任意静态资源服务器
 ```
 
 ---
+
+## 文档与贡献
+
+- 所有文档统一存放在 `docs/` 目录：
+  - `docs/README.md`：文档总览与索引入口。
+  - `docs/system/`：系统设计与 Somnium Nexus 相关说明。
+  - `docs/tests/`：交互与样式相关的测试记录。
+  - `docs/agents/`：智能助手与协作说明。
+- 贡献者请先阅读根目录 `AGENTS.md`，了解代码风格、提交流程与中文优先等要求。
 
 ## Performance Considerations | 性能考量
 

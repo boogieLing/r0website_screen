@@ -145,6 +145,7 @@ const InfiniteGallery = observer(({
                                 src={image.src}
                                 alt={image.title}
                                 className={styles.galleryImage}
+                                objectFit="cover"
                                 aspectRatio="4:3"
                                 skeletonSize="none"
                                 showRetry={false}

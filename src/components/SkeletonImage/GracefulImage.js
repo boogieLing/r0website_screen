@@ -36,7 +36,8 @@ const GracefulImage = ({
     onError,
     skeletonSize = 'medium',
     showRetry = true,
-    errorMessage = 'Image not available'
+    errorMessage = 'Image not available',
+    objectFit = 'contain'
 }) => {
     const {
         isLoading,
@@ -63,6 +64,12 @@ const GracefulImage = ({
         styles[`size-${skeletonSize}`],
         className
     ].filter(Boolean).join(' ');
+
+    const imageStyle = {
+        opacity: isLoading ? 0 : 1,
+        transition: 'opacity 0.4s ease',
+        objectFit
+    };
 
     return (
         <div className={containerClasses} style={style}>
@@ -97,10 +104,7 @@ const GracefulImage = ({
                     onLoad={handleImageLoad}
                     onError={handleImageError}
                     loading="lazy"
-                    style={{
-                        opacity: isLoading ? 0 : 1,
-                        transition: 'opacity 0.4s ease'
-                    }}
+                    style={imageStyle}
                 />
             )}
 

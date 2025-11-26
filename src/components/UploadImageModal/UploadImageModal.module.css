@@ -1,0 +1,88 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1400;
+}
+.modal {
+  background: #ffffff;
+  padding: 24px 28px;
+  border-radius: 8px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+  min-width: 360px;
+  max-width: 420px;
+}
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+.closeButton {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+}
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.label {
+  font-size: 14px;
+  color: #555;
+}
+.input,
+.tagsInput {
+  padding: 6px 10px;
+  border-radius: 4px;
+  border: 1px solid #d9d9d9;
+  font-size: 14px;
+}
+.fileInput {
+  font-size: 14px;
+}
+.error {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #c0392b;
+}
+.actions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.cancelButton,
+.submitButton {
+  min-width: 80px;
+  padding: 6px 14px;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.cancelButton {
+  border: 1px solid #d9d9d9;
+  background: #ffffff;
+}
+.submitButton {
+  border: none;
+  background: #333;
+  color: #ffffff;
+}
+/*# sourceMappingURL=UploadImageModal.module.css.map */

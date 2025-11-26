@@ -27,7 +27,7 @@
     flex: 1; // 占满剩余空间
     display: flex;
     flex-direction: column;
-    overflow: hidden; // 防止溢出影响布局
+    overflow: visible; // 允许右侧浮层不被裁剪
     width: 100%; // 占满侧栏宽度
     padding: 0; // 移除padding，由tabsContainer控制
     min-height: 0; // 防止flex项目被内容撑开
@@ -38,7 +38,8 @@
     display: flex;
     flex: 1;
     width: 100%;
-    overflow: hidden; // 防止溢出
+    overflow: visible; // 允许右侧浮层不压缩左侧
+    position: relative; // 允许右侧浮层定位
 
     // 动态布局动画
     transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -56,21 +57,32 @@
             opacity: 0;
             visibility: hidden;
             padding: 0; // 移除内边距
+            display: none; // 完全隐藏，避免遮挡
         }
     }
 
-    // 展开状态 - 两个flow均分空间
+    // 展开状态 - 右侧浮层不挤压左侧
     &.expanded {
         .tabsFlowLeft {
-            flex: 1; // 均分空间
+            flex: 1 0 100%; // 保持原宽度，不被右侧挤压
+            width: 100%;
         }
 
         .tabsFlowRight {
-            flex: 1; // 均分空间
-            width: auto;
+            position: absolute;
+            top: 0;
+            left: 100%; // 浮在左列右侧，不挤压左列
+            width: 280px;
+            max-width: 320px;
+            min-width: 220px;
+            flex: 0 0 auto;
             opacity: 1;
             visibility: visible;
+            display: block;
             padding: 16px 10px; // 恢复内边距
+            box-shadow: -6px 0 12px rgba(0, 0, 0, 0.06);
+            background: transparent;
+            z-index: 12;
         }
     }
 }
@@ -110,7 +122,7 @@
 
 // 右侧子菜单tabsFlow - 日系美学，融为一体
 .tabsFlowRight {
-    flex: 1; // 均分空间
+    flex: 0 0 auto; // 展开时由expanded状态控制定位
     display: flex;
     flex-direction: column; // 垂直布局，一行一个
     overflow-y: auto; // 超出时滚动
@@ -549,7 +561,7 @@
     padding: 0; // 移除padding，由各个部分控制
     border-right: 1px solid rgba(0, 0, 0, 0.05); // 日系极细分隔线
     z-index: 1001; // 更高的 z-index，覆盖在其他元素之上
-    overflow-y: hidden; // 改为hidden，由内部元素控制滚动
+    overflow: visible; // 允许右侧浮层溢出
     backdrop-filter: blur(10px); // 毛玻璃效果
     box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
 
@@ -1317,19 +1329,37 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.95);
+    background-color: #000; // 完全不透明的黑色，避免透出底层内容
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1000;
     animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    backdrop-filter: blur(8px);
+    overflow: hidden;
+}
+
+.modalOverlayBg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: blur(22px);
+    transform: scale(1.08); // 放大一点避免边缘露底
+    opacity: 1; // 背景图完全不透明，只显示模糊后的缩略图
+    z-index: -1;
 }
 
 .modalContent {
     position: relative;
     max-width: 85vw;
     max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
     background: #fefefe;
     border-radius: 2px;
     overflow: hidden;
@@ -1349,24 +1379,24 @@
 
 .modalImage {
     width: 100%;
-    height: auto;
-    max-height: 65vh;
-    object-fit: contain;
+    height: 72vh; // 略微增大图片展示区域
+    max-height: 72vh;
     background-color: #f8f8f8;
     display: block;
+    flex: 0 0 auto;
 }
 
 .modalInfo {
-    padding: 30px 40px;
+    padding: 18px 28px; // 稍微缩小信息栏的内边距
     text-align: center;
     background: #fefefe;
 
     @media (max-width: 768px) {
-        padding: 20px 25px;
+        padding: 14px 20px;
     }
 
     @media (max-width: 480px) {
-        padding: 15px 20px;
+        padding: 12px 16px;
     }
 }
 
@@ -1387,6 +1417,67 @@
     font-weight: 300;
     color: #666;
     margin: 0;
+}
+
+.uploadResultOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 1100;
+}
+
+.uploadResultModal {
+    min-width: 320px;
+    max-width: 420px;
+    padding: 24px 28px;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
+    text-align: center;
+}
+
+.uploadResultModalSuccess .uploadResultTitle {
+    color: #0f9d58;
+}
+
+.uploadResultModalError .uploadResultTitle {
+    color: #d93025;
+}
+
+.uploadResultTitle {
+    margin: 0 0 8px 0;
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #222;
+}
+
+.uploadResultMessage {
+    margin: 0 0 16px 0;
+    font-size: 0.95rem;
+    color: #555;
+    word-break: break-word;
+}
+
+.uploadResultButton {
+    padding: 8px 20px;
+    border-radius: 20px;
+    border: none;
+    background-color: #222;
+    color: #fff;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.uploadResultButton:hover {
+    background-color: #000;
+    transform: translateY(-1px);
 }
 
 .closeButton {
@@ -1430,6 +1521,13 @@
     overflow: auto; // 改为auto，允许内部内容滚动
     display: block;
     padding-left: 80px; // 左侧留白，给侧边栏预留空间
+}
+
+.loadingMoreHint {
+    padding: 12px 16px;
+    text-align: center;
+    color: #666;
+    font-size: 0.9rem;
 }
 
 // 动画定义

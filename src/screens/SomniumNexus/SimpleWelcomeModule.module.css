@@ -3,211 +3,44 @@
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  background: #000;
+  background: rgba(255, 255, 255, 0.95);
 }
 .backgroundImageWrapper {
   position: absolute;
   top: 0;
+  right: 0;
+  bottom: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
+  overflow: hidden;
 }
 .backgroundImage {
-  width: 100%;
+  position: absolute;
+  top: 0;
+  right: 0;
   height: 100%;
-  object-fit: cover;
-  transition: opacity 0.5s ease-in-out;
+  width: auto;
+  object-position: right top;
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
 }
-.backgroundImage.transitioning {
+.backgroundImageBase {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: auto;
+  object-position: right top;
+  opacity: 1;
+  z-index: 1;
+  transition: opacity 0.8s ease-in-out;
+}
+.backgroundImageBaseFadingOut {
   opacity: 0;
 }
-.imageOverlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0.7) 100%);
+.backgroundImageOverlay {
   z-index: 2;
 }
-.textOverlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 3;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  text-align: center;
-  font-family: 'Helvetica Neue', 'Hiragino Sans', 'Yu Gothic', '游明朝体', 'Yu Mincho', serif;
-}
-.mainTitleContainer {
-  margin-bottom: 40px;
-  animation: fadeInUp 1s ease-out;
-}
-.mainTitle {
-  font-size: 4em;
-  font-weight: 300;
-  margin: 0;
-  letter-spacing: 0.2em;
-  writing-mode: vertical-rl;
-  text-orientation: upright;
-  line-height: 1.2;
-  color: #fff;
-  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
-}
-.mainTitle .titleSub {
-  display: block;
-  font-size: 0.4em;
-  margin-top: 20px;
-  letter-spacing: 0.1em;
-  writing-mode: horizontal-tb;
-  color: rgba(255, 255, 255, 0.8);
-}
-.descriptionContainer {
-  margin-bottom: 60px;
-  animation: fadeInUp 1s ease-out 0.3s both;
-}
-.description {
-  font-size: 1.3em;
-  font-weight: 300;
-  margin: 0 0 15px 0;
-  letter-spacing: 0.1em;
-  line-height: 1.8;
-  color: rgba(255, 255, 255, 0.9);
-  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.5);
-}
-.subDescription {
-  font-size: 1em;
-  font-weight: 300;
-  margin: 0;
-  letter-spacing: 0.05em;
-  color: rgba(255, 255, 255, 0.7);
-}
-.currentImageInfo {
-  position: absolute;
-  bottom: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.4);
-  padding: 20px 30px;
-  border-radius: 8px;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  animation: fadeInUp 1s ease-out 0.6s both;
-}
-.imageTitle {
-  font-size: 1.2em;
-  font-weight: 400;
-  margin: 0 0 8px 0;
-  color: #fff;
-  letter-spacing: 0.1em;
-}
-.imageDesc {
-  font-size: 0.9em;
-  margin: 0;
-  color: rgba(255, 255, 255, 0.8);
-  letter-spacing: 0.05em;
-}
-.exploreButton {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  color: white;
-  padding: 15px 40px;
-  font-size: 1.1em;
-  border-radius: 30px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: inherit;
-  font-weight: 300;
-  letter-spacing: 0.1em;
-  backdrop-filter: blur(5px);
-  animation: fadeInUp 1s ease-out 0.9s both;
-}
-.exploreButton:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.8);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-}
-.exploreButton:active {
-  transform: translateY(0);
-}
-.imageIndicators {
-  position: absolute;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 10px;
-  z-index: 4;
-}
-.indicator {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-.indicator.active {
-  background: rgba(255, 255, 255, 0.9);
-  transform: scale(1.2);
-}
-.indicator:hover {
-  background: rgba(255, 255, 255, 0.6);
-}
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-@media (max-width: 768px) {
-  .mainTitle {
-    font-size: 3em;
-  }
-  .mainTitle .titleSub {
-    font-size: 0.5em;
-  }
-  .description {
-    font-size: 1.1em;
-  }
-  .currentImageInfo {
-    bottom: 60px;
-    padding: 15px 20px;
-  }
-  .exploreButton {
-    padding: 12px 30px;
-    font-size: 1em;
-  }
-}
-@media (max-width: 480px) {
-  .mainTitle {
-    font-size: 2.5em;
-  }
-  .description {
-    font-size: 1em;
-  }
-  .currentImageInfo {
-    bottom: 50px;
-    width: 90%;
-    padding: 12px 15px;
-  }
-  .imageTitle {
-    font-size: 1em;
-  }
-  .imageDesc {
-    font-size: 0.8em;
-  }
+.backgroundImageOverlayVisible {
+  opacity: 1;
 }
 /*# sourceMappingURL=SimpleWelcomeModule.module.css.map */

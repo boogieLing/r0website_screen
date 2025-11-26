@@ -80,3 +80,18 @@ export const put= (url, data, config = {}) => {
         })
     })
 }
+
+/* 统一封装delete请求  */
+export const del = (url, config = {}) => {
+    return new Promise((resolve, reject) => {
+        serverClient({
+            method: 'delete',
+            url,
+            ...config
+        }).then(response => {
+            resolve(response);
+        }).catch(error => {
+            reject(error);
+        });
+    });
+}
