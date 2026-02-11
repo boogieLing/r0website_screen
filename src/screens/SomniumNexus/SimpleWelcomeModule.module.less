@@ -18,37 +18,80 @@
     overflow: hidden;
 }
 
-.backgroundImage {
+.backgroundImageLayer {
     position: absolute;
     top: 0;
     right: 0;
-    height: 100%; // 优先保证高度完整展示
-    width: auto;
-    object-position: right top; // 从右上角开始展示
-    opacity: 0;
-    transition: opacity 0.8s ease-in-out;
-}
-
-.backgroundImageBase {
-    position: absolute;
-    top: 0;
-    right: 0;
-    height: 100%; // 优先保证高度完整展示
+    height: 100%;
     width: auto;
     object-position: right top;
-    opacity: 1;
-    z-index: 1;
-    transition: opacity 0.8s ease-in-out;
-}
-
-.backgroundImageBaseFadingOut {
     opacity: 0;
+    transition: opacity 1.6s ease-in-out;
+    filter: saturate(0.92);
 }
 
-.backgroundImageOverlay {
+.active {
+    opacity: 1;
     z-index: 2;
 }
 
-.backgroundImageOverlayVisible {
-    opacity: 1;
+.inactive {
+    opacity: 0;
+    z-index: 1;
+}
+
+// 诗意文案 - 纵向缓慢漂浮，日系克制
+.poeticOverlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+    display: flex;
+    align-items: stretch;
+    justify-content: flex-end;
+    gap: 18px;
+    padding: 48px 56px 48px 24px;
+    background: transparent; // 保持原图纯净
+    mix-blend-mode: normal;
+}
+
+.poeticLine {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    font-size: 22px;
+    letter-spacing: 0.12em;
+    color: rgba(247, 247, 240, 0.9); // 柔和米白
+    opacity: 0.98;
+    margin-right: 0;
+    transform: translateY(-10%);
+    animation: driftDown 12s ease-in-out infinite alternate;
+    filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.1));
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
+}
+
+@media (max-width: 768px) {
+    .poeticOverlay {
+        padding: 32px 28px 32px 16px;
+        gap: 12px;
+    }
+
+    .poeticLine {
+        font-size: 17px;
+        letter-spacing: 0.1em;
+    }
+}
+
+@keyframes driftDown {
+    0% {
+        transform: translateY(-10%);
+        opacity: 0.88;
+    }
+    50% {
+        transform: translateY(2%);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(10%);
+        opacity: 0.9;
+    }
 }

@@ -475,6 +475,7 @@ class ActionStore {
      */
     async updateCurrentCategoryLayoutMode(layoutMode) {
         const categoryId = somniumNexusStore.selectedCategory;
+        const subCategoryId = somniumNexusStore.selectedSubCategory;
 
         if (!categoryId) {
             alert('请先选择一个项目分类');
@@ -487,11 +488,51 @@ class ActionStore {
         }
 
         try {
-            await updateCategoryLayoutMode(categoryId, layoutMode);
-            somniumNexusStore.setCategoryLayoutMode(categoryId, layoutMode);
+            // 确认应使用的远端ID：子分类为独立分类，优先取其 remoteId
+            const categoryData = somniumNexusStore.galleryCategories[categoryId] || {};
+            const norm = somniumNexusStore.normalizeKeyForCompare
+                ? somniumNexusStore.normalizeKeyForCompare
+                : (v) => String(v || '').trim().toLowerCase();
+
+            let activeKey = subCategoryId || categoryId;
+            let targetId = null;
+            let aliasKeyForLayout = null;
+
+            if (subCategoryId && Array.isArray(categoryData.aliasCategoryDetails)) {
+                const subNormalized = norm(subCategoryId);
+                const detail = categoryData.aliasCategoryDetails.find((item) => {
+                    const keyNorm = norm(item.key);
+                    const tailNorm = norm((item.key || '').split('/').pop());
+                    return subNormalized && (keyNorm === subNormalized || tailNorm === subNormalized);
+                });
+
+                if (detail) {
+                    activeKey = detail.key || subCategoryId;
+                    aliasKeyForLayout = detail.key || subCategoryId;
+                    targetId = detail.remoteId || targetId;
+                }
+            }
+
+            const resolvedKey = somniumNexusStore.resolveCategoryKey
+                ? somniumNexusStore.resolveCategoryKey(activeKey)
+                : activeKey;
+
+            if (!targetId) {
+                targetId = somniumNexusStore.getRemoteId
+                    ? somniumNexusStore.getRemoteId(activeKey)
+                    : activeKey;
+            }
+
+            targetId = targetId || resolvedKey || activeKey;
+
+            await updateCategoryLayoutMode(targetId, layoutMode);
+            somniumNexusStore.setCategoryLayoutMode(resolvedKey, layoutMode, {
+                aliasKey: aliasKeyForLayout || subCategoryId || null
+            });
 
             const modeText = layoutMode === 'flex' ? 'Flex网格' : '自由布局';
-            console.log(`分类 ${categoryId} 布局模式已更新为 ${modeText}`);
+            const logKey = subCategoryId ? `${resolvedKey}/${subCategoryId}` : resolvedKey;
+            console.log(`分类 ${logKey}(${targetId}) 布局模式已更新为 ${modeText}`);
             alert(`已将当前分类布局设置为：${modeText}`);
         } catch (error) {
             console.error('更新分类布局模式失败:', error);
@@ -505,7 +546,8 @@ class ActionStore {
      */
     toggleEditMode() {
         const category = somniumNexusStore.currentCategory;
-        const categoryLayoutMode = somniumNexusStore.getCategoryLayoutMode(category);
+        const activeLayoutMode = somniumNexusStore.getActiveLayoutMode(category);
+        const categoryLayoutMode = activeLayoutMode || somniumNexusStore.getCategoryLayoutMode(category);
         let currentLayout = environmentManager.getCurrentLayoutType();
 
         if (!somniumNexusStore.isUsingTestData && categoryLayoutMode) {
@@ -534,7 +576,8 @@ class ActionStore {
      */
     get isEditModeActive() {
         const category = somniumNexusStore.currentCategory;
-        const categoryLayoutMode = somniumNexusStore.getCategoryLayoutMode(category);
+        const activeLayoutMode = somniumNexusStore.getActiveLayoutMode(category);
+        const categoryLayoutMode = activeLayoutMode || somniumNexusStore.getCategoryLayoutMode(category);
         let currentLayout = environmentManager.getCurrentLayoutType();
 
         if (!somniumNexusStore.isUsingTestData && categoryLayoutMode) {

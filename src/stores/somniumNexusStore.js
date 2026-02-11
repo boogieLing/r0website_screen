@@ -1,10 +1,17 @@
 import {makeAutoObservable, computed} from "mobx";
 import testDataStore from "./testDataStore";
 import {listCategories, getCategoryImages, addImageToCategory} from "@/request/categoryApi";
-import {deleteImage} from '@/request/imageApi';
+import {addImageToCache as cacheImageToLocal, deleteImage, getRandomCachedImage} from '@/request/imageApi';
 
 // 正式环境图片分页大小
 const DEFAULT_PAGE_SIZE = 60;
+// 首次进入分类时的首屏加载张数（越小越快进入，后续后台预取）
+const INITIAL_PAGE_SIZE = 12;
+// 后台自动预取的最多页数（避免一次性打满全部图片）
+const MAX_PREFETCH_PAGES = 2;
+
+// 前端需要隐藏的分类键列表（使用归一化对比）
+const HIDDEN_CATEGORY_KEYS = ['alum_local_cache'];
 
 /**
  * SomniumNexusStore - 正式环境图片数据管理
@@ -76,6 +83,26 @@ class SomniumNexusStore {
 
     normalizeKeyForCompare(value) {
         return String(value || '').trim().toLowerCase();
+    }
+
+    isHiddenCategory(key, categoryData) {
+        const candidates = [key];
+        if (categoryData) {
+            if (categoryData.remoteId) {
+                candidates.push(categoryData.remoteId);
+            }
+            if (categoryData.originalKey) {
+                candidates.push(categoryData.originalKey);
+            }
+            if (Array.isArray(categoryData.aliasCategoryIds)) {
+                candidates.push(...categoryData.aliasCategoryIds);
+            }
+        }
+
+        return candidates.some((candidate) => {
+            const normalized = this.normalizeKeyForCompare(candidate);
+            return HIDDEN_CATEGORY_KEYS.some((hidden) => this.normalizeKeyForCompare(hidden) === normalized);
+        });
     }
 
     /**
@@ -184,37 +211,64 @@ class SomniumNexusStore {
             const normalizedParentKey = this.normalizeKeyForCompare(rawParentKey);
             const canonicalParentKey = canonicalParentKeyMap[normalizedParentKey] || rawParentKey;
 
-            if (!canonicalParentKeyMap[normalizedParentKey]) {
-                canonicalParentKeyMap[normalizedParentKey] = canonicalParentKey;
-            }
+        if (!canonicalParentKeyMap[normalizedParentKey]) {
+            canonicalParentKeyMap[normalizedParentKey] = canonicalParentKey;
+        }
 
-            if (!merged[canonicalParentKey]) {
-                const title = nameParts[0] || keyParts[0] || nameCandidate || canonicalParentKey;
-                merged[canonicalParentKey] = {
-                    ...category,
-                    title,
-                    rawTitle: nameCandidate,
-                    aliasRemoteMap: {},
-                    aliasCategoryDetails: []
-                };
-            }
-            const baseParent = merged[canonicalParentKey];
+        if (!merged[canonicalParentKey]) {
+            const title = nameParts[0] || keyParts[0] || nameCandidate || canonicalParentKey;
+            merged[canonicalParentKey] = {
+                ...category,
+                title,
+                rawTitle: nameCandidate,
+                aliasRemoteMap: {...(category.aliasRemoteMap || {})},
+                aliasCategoryDetails: Array.isArray(category.aliasCategoryDetails)
+                    ? [...category.aliasCategoryDetails]
+                    : []
+            };
+        }
+        const baseParent = merged[canonicalParentKey];
 
-            // 如果没有路径，直接写入/覆盖父级
-            if (!hasPath) {
-                merged[canonicalParentKey] = {
-                    ...baseParent,
-                    ...category,
-                    title: nameCandidate || canonicalParentKey,
-                    rawTitle: nameCandidate || baseParent.rawTitle,
-                    // 保持已有子菜单信息
-                    subCategories: Array.isArray(baseParent.subCategories) ? baseParent.subCategories : [],
-                    hasSubMenu: baseParent.hasSubMenu || false,
-                    aliasRemoteMap: baseParent.aliasRemoteMap || {},
-                    aliasCategoryDetails: baseParent.aliasCategoryDetails || []
-                };
-                return;
-            }
+        // 如果没有路径，直接写入/覆盖父级
+        if (!hasPath) {
+            const mergedSubCategories = Array.isArray(baseParent.subCategories) ? [...baseParent.subCategories] : [];
+            (Array.isArray(category.subCategories) ? category.subCategories : []).forEach((sub) => {
+                const normalized = sub && sub.key ? this.normalizeKeyForCompare(sub.key) : null;
+                if (!normalized) return;
+                if (!mergedSubCategories.some((item) => this.normalizeKeyForCompare(item.key) === normalized)) {
+                    mergedSubCategories.push(sub);
+                }
+            });
+
+            const aliasRemoteMap = {
+                ...(baseParent.aliasRemoteMap || {}),
+                ...(category.aliasRemoteMap || {})
+            };
+
+            const aliasCategoryDetails = Array.isArray(baseParent.aliasCategoryDetails)
+                ? [...baseParent.aliasCategoryDetails]
+                : [];
+            (Array.isArray(category.aliasCategoryDetails) ? category.aliasCategoryDetails : []).forEach((detail) => {
+                if (!detail || !detail.key) return;
+                const normalized = this.normalizeKeyForCompare(detail.key);
+                if (!aliasCategoryDetails.some((item) => this.normalizeKeyForCompare(item.key) === normalized)) {
+                    aliasCategoryDetails.push(detail);
+                }
+            });
+
+            merged[canonicalParentKey] = {
+                ...baseParent,
+                ...category,
+                title: nameCandidate || canonicalParentKey,
+                rawTitle: nameCandidate || baseParent.rawTitle,
+                // 保持已有子菜单信息
+                subCategories: mergedSubCategories,
+                hasSubMenu: baseParent.hasSubMenu || category.hasSubMenu || false,
+                aliasRemoteMap,
+                aliasCategoryDetails
+            };
+            return;
+        }
 
             const subPathParts = nameParts.length > 1 ? nameParts.slice(1) : (keyParts.length > 1 ? keyParts.slice(1) : []);
             const subKey = subPathParts.join('/') || keyParts.slice(1).join('/') || `sub-${(baseParent.subCategories || []).length + 1}`;
@@ -257,18 +311,44 @@ class SomniumNexusStore {
             }
 
             const aliasCategoryDetails = Array.isArray(baseParent.aliasCategoryDetails) ? [...baseParent.aliasCategoryDetails] : [];
+            const normalizedChildSettings = this.normalizeSettings(category.settings || category.Settings || {});
             if (subKey && !aliasCategoryDetails.some((detail) => this.normalizeKeyForCompare(detail.key) === safeKeyNormalized)) {
                 aliasCategoryDetails.push({
                     key: safeKey,
                     title: subTitle,
                     remoteId: incomingRemoteId,
-                    parentKey: canonicalParentKey
+                    parentKey: canonicalParentKey,
+                    settings: normalizedChildSettings,
+                    Settings: normalizedChildSettings
                 });
             }
 
             const mergedImages = this.mergeImages(baseParent.images, category.images);
             const countFromParent = typeof baseParent.imageCount === 'number' ? baseParent.imageCount : (Array.isArray(baseParent.images) ? baseParent.images.length : 0);
             const countFromChild = typeof category.imageCount === 'number' ? category.imageCount : (Array.isArray(category.images) ? category.images.length : 0);
+
+            const parentSettings = baseParent.settings || baseParent.Settings || {};
+            const childSettings = normalizedChildSettings;
+            const layoutModeFromParent = parentSettings.layoutMode || parentSettings.LayoutMode;
+            const layoutModeFromChild = childSettings.layoutMode || childSettings.LayoutMode;
+            const finalLayoutMode = layoutModeFromParent || layoutModeFromChild;
+            const mergedSettings = {
+                ...childSettings,
+                ...parentSettings
+            };
+            if (finalLayoutMode) {
+                mergedSettings.layoutMode = finalLayoutMode;
+                mergedSettings.LayoutMode = finalLayoutMode;
+            }
+
+            const aliasLayoutMap = {...(baseParent.aliasLayoutMap || {})};
+            if (layoutModeFromChild) {
+                aliasLayoutMap[safeKeyNormalized] = layoutModeFromChild;
+                const subKeyNormalized = this.normalizeKeyForCompare(subKey);
+                if (subKeyNormalized) {
+                    aliasLayoutMap[subKeyNormalized] = layoutModeFromChild;
+                }
+            }
 
             merged[canonicalParentKey] = {
                 ...baseParent,
@@ -280,10 +360,13 @@ class SomniumNexusStore {
                 aliasCategoryIds,
                 aliasRemoteMap,
                 aliasCategoryDetails,
+                aliasLayoutMap,
                 images: mergedImages,
                 imageCount: Math.max(countFromParent, countFromChild, mergedImages.length),
                 // 避免子分类覆盖父级 remoteId
-                remoteId: baseParent.remoteId || category.remoteId || incomingRemoteId || canonicalParentKey
+                remoteId: baseParent.remoteId || category.remoteId || incomingRemoteId || canonicalParentKey,
+                settings: mergedSettings,
+                Settings: mergedSettings
             };
         });
 
@@ -384,6 +467,23 @@ class SomniumNexusStore {
     }
 
     /**
+     * 获取当前激活的布局模式：如果选择了子分类且该子分类有独立布局，则优先使用子分类布局
+     */
+    getActiveLayoutMode(category) {
+        const subKey = this._selectedSubCategory;
+        if (category && subKey) {
+            const aliasLayoutMap = category.aliasLayoutMap || {};
+            const normalized = this.normalizeKeyForCompare(subKey);
+            const layoutFromSub = aliasLayoutMap[normalized];
+            if (layoutFromSub) {
+                const normalizedMode = String(layoutFromSub).trim().toLowerCase();
+                return normalizedMode === 'freeform' ? 'freedom' : normalizedMode;
+            }
+        }
+        return this.getCategoryLayoutMode(category);
+    }
+
+    /**
      * 确保指定分类具备 settings.layoutMode（当首次通过路由直接访问时，可能先加载了图片但未加载分类配置）
      */
     ensureCategorySettings = async (categoryId) => {
@@ -459,10 +559,17 @@ class SomniumNexusStore {
             baseData = testDataStore.getTestGalleryData();
         } else {
             // 合并正式环境数据和用户创建的项目数据
-            baseData = {
+            const merged = {
                 ...this._productionGalleryData,
                 ...this._userProjects
             };
+            baseData = Object.entries(merged).reduce((acc, [key, value]) => {
+                if (this.isHiddenCategory(key, value)) {
+                    return acc;
+                }
+                acc[key] = value;
+                return acc;
+            }, {});
         }
 
         // 折叠斜杠分类，避免 A 与 A/B 重复
@@ -510,7 +617,7 @@ class SomniumNexusStore {
         if (!data) return [];
 
         // 直接返回所有分类键，不再特殊处理"all"分类
-        return Object.keys(data);
+        return Object.keys(data).filter((key) => !this.isHiddenCategory(key, data[key]));
     }
 
     /**
@@ -522,6 +629,9 @@ class SomniumNexusStore {
         const seen = new Set();
 
         Object.entries(data).forEach(([key, cat]) => {
+            if (this.isHiddenCategory(key, cat)) {
+                return;
+            }
             const normalized = this.normalizeKeyForCompare(key);
             if (!seen.has(normalized)) {
                 options.push({
@@ -580,10 +690,28 @@ class SomniumNexusStore {
 
         // 如果有子菜单且选择了子分类，只显示匹配的子分类图片
         if (this._selectedSubCategory && category.hasSubMenu) {
-            return category.images.filter(image =>
-                image.subCategory === this._selectedSubCategory ||
-                image.category === this._selectedSubCategory
-            );
+            const normalizedSelected = this.normalizeKeyForCompare(this._selectedSubCategory);
+            return category.images.filter((image) => {
+                const rawSub = image.subCategory;
+                const rawCat = image.category;
+                const sub = this.normalizeKeyForCompare(rawSub);
+                const cat = this.normalizeKeyForCompare(rawCat);
+
+                // 支持 A/B 的子分类，允许取末段进行匹配
+                const subTail = this.normalizeKeyForCompare(
+                    (typeof rawSub === 'string' && rawSub.includes('/')) ? rawSub.split('/').pop() : null
+                );
+                const catTail = this.normalizeKeyForCompare(
+                    (typeof rawCat === 'string' && rawCat.includes('/')) ? rawCat.split('/').pop() : null
+                );
+
+                return (
+                    sub === normalizedSelected ||
+                    cat === normalizedSelected ||
+                    subTail === normalizedSelected ||
+                    catTail === normalizedSelected
+                );
+            });
         }
 
         // 否则显示该分类下的所有图片
@@ -731,15 +859,22 @@ class SomniumNexusStore {
         const existing = this._categoryPageState[resolvedKey];
         const categoryData = this._productionGalleryData[resolvedKey] || this._userProjects[resolvedKey] || {};
         const currentCount = Array.isArray(categoryData.images) ? categoryData.images.length : 0;
-        const total = typeof categoryData.imageCount === 'number' ? categoryData.imageCount : currentCount;
+        const rawTotal = typeof categoryData.imageCount === 'number' ? categoryData.imageCount : currentCount;
+        const normalizedTotal = Number.isFinite(Number(rawTotal)) ? Number(rawTotal) : null;
 
         if (existing) {
-            const normalizedHasMore = typeof existing.total === 'number'
-                ? currentCount < existing.total
-                : existing.hasMore;
+            const existingTotal = Number.isFinite(Number(existing.total)) ? Number(existing.total) : normalizedTotal;
+            let normalizedHasMore = existing.hasMore;
+
+            if (existingTotal !== null) {
+                const reachedByCount = currentCount >= existingTotal;
+                const reachedByPage = (existing.page * (existing.pageSize || DEFAULT_PAGE_SIZE)) >= existingTotal;
+                normalizedHasMore = !(reachedByCount || reachedByPage);
+            }
 
             return {
                 ...existing,
+                total: existingTotal,
                 hasMore: normalizedHasMore
             };
         }
@@ -747,8 +882,8 @@ class SomniumNexusStore {
         return {
             page: 0,
             pageSize: DEFAULT_PAGE_SIZE,
-            total,
-            hasMore: total ? currentCount < total : true,
+            total: normalizedTotal,
+            hasMore: normalizedTotal ? currentCount < normalizedTotal : true,
             isLoading: false
         };
     }
@@ -764,11 +899,12 @@ class SomniumNexusStore {
      * 更新指定分类的布局模式（settings.layoutMode / Settings.LayoutMode）
      * layoutMode 来自服务端，取值 flex / freedom
      */
-    setCategoryLayoutMode(categoryId, layoutMode) {
+    setCategoryLayoutMode(categoryId, layoutMode, options = {}) {
         if (!categoryId || !layoutMode) {
             return;
         }
 
+        const {aliasKey = null} = options;
         const normalized = String(layoutMode).trim().toLowerCase();
         // 统一将自由布局保存为 freedom，兼容后端约定
         let storedLayoutMode = normalized;
@@ -776,10 +912,20 @@ class SomniumNexusStore {
             storedLayoutMode = 'freedom';
         }
 
-        if (this._productionGalleryData[categoryId]) {
-            const prev = this._productionGalleryData[categoryId];
+        const resolvedKey = this.resolveCategoryKey(categoryId);
+        const aliasNormalized = aliasKey ? this.normalizeKeyForCompare(aliasKey) : null;
+
+        const applyUpdate = (store, persistUserProjects = false) => {
+            const prev = store[resolvedKey];
+            if (!prev) return false;
+
             const prevSettings = prev.settings || prev.Settings || {};
-            this._productionGalleryData[categoryId] = {
+            const aliasLayoutMap = {...(prev.aliasLayoutMap || {})};
+            if (aliasNormalized) {
+                aliasLayoutMap[aliasNormalized] = storedLayoutMode;
+            }
+
+            store[resolvedKey] = {
                 ...prev,
                 settings: {
                     ...prevSettings,
@@ -791,27 +937,18 @@ class SomniumNexusStore {
                     ...prevSettings,
                     layoutMode: storedLayoutMode,
                     LayoutMode: storedLayoutMode
-                }
-            };
-        }
-
-        if (this._userProjects[categoryId]) {
-            const prev = this._userProjects[categoryId];
-            const prevSettings = prev.settings || prev.Settings || {};
-            this._userProjects[categoryId] = {
-                ...prev,
-                settings: {
-                    ...prevSettings,
-                    layoutMode: storedLayoutMode,
-                    LayoutMode: storedLayoutMode
                 },
-                Settings: {
-                    ...prevSettings,
-                    layoutMode: storedLayoutMode,
-                    LayoutMode: storedLayoutMode
-                }
+                ...(aliasNormalized ? {aliasLayoutMap} : {})
             };
-            this.saveUserProjectsToLocal();
+
+            if (persistUserProjects) {
+                this.saveUserProjectsToLocal();
+            }
+            return true;
+        };
+
+        if (!applyUpdate(this._productionGalleryData)) {
+            applyUpdate(this._userProjects, true);
         }
     }
 
@@ -970,7 +1107,7 @@ class SomniumNexusStore {
         }
 
         const resolvedKey = this.resolveCategoryKey(categoryId);
-        const remoteId = this.getRemoteId(resolvedKey);
+        const remoteId = this.getRemoteId(categoryId);
 
         if (this.isUsingTestData) {
             alert('当前为测试数据环境，无法将图片添加到分类（仅正式环境可用）');
@@ -998,6 +1135,110 @@ class SomniumNexusStore {
             alert(`添加到分类失败：${message}`);
             return false;
         }
+    }
+
+    /**
+     * 将图片加入本地缓存分类（仅正式环境）
+     */
+    async addImageToCache(imageId) {
+        if (!imageId) {
+            console.warn('addImageToCache: 缺少图片ID');
+            return {success: false, message: '缺少图片ID'};
+        }
+
+        if (this.isUsingTestData) {
+            const message = '当前为测试数据环境，无法加入本地缓存分类（仅正式环境可用）';
+            alert(message);
+            return {success: false, message};
+        }
+
+        try {
+            const resp = await cacheImageToLocal(imageId);
+            const payload = resp && resp.data;
+            const success = payload && (
+                payload.code === '001001200' ||
+                payload.code === 200 ||
+                payload.code === '200'
+            );
+            const message = (payload && (payload.data || payload.msg)) || (success ? '已加入本地缓存分类' : '加入缓存分类失败');
+
+            if (success) {
+                console.log('图片已加入本地缓存分类', {imageId, response: payload});
+                return {success: true, message};
+            }
+
+            alert(`加入缓存分类失败：${message}`);
+            return {success: false, message};
+        } catch (error) {
+            console.error('加入缓存分类失败:', error);
+            const message =
+                (error && error.response && error.response.data && error.response.data.data) ||
+                '加入缓存分类失败，请稍后重试';
+            alert(`加入缓存分类失败：${message}`);
+            return {success: false, message};
+        }
+    }
+
+    /**
+     * 从本地缓存分类获取随机图片（返回对象包含 revoke 用于释放 URL）
+     */
+    async fetchRandomCachedImages(count = 3) {
+        const results = [];
+        const seenIds = new Set();
+
+        if (typeof URL === 'undefined' || typeof URL.createObjectURL !== 'function') {
+            console.warn('当前环境不支持 URL.createObjectURL，无法加载缓存图片');
+            return results;
+        }
+
+        for (let i = 0; i < count; i++) {
+            try {
+                const resp = await getRandomCachedImage();
+                const statusOk = resp && resp.status >= 200 && resp.status < 300;
+                const headers = (resp && resp.headers) || {};
+                const imageId = headers['x-image-id'] || headers['X-Image-ID'] || `cache-${Date.now()}-${i}`;
+                const contentType = headers['content-type'] || headers['Content-Type'] || '';
+
+                if (!statusOk) {
+                    let message = '获取缓存图片失败';
+                    try {
+                        if (resp && resp.data && typeof resp.data.text === 'function') {
+                            const text = await resp.data.text();
+                            const parsed = JSON.parse(text);
+                            message = parsed.data || parsed.msg || message;
+                        }
+                    } catch (parseError) {
+                        console.warn('解析缓存图片失败响应时出错', parseError);
+                    }
+
+                    console.warn('获取缓存图片接口返回异常', {status: resp && resp.status, message});
+                    continue;
+                }
+
+                const blob = resp && resp.data;
+                if (!blob || typeof blob.size !== 'number') {
+                    console.warn('缓存图片响应体不是有效的 Blob');
+                    continue;
+                }
+
+                if (seenIds.has(imageId)) {
+                    continue;
+                }
+
+                const objectUrl = URL.createObjectURL(blob);
+                results.push({
+                    id: imageId,
+                    src: objectUrl,
+                    contentType,
+                    revoke: () => URL.revokeObjectURL(objectUrl)
+                });
+                seenIds.add(imageId);
+            } catch (error) {
+                console.error('获取本地缓存随机图片失败:', error);
+            }
+        }
+
+        return results;
     }
 
     /**
@@ -1113,7 +1354,7 @@ class SomniumNexusStore {
 
         const resolvedKey = this.resolveCategoryKey(categoryId);
         const remoteId = this.getRemoteId(resolvedKey);
-        const {pageSize = DEFAULT_PAGE_SIZE, reset = false, forceAlias = false} = options;
+        const {pageSize = DEFAULT_PAGE_SIZE, reset = false, forceAlias = false, force = false} = options;
         const existing = this._productionGalleryData[resolvedKey] || {};
         const pagination = this.getCategoryPageState(resolvedKey);
 
@@ -1136,8 +1377,24 @@ class SomniumNexusStore {
         const targetPage = page || (pagination.page + 1);
         const effectivePageSize = pageSize || pagination.pageSize || DEFAULT_PAGE_SIZE;
 
+        // 已知总数且翻页已超过范围时直接停止
+        const knownTotalRaw = pagination.total;
+        const knownTotal = Number.isFinite(Number(knownTotalRaw)) ? Number(knownTotalRaw) : null;
+        if (!reset && !force && knownTotal !== null && pagination.page > 0) {
+            const startIndex = (targetPage - 1) * effectivePageSize;
+            if (startIndex >= knownTotal) {
+                this._categoryPageState[resolvedKey] = {
+                    ...pagination,
+                    total: knownTotal,
+                    hasMore: false,
+                    isLoading: false
+                };
+                return false;
+            }
+        }
+
         // 已加载完所有数据时不再重复请求
-        if (!reset && !pagination.hasMore && pagination.page >= targetPage) {
+        if (!reset && !force && !pagination.hasMore && pagination.page >= targetPage) {
             return false;
         }
 
@@ -1183,10 +1440,18 @@ class SomniumNexusStore {
             }
 
             const prevImages = Array.isArray(existing.images) ? existing.images : [];
-            const seen = new Set(prevImages.map((img) => img.id));
             const mergedImages = [...prevImages];
+            const imageMap = new Map();
+            mergedImages.forEach((img) => {
+                if (img && img.id) {
+                    imageMap.set(img.id, img);
+                }
+            });
 
-            let computedTotal = typeof pagination.total === "number" ? pagination.total : prevImages.length;
+            const initialTotal = typeof pagination.total === 'number'
+                ? pagination.total
+                : Number(pagination.total);
+            let computedTotal = Number.isFinite(initialTotal) ? initialTotal : prevImages.length;
             let computedHasMore = false;
 
             for (const target of targets) {
@@ -1228,17 +1493,40 @@ class SomniumNexusStore {
                     }).filter(Boolean);
 
                     newImages.forEach((img) => {
-                        if (!seen.has(img.id)) {
+                        const existingImg = imageMap.get(img.id);
+                        if (!existingImg) {
                             mergedImages.push(img);
-                            seen.add(img.id);
+                            imageMap.set(img.id, img);
+                            return;
+                        }
+
+                        // 如果新数据包含子分类信息而旧数据没有，则用新数据补全
+                        const shouldUpdateSubCategory = !existingImg.subCategory && img.subCategory;
+                        const shouldUpdateCategory = !existingImg.category && img.category;
+                        if (shouldUpdateSubCategory || shouldUpdateCategory) {
+                            const updated = {
+                                ...existingImg,
+                                subCategory: shouldUpdateSubCategory ? img.subCategory : existingImg.subCategory,
+                                category: shouldUpdateCategory ? img.category : existingImg.category
+                            };
+                            const idx = mergedImages.findIndex((item) => item && item.id === img.id);
+                            if (idx !== -1) {
+                                mergedImages[idx] = updated;
+                            } else {
+                                mergedImages.push(updated);
+                            }
+                            imageMap.set(img.id, updated);
                         }
                     });
 
-                    const remoteTotal = typeof payload.total === "number" ? payload.total : newImages.length;
-                    if (typeof remoteTotal === "number") {
+                    const remoteTotalRaw = payload.total;
+                    const remoteTotal = Number.isFinite(Number(remoteTotalRaw)) ? Number(remoteTotalRaw) : null;
+                    if (remoteTotal !== null) {
                         computedTotal = Math.max(computedTotal, mergedImages.length, remoteTotal);
+                    } else {
+                        computedTotal = Math.max(computedTotal, mergedImages.length);
                     }
-                    const targetHasMore = typeof remoteTotal === "number"
+                    const targetHasMore = remoteTotal !== null
                         ? mergedImages.length < remoteTotal
                         : newImages.length === effectivePageSize;
                     computedHasMore = computedHasMore || targetHasMore;
@@ -1249,6 +1537,10 @@ class SomniumNexusStore {
 
             const safeTitle = (existing && existing.title) || categoryId;
             const safeDescription = (existing && existing.description) || "";
+
+            const hasMore = Number.isFinite(computedTotal)
+                ? !((mergedImages.length >= computedTotal) || (targetPage * effectivePageSize >= computedTotal))
+                : computedHasMore;
 
             this._productionGalleryData[resolvedKey] = {
                 ...existing,
@@ -1263,7 +1555,7 @@ class SomniumNexusStore {
                 page: targetPage,
                 pageSize: effectivePageSize,
                 total: computedTotal,
-                hasMore: computedHasMore,
+                hasMore,
                 isLoading: false,
                 aliasesLoaded: true
             };
@@ -1389,7 +1681,42 @@ class SomniumNexusStore {
                 // 优先补全分类设置，避免缺失 layoutMode 时回落到自由布局
                 this.ensureCategorySettings(resolved);
                 this.loadCategoryDetail(resolved);
+                // 切换分类时主动拉取首屏图片（含别名，避免子分类无图），并后台预取后续页
+                const initialSize = Math.min(INITIAL_PAGE_SIZE, DEFAULT_PAGE_SIZE);
+                this.loadCategoryPage(resolved, 1, {reset: true, forceAlias: true, pageSize: initialSize})
+                    .then(() => this.prefetchCategoryImages(resolved))
+                    .catch(() => {});
             }
+        }
+    };
+
+    /**
+     * 后台预取更多图片（在首屏加载完成后启动）
+     */
+    prefetchCategoryImages = async (categoryId) => {
+        if (!categoryId || this._useTestData) return;
+        const resolved = this.resolveCategoryKey(categoryId);
+        // 防止切换分类后仍在预取
+        if (this._selectedCategory && this._selectedCategory !== resolved) {
+            return;
+        }
+
+        let state = this.getCategoryPageState(resolved);
+        if (!state.hasMore) return;
+
+        let nextPage = state.page + 1;
+        let fetchedPages = 0;
+
+        while (state.hasMore && fetchedPages < MAX_PREFETCH_PAGES) {
+            // 如果用户切换了分类，停止预取
+            if (this._selectedCategory && this._selectedCategory !== resolved) {
+                break;
+            }
+            const ok = await this.loadCategoryPage(resolved, nextPage, {forceAlias: false});
+            if (!ok) break;
+            fetchedPages += 1;
+            nextPage += 1;
+            state = this.getCategoryPageState(resolved);
         }
     };
 
@@ -1398,7 +1725,15 @@ class SomniumNexusStore {
 
         // 选择子分类时，如果存在折叠别名，强制加载一次包含别名的首屏图片
         if (!this._useTestData && this._selectedCategory) {
-            this.loadCategoryPage(this._selectedCategory, 1, {forceAlias: true});
+            const resolved = this.resolveCategoryKey(this._selectedCategory);
+            const categoryData = this._productionGalleryData[resolved] || {};
+            const hasSubImages = Array.isArray(categoryData.images) && categoryData.images.some((img) =>
+                img.subCategory === subCategoryKey || img.category === subCategoryKey
+            );
+            const pageState = this.getCategoryPageState(resolved);
+            const shouldForce = !hasSubImages || !pageState.aliasesLoaded;
+
+            this.loadCategoryPage(resolved, 1, {forceAlias: true, force: shouldForce});
         }
     };
 

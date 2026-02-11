@@ -1,4 +1,5 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState, useCallback} from 'react';
+import {observer} from 'mobx-react-lite';
 import somniumNexusStore from '@/stores/somniumNexusStore';
 import styles from './SimpleWelcomeModule.module.less';
 
@@ -18,198 +19,169 @@ const FALLBACK_IMAGES = [
     }
 ];
 
-const SimpleWelcomeModule = ({prefetchedImages = []}) => {
-    const [images, setImages] = useState([]);
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [overlayIndex, setOverlayIndex] = useState(null);
-    const [isFading, setIsFading] = useState(false);
+const randomImageUrl = () => `https://www.shyr0.com/server/api/base/picbed/image/cache/random?ts=${Date.now()}`;
 
-    // 从 nexus 分类（全部图片）接口加载图片
-    useEffect(() => {
-        let isMounted = true;
+const SimpleWelcomeModule = observer(({prefetchedImages = []}) => {
+    const isMountedRef = useRef(true);
+    const [activeIndex, setActiveIndex] = useState(0);
+    const [slots, setSlots] = useState(() => ([
+        {src: FALLBACK_IMAGES[0].src, ready: true, key: 'slot-0'},
+        {src: FALLBACK_IMAGES[1]?.src || FALLBACK_IMAGES[0].src, ready: true, key: 'slot-1'}
+    ]));
 
-        const useImages = (list) => {
-            if (!isMounted || !list || list.length === 0) return false;
-            setImages(list);
-            const initialIndex = Math.floor(Math.random() * list.length);
-            setCurrentIndex(initialIndex);
-            return true;
-        };
+    const loadSlot = useCallback((slotIndex, usePrefetch = false) => {
+        if (!isMountedRef.current) return;
 
-        const loadImages = async () => {
-            try {
-                // 如果父组件已传入预取的图片，直接使用
-                if (prefetchedImages && prefetchedImages.length > 0) {
-                    const normalizedPrefetch = prefetchedImages
-                        .map((img) => {
-                            if (!img) return null;
-                            const fullSrc =
-                                img.fullSrc ||
-                                img.src ||
-                                img.CosURL ||
-                                img.ThumbURL ||
-                                '';
-                            if (!fullSrc) return null;
-                            return {
-                                id: img.id || img.ID || fullSrc,
-                                src: fullSrc
-                            };
-                        })
-                        .filter(Boolean);
-
-                    if (useImages(normalizedPrefetch)) {
-                        return;
-                    }
-                }
-
-                // 使用 SomniumNexusStore 的分类图片加载逻辑，请求 nexus 分类的图片列表
-                await somniumNexusStore.loadCategoryDetail('nexus', {force: true});
-
-                const storeImages = somniumNexusStore.getImagesByCategory('nexus') || [];
-
-                const normalized = storeImages
-                    .map((img) => {
-                        if (!img) return null;
-                        const fullSrc =
-                            img.fullSrc ||
-                            img.src ||
-                            img.CosURL ||
-                            img.ThumbURL ||
-                            '';
-                        if (!fullSrc) return null;
-                        return {
-                            id: img.id || img.ID || fullSrc,
-                            src: fullSrc
-                        };
-                    })
-                    .filter(Boolean);
-
-                const finalImages =
-                    normalized && normalized.length > 0
-                        ? normalized
-                        : FALLBACK_IMAGES;
-
-                useImages(finalImages);
-            } catch (error) {
-                console.error('加载 nexus 图片失败，将使用兜底图片:', error);
-                useImages(FALLBACK_IMAGES);
-            }
-        };
-
-        loadImages();
-
-        return () => {
-            isMounted = false;
-        };
-    }, [prefetchedImages]);
-
-    // 随机播放：定时准备下一张图片（仅选择索引，不直接切换）
-    useEffect(() => {
-        if (!images || images.length === 0) {
-            return;
-        }
-
-        const interval = setInterval(() => {
-            if (!images || images.length <= 1) {
-                return;
-            }
-
-            setOverlayIndex((prevOverlay) => {
-                let next = Math.floor(Math.random() * images.length);
-
-                // 避免和当前或者上一次预备的相同
-                if (next === currentIndex || next === prevOverlay) {
-                    next = (next + 1) % images.length;
-                }
-
+        // 测试环境直接使用兜底图，避免多余请求
+        if (somniumNexusStore.isUsingTestData) {
+            const fallbackSrc = FALLBACK_IMAGES[slotIndex % FALLBACK_IMAGES.length]?.src || FALLBACK_IMAGES[0].src;
+            setSlots((prev) => {
+                const next = [...prev];
+                next[slotIndex] = {
+                    ...next[slotIndex],
+                    src: fallbackSrc,
+                    ready: true,
+                    key: `fallback-${slotIndex}-${Date.now()}`
+                };
                 return next;
             });
-        }, 12000); // 每 12 秒切换一次，避免变动过快
-
-        return () => {
-            clearInterval(interval);
-        };
-    }, [images, currentIndex]);
-
-    // 预加载 overlayIndex 对应图片，并在加载完成后触发淡入淡出动画
-    useEffect(() => {
-        if (overlayIndex === null || !images || !images[overlayIndex]) {
             return;
         }
 
-        let canceled = false;
-        const target = images[overlayIndex];
-        const preloadImg = new Image();
-        preloadImg.src = target.src;
+        // 可选使用预取图作为初始缓冲
+        if (usePrefetch && prefetchedImages && prefetchedImages[slotIndex]) {
+            const candidate = prefetchedImages[slotIndex];
+            const prefetchSrc = candidate &&
+                (candidate.fullSrc || candidate.src || candidate.CosURL || candidate.ThumbURL);
+            if (prefetchSrc) {
+                setSlots((prev) => {
+                    const next = [...prev];
+                    next[slotIndex] = {
+                        ...next[slotIndex],
+                        src: prefetchSrc,
+                        ready: true,
+                        key: `prefetch-${slotIndex}-${Date.now()}`
+                    };
+                    return next;
+                });
+                return;
+            }
+        }
 
-        const startFade = () => {
-            if (canceled) return;
+        const url = randomImageUrl();
+        const loader = new Image();
 
-            // 确保从透明开始
-            setIsFading(false);
-
-            // 下一帧再开启淡入，确保浏览器能捕捉到 opacity 的变更
-            requestAnimationFrame(() => {
-                if (canceled) return;
-                setIsFading(true);
-
-                // 等动画结束后，切换当前图片，并移除覆盖层
-                setTimeout(() => {
-                    if (canceled) return;
-                    setCurrentIndex(overlayIndex);
-                    setOverlayIndex(null);
-                    setIsFading(false);
-                }, 800);
+        loader.onload = () => {
+            if (!isMountedRef.current) return;
+            setSlots((prev) => {
+                const next = [...prev];
+                next[slotIndex] = {
+                    ...next[slotIndex],
+                    src: url,
+                    ready: true,
+                    key: `random-${slotIndex}-${Date.now()}`
+                };
+                return next;
             });
         };
 
-        if (preloadImg.complete) {
-            startFade();
-        } else {
-            preloadImg.onload = startFade;
-            preloadImg.onerror = startFade;
-        }
+        loader.onerror = () => {
+            if (!isMountedRef.current) return;
+            const fallbackSrc = FALLBACK_IMAGES[slotIndex % FALLBACK_IMAGES.length]?.src || FALLBACK_IMAGES[0].src;
+            setSlots((prev) => {
+                const next = [...prev];
+                next[slotIndex] = {
+                    ...next[slotIndex],
+                    src: fallbackSrc,
+                    ready: true,
+                    key: `fallback-${slotIndex}-${Date.now()}`
+                };
+                return next;
+            });
+        };
+
+        loader.src = url;
+    }, [prefetchedImages, somniumNexusStore.isUsingTestData]);
+
+    // 初始化两张图 + 轮播定时器
+    useEffect(() => {
+        isMountedRef.current = true;
+        loadSlot(0, true);
+        loadSlot(1, true);
+
+        const timer = setInterval(() => {
+            setActiveIndex((prev) => {
+                const next = prev === 0 ? 1 : 0;
+                // 预加载下一个槽位（当前将要隐藏的槽位）
+                loadSlot(prev);
+                return next;
+            });
+        }, 13000);
 
         return () => {
-            canceled = true;
-            preloadImg.onload = null;
-            preloadImg.onerror = null;
+            isMountedRef.current = false;
+            clearInterval(timer);
         };
-    }, [overlayIndex, images]);
+    }, [loadSlot]);
 
-    const currentImage =
-        images && images.length > 0 ? images[currentIndex] : null;
-    const overlayImage =
-        overlayIndex !== null && images && images.length > 0
-            ? images[overlayIndex]
-            : null;
+    const poeticLines = useMemo(() => {
+        const data = somniumNexusStore.galleryCategories || {};
+        const validKeys = somniumNexusStore.categories || [];
+        const lines = validKeys
+            .map((key) => {
+                const cat = data[key] || {};
+                return cat.title || cat.name || key;
+            })
+            .filter(Boolean);
+
+        // 去重后仅取前若干条，保持克制
+        const seen = new Set();
+        const unique = [];
+        lines.forEach((line) => {
+            const trimmed = String(line).trim();
+            if (!trimmed) return;
+            const normalized = trimmed.toLowerCase();
+            if (seen.has(normalized)) return;
+            seen.add(normalized);
+            unique.push(trimmed);
+        });
+
+        return unique.slice(0, 9);
+    }, [somniumNexusStore.categories, somniumNexusStore.galleryCategories]);
 
     return (
         <div className={styles.welcomeContainer}>
             <div className={styles.backgroundImageWrapper}>
-                {currentImage && (
-                    <img
-                        key={`current-${currentImage.id}`}
-                        src={currentImage.src}
-                        alt="Somnium Nexus"
-                        className={`${styles.backgroundImageBase} ${
-                            isFading ? styles.backgroundImageBaseFadingOut : ''
-                        }`}
-                    />
-                )}
-                {overlayImage && (
-                    <img
-                        key={`overlay-${overlayImage.id}`}
-                        src={overlayImage.src}
-                        alt="Somnium Nexus"
-                        className={`${styles.backgroundImage} ${
-                            isFading ? styles.backgroundImageOverlayVisible : styles.backgroundImageOverlay
-                        }`}
-                    />
-                )}
+                {slots.map((slot, idx) => {
+                    const src = slot.src || FALLBACK_IMAGES[idx % FALLBACK_IMAGES.length].src;
+                    const isActive = idx === activeIndex && slot.ready;
+                    return (
+                        <img
+                            key={slot.key || `${idx}-${src}`}
+                            src={src}
+                            alt="Somnium Nexus"
+                            className={`${styles.backgroundImageLayer} ${isActive ? styles.active : styles.inactive}`}
+                        />
+                    );
+                })}
             </div>
+            {poeticLines.length > 0 && (
+                <div className={styles.poeticOverlay}>
+                    {poeticLines.map((line, index) => (
+                        <div
+                            key={`${line}-${index}`}
+                            className={styles.poeticLine}
+                            style={{
+                                animationDelay: `${index * 0.85}s`
+                            }}
+                        >
+                            {line}
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
-};
+});
 
 export default SimpleWelcomeModule;

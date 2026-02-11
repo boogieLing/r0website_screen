@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { observer } from 'mobx-react-lite';
 import GracefulImage from '@/components/SkeletonImage/GracefulImage';
 import { calculateNonOverlappingPosition } from '@/utils/magneticLayout';
@@ -28,10 +29,13 @@ const GalleryItem = observer(({
     const [showRatioMenu, setShowRatioMenu] = useState(false); // 比例菜单显示状态
     const [showCategoryMenu, setShowCategoryMenu] = useState(false); // 添加到分类菜单显示状态
     const [isAddingToCategory, setIsAddingToCategory] = useState(false); // 添加到分类的加载状态
+    const [isCachingToLocal, setIsCachingToLocal] = useState(false); // 加入缓存分类加载状态
     const [isDeleting, setIsDeleting] = useState(false); // 删除中的状态
     const [currentRatio, setCurrentRatio] = useState('5:7'); // 当前比例
+    const [categoryMenuStyle, setCategoryMenuStyle] = useState({}); // 分类菜单的浮层位置
     const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
     const [resizeStart, setResizeStart] = useState({ width: 0, height: 0, x: 0, y: 0 });
+    const categoryButtonRef = useRef(null);
 
     // 优化：使用解构获取数据，避免重复访问
     const { id, x, y, width, height, originalImage } = item;
@@ -68,6 +72,77 @@ const GalleryItem = observer(({
 
     // 实时计算当前比例
     const realTimeRatio = calculateAspectRatio(width, height);
+
+    // 解析当前可用的宽高比（优先使用编辑后的尺寸，其次使用原图尺寸）
+    const resolvedAspectRatio = useMemo(() => {
+        const parsePositiveNumber = (value) => {
+            const num = Number(value);
+            return Number.isFinite(num) && num > 0 ? num : null;
+        };
+
+        let baseWidth = parsePositiveNumber(width);
+        let baseHeight = parsePositiveNumber(height);
+
+        if (!baseWidth || !baseHeight) {
+            const rawWidth = parsePositiveNumber(originalImage?.width || originalImage?.thumbWidth);
+            const rawHeight = parsePositiveNumber(originalImage?.height || originalImage?.thumbHeight);
+            if (rawWidth && rawHeight) {
+                baseWidth = rawWidth;
+                baseHeight = rawHeight;
+            }
+        }
+
+        if (!baseWidth || !baseHeight) {
+            baseWidth = 4;
+            baseHeight = 3;
+        }
+
+        const gcd = (a, b) => {
+            const safeA = Math.abs(Math.round(a));
+            const safeB = Math.abs(Math.round(b));
+            return safeB === 0 ? safeA : gcd(safeB, safeA % safeB);
+        };
+
+        const divisor = gcd(baseWidth, baseHeight) || 1;
+        const normalizedWidth = Math.max(1, Math.round(baseWidth / divisor));
+        const normalizedHeight = Math.max(1, Math.round(baseHeight / divisor));
+
+        return {
+            css: `${normalizedWidth} / ${normalizedHeight}`,
+            skeleton: `${normalizedWidth}:${normalizedHeight}`
+        };
+    }, [width, height, originalImage]);
+
+    // 更新“添加到分类”菜单的位置，避免被父容器裁剪
+    const updateCategoryMenuPosition = useCallback(() => {
+        const button = categoryButtonRef.current;
+        if (!button) return;
+
+        const rect = button.getBoundingClientRect();
+        const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
+        const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+
+        const padding = 12;
+        const minWidth = 220;
+        const spaceBelow = viewportHeight - rect.bottom - padding;
+        const spaceAbove = rect.top - padding;
+        const shouldOpenUpwards = spaceBelow < 180 && spaceAbove > spaceBelow;
+
+        const maxHeightCandidate = shouldOpenUpwards ? spaceAbove : spaceBelow;
+        const maxHeight = Math.max(160, Math.min(360, maxHeightCandidate - 8));
+
+        const top = shouldOpenUpwards
+            ? Math.max(padding, rect.top - maxHeight - 8)
+            : Math.min(viewportHeight - padding, rect.bottom + 8);
+        const left = Math.min(rect.left, viewportWidth - minWidth - padding);
+
+        setCategoryMenuStyle({
+            top: `${top}px`,
+            left: `${left}px`,
+            minWidth: `${Math.max(minWidth, rect.width + 24)}px`,
+            maxHeight: `${maxHeight}px`
+        });
+    }, []);
 
     // 当尺寸变化时的动画效果
     useEffect(() => {
@@ -321,6 +396,21 @@ const GalleryItem = observer(({
         }
     }, [showRatioMenu, showCategoryMenu]);
 
+    // 分类菜单开启时，监听窗口和滚动以保持定位
+    useEffect(() => {
+        if (!showCategoryMenu) return undefined;
+        updateCategoryMenuPosition();
+
+        const handleReposition = () => updateCategoryMenuPosition();
+        window.addEventListener('resize', handleReposition);
+        window.addEventListener('scroll', handleReposition, true);
+
+        return () => {
+            window.removeEventListener('resize', handleReposition);
+            window.removeEventListener('scroll', handleReposition, true);
+        };
+    }, [showCategoryMenu, updateCategoryMenuPosition]);
+
     // 处理点击
     const handleClick = useCallback(() => {
         if (!editMode && onClick) {
@@ -330,9 +420,42 @@ const GalleryItem = observer(({
 
     // 切换“添加到分类”菜单
     const toggleCategoryMenu = useCallback((e) => {
-        e.stopPropagation();
-        setShowCategoryMenu(!showCategoryMenu);
-    }, [showCategoryMenu]);
+        if (e) {
+            e.stopPropagation();
+        }
+        setShowCategoryMenu((prev) => {
+            const next = !prev;
+            if (!prev) {
+                requestAnimationFrame(() => updateCategoryMenuPosition());
+            }
+            return next;
+        });
+    }, [updateCategoryMenuPosition]);
+
+    // 将图片加入本地缓存分类
+    const handleAddToCache = useCallback(async (event) => {
+        if (event) {
+            event.stopPropagation();
+        }
+
+        if (!editMode || !originalImage || !originalImage.id) {
+            return;
+        }
+
+        if (isCachingToLocal) {
+            return;
+        }
+
+        setIsCachingToLocal(true);
+        try {
+            const result = await somniumNexusStore.addImageToCache(originalImage.id);
+            if (result && result.success) {
+                alert(result.message || '已加入本地缓存分类');
+            }
+        } finally {
+            setIsCachingToLocal(false);
+        }
+    }, [editMode, originalImage, isCachingToLocal, somniumNexusStore]);
 
     // 执行“添加到分类”操作
     const handleAddToCategory = useCallback(async (option) => {
@@ -416,8 +539,9 @@ const GalleryItem = observer(({
                 position: flexMode ? 'relative' : 'absolute',
                 left: flexMode ? 'auto' : `${x}px`,
                 top: flexMode ? 'auto' : `${y}px`,
-                width: flexMode ? undefined : `${width}px`, // flex模式下不设置width，让CSS控制
-                height: `${height}px`,
+                width: flexMode ? '100%' : `${width}px`,
+                height: flexMode ? 'auto' : `${height}px`,
+                aspectRatio: flexMode ? resolvedAspectRatio.css : undefined,
                 zIndex: isDragging || isResizing ? 1000 : id
             }}
             onMouseDown={handleMouseDown}
@@ -429,7 +553,7 @@ const GalleryItem = observer(({
                     alt={originalImage.title}
                     className={styles.galleryImage}
                     objectFit="cover"
-                    aspectRatio="4:3"
+                    aspectRatio={resolvedAspectRatio.skeleton}
                     skeletonSize="none"
                     showRetry={false}
                 />
@@ -481,6 +605,7 @@ const GalleryItem = observer(({
                         <div className={styles.categoryControls}>
                             <div
                                 className={styles.categoryButton}
+                                ref={categoryButtonRef}
                                 onClick={toggleCategoryMenu}
                                 title={isAddingToCategory ? '正在添加到分类...' : '添加到分类'}
                                 role="button"
@@ -494,8 +619,27 @@ const GalleryItem = observer(({
                             >
                                 +
                             </div>
-                            {showCategoryMenu && (
-                                <div className={styles.categoryMenu}>
+                            <div
+                                className={`${styles.cacheButton} ${isCachingToLocal ? styles.caching : ''}`}
+                                onClick={handleAddToCache}
+                                title={isCachingToLocal ? '正在加入本地缓存分类...' : '加入本地缓存分类'}
+                                role="button"
+                                tabIndex={0}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        handleAddToCache(e);
+                                    }
+                                }}
+                            >
+                                {isCachingToLocal ? '…' : '缓存'}
+                            </div>
+                            {showCategoryMenu && typeof document !== 'undefined' && createPortal(
+                                <div
+                                    className={styles.categoryMenu}
+                                    style={categoryMenuStyle}
+                                    onClick={(e) => e.stopPropagation()}
+                                >
                                     {availableCategories.map((option) => {
                                         const categoryData = somniumNexusStore.galleryCategories[option.assignKeys[0]];
                                         if (!categoryData) return null;
@@ -517,7 +661,8 @@ const GalleryItem = observer(({
                                             暂无可用分类
                                         </div>
                                     )}
-                                </div>
+                                </div>,
+                                document.body
                             )}
                         </div>
 

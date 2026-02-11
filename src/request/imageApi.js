@@ -36,3 +36,14 @@ export const updateImagePosition = (id, data) => put(`${prefix}/${id}/position`,
 
 // 删除图片
 export const deleteImage = (id) => del(`${prefix}/${id}`);
+
+// 将图片加入本地缓存分类
+export const addImageToCache = (id) => post(`${prefix}/cache/${id}`);
+
+// 获取本地缓存中的随机图片（二进制）
+export const getRandomCachedImage = () =>
+    get(`${prefix}/cache/random`, undefined, {
+        responseType: 'blob',
+        // 允许服务端返回 4xx 时也进入 then，便于前端解析失败信息
+        validateStatus: (status) => status >= 200 && status < 500
+    });

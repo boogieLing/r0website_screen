@@ -10,52 +10,26 @@
   box-sizing: border-box;
 }
 .flexContainer {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  align-items: flex-start;
   width: 100%;
   min-height: 100%;
   margin: 0 auto;
   max-width: 1400px;
   box-sizing: border-box;
 }
-@media (max-width: 480px) {
-  .flexContainer {
-    justify-content: center;
-  }
+.columns {
+  display: grid;
+  grid-template-columns: repeat(var(--columns, 3), minmax(0, 1fr));
+  gap: var(--flex-gap, 12px);
+  align-items: start;
 }
-@media (min-width: 481px) and (max-width: 768px) {
-  .flexContainer {
-    justify-content: center;
-  }
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flex-gap, 12px);
 }
-.galleryItem-1col {
-  width: calc(100% - 8px) !important;
-}
-.galleryItem-2col {
-  width: calc(50% - 6px) !important;
-}
-.galleryItem-3col {
-  width: calc(33.333% - 5.333px) !important;
-}
-.galleryItem-4col {
-  width: calc(25% - 6px) !important;
-}
-.galleryItem-5col {
-  width: calc(20% - 6.4px) !important;
-}
-.flexContainer .galleryItem:nth-child(n+6) {
-  display: none !important;
-}
-.flexContainer .galleryItem {
-  min-width: 0 !important;
-  box-sizing: border-box !important;
-  flex-shrink: 0 !important;
-  flex-grow: 0 !important;
-  flex-basis: auto !important;
-  border: 1px solid rgba(255, 0, 0, 0.2) !important;
-  background-color: rgba(255, 0, 0, 0.05) !important;
+.masonryItem {
+  width: 100% !important;
+  display: block;
 }
 .editToggle {
   position: fixed;

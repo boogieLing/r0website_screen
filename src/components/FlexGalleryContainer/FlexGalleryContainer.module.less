@@ -12,10 +12,6 @@
 }
 
 .flexContainer {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start; // 从左开始排列
-    align-items: flex-start; // 顶部对齐，适应不同高度
     width: 100%;
     min-height: 100%;
     margin: 0 auto; // 确保居中
@@ -23,78 +19,24 @@
     box-sizing: border-box; // 确保padding包含在宽度计算中
 }
 
-// 移除基于data-columns的CSS规则，完全依赖JavaScript计算和类名控制
-
-// 媒体查询 - 建议性响应式布局，不再强制覆盖，让JavaScript控制更灵活
-@media (max-width: 480px) {
-    .flexContainer {
-        justify-content: center; // 小屏居中
-    }
+// 手动分列，避免浏览器自动平衡导致追加图片时重排
+.columns {
+    display: grid;
+    grid-template-columns: repeat(var(--columns, 3), minmax(0, 1fr));
+    gap: var(--flex-gap, 12px);
+    align-items: start;
 }
 
-@media (min-width: 481px) and (max-width: 768px) {
-    .flexContainer {
-        justify-content: center; // 中小屏居中
-    }
+.column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--flex-gap, 12px);
 }
 
-@media (min-width: 769px) and (max-width: 1024px) {
-    .flexContainer {
-        // 平板中屏：保持默认布局
-    }
-}
-
-@media (min-width: 1025px) and (max-width: 1280px) {
-    .flexContainer {
-        // 桌面小屏：保持默认布局
-    }
-}
-
-@media (min-width: 1281px) {
-    .flexContainer {
-        // 桌面大屏：保持默认布局
-    }
-}
-
-// 基于列数的宽度控制类 - 通过props传入GalleryItem
-.galleryItem-1col {
-    width: calc(100% - 8px) !important; // 单列：100%宽度减去间距
-}
-
-.galleryItem-2col {
-    width: calc(50% - 6px) !important; // 两列：50%宽度减去间距
-}
-
-.galleryItem-3col {
-    width: calc(33.333% - 5.333px) !important; // 三列：33.333%宽度减去间距
-}
-
-.galleryItem-4col {
-    width: calc(25% - 6px) !important; // 四列：25%宽度减去间距
-}
-
-.galleryItem-5col {
-    width: calc(20% - 6.4px) !important; // 五列：20%宽度减去间距
-}
-
-// 强制隐藏第6列及以后的元素 - 防止任何可能的6列情况
-.flexContainer .galleryItem:nth-child(n+6) {
-    display: none !important;
-}
-
-// 额外的安全规则 - 确保flex布局正常工作
-.flexContainer {
-    .galleryItem {
-        min-width: 0 !important; // 防止内容撑开
-        box-sizing: border-box !important; // 确保padding和border包含在宽度计算中
-        flex-shrink: 0 !important; // 防止flex项目收缩
-        flex-grow: 0 !important; // 防止flex项目增长
-        flex-basis: auto !important; // 让基础尺寸由width属性控制
-
-        // 调试样式 - 临时添加边框帮助可视化
-        border: 1px solid rgba(255, 0, 0, 0.2) !important;
-        background-color: rgba(255, 0, 0, 0.05) !important;
-    }
+// 瀑布流元素 - 等宽不等高
+.masonryItem {
+    width: 100% !important;
+    display: block;
 }
 
 // 编辑模式切换按钮 - 简约风格，与GalleryFlex统一

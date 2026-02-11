@@ -37,8 +37,7 @@ const SomniumNexus = observer(() => {
     const [showActionTempSubMenu, setShowActionTempSubMenu] = useState(false); // 临时action子菜单显示状态
     const [isLoadingMore, setIsLoadingMore] = useState(false); // 滚动加载状态
     const galleryWrapperRef = useRef(null); // 主内容滚动容器
-    const [nexusPrefetchedImages, setNexusPrefetchedImages] = useState([]); // 欢迎页使用的 nexus 预取图片
-    const hasPrefetchedNexusRef = useRef(false); // 避免重复预取 nexus
+    const cachePrefetchedImages = []; // 欢迎页不预取，直接由组件拉取随机图
 
     const categories = somniumNexusStore.categories;
     const currentImages = somniumNexusStore.currentCategoryImages;
@@ -89,7 +88,7 @@ const SomniumNexus = observer(() => {
         }
 
         const currentCategory = somniumNexusStore.currentCategory;
-        const layoutMode = somniumNexusStore.getCategoryLayoutMode(currentCategory);
+        const layoutMode = somniumNexusStore.getActiveLayoutMode(currentCategory);
 
         if (layoutMode) {
             if (layoutMode === 'flex') {
@@ -104,8 +103,8 @@ const SomniumNexus = observer(() => {
         return environmentLayout;
     };
 
-    // 记录分类布局模式用于依赖跟踪
-    const categoryLayoutModeKey = somniumNexusStore.getCategoryLayoutMode(somniumNexusStore.currentCategory);
+    // 记录分类布局模式用于依赖跟踪（包含子分类布局）
+    const categoryLayoutModeKey = somniumNexusStore.getActiveLayoutMode(somniumNexusStore.currentCategory);
 
     // 当分类、环境或设备状态变化时，更新当前布局状态
     useEffect(() => {
@@ -125,6 +124,7 @@ const SomniumNexus = observer(() => {
     }, [
         categoryLayoutModeKey,
         somniumNexusStore.selectedCategory,
+        somniumNexusStore.selectedSubCategory,
         somniumNexusStore.isUsingTestData,
         environmentLayout,
         isMobile
@@ -219,28 +219,7 @@ const SomniumNexus = observer(() => {
         setIsLoadingMore(false);
     }, [somniumNexusStore.selectedCategory]);
 
-    // 未选择项目时，预取 nexus 分类图片供欢迎页随机展示
-    useEffect(() => {
-        if (somniumNexusStore.isUsingTestData || somniumNexusStore.selectedCategory) {
-            return;
-        }
-
-        const loadNexusForWelcome = async () => {
-            const ok = await somniumNexusStore.loadCategoryDetail('nexus', {force: true, reset: true});
-            const images = somniumNexusStore.getImagesByCategory('nexus') || [];
-            if (images.length > 0) {
-                setNexusPrefetchedImages(images);
-                hasPrefetchedNexusRef.current = true;
-            } else if (!ok) {
-                // 允许后续重试
-                hasPrefetchedNexusRef.current = false;
-            }
-        };
-
-        if (!hasPrefetchedNexusRef.current) {
-            loadNexusForWelcome();
-        }
-    }, [somniumNexusStore.selectedCategory, somniumNexusStore.isUsingTestData, categories.length]);
+    // 欢迎页不再预取随机图，直接交给 SimpleWelcomeModule 自行拉取
 
     // 取消自动选择"全部"分类，让用户手动选择
     useEffect(() => {
@@ -857,10 +836,10 @@ const SomniumNexus = observer(() => {
                     />
                 )}
                 {(!hasSelected && !sidebarExpanded) ? (
-                    <SimpleWelcomeModule prefetchedImages={nexusPrefetchedImages} />
+                    <SimpleWelcomeModule prefetchedImages={cachePrefetchedImages} />
                 ) : (!hasSelected || !somniumNexusStore.selectedCategory) ? (
                     // 保持欢迎页面显示，即使侧栏展开但未选择项目
-                    <SimpleWelcomeModule prefetchedImages={nexusPrefetchedImages} />
+                    <SimpleWelcomeModule prefetchedImages={cachePrefetchedImages} />
                 ) : (
                     <div className={styles.galleryWrapper} ref={galleryWrapperRef}>
                         {renderedLayout === LAYOUT_TYPES.FLEX ? (

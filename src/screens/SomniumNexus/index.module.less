@@ -79,9 +79,11 @@
             opacity: 1;
             visibility: visible;
             display: block;
-            padding: 16px 10px; // 恢复内边距
-            box-shadow: -6px 0 12px rgba(0, 0, 0, 0.06);
-            background: transparent;
+            padding: 14px 12px; // 与主样式一致
+            box-shadow: 2px 0 18px rgba(0, 0, 0, 0.06); // 与侧栏一致的轻量阴影
+            background: rgba(254, 254, 254, 0.9); // 与侧栏相同的半透白
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            border-radius: 0; // 保持直角
             z-index: 12;
         }
     }
@@ -127,16 +129,20 @@
     flex-direction: column; // 垂直布局，一行一个
     overflow-y: auto; // 超出时滚动
     overflow-x: hidden;
-    padding: 16px 10px; // 统一留白，左右对称
+    padding: 14px 12px; // 紧凑留白
     min-height: 0; // 防止flex项目被内容撑开
-    background-color: transparent; // 移除背景区分，融为一体
+    background: rgba(254, 254, 254, 0.9); // 与侧栏一致的实色+轻微透明
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    border-radius: 0; // 去掉圆角，保持侧栏直角风格
+    box-shadow: 2px 0 18px rgba(0, 0, 0, 0.06); // 与侧栏风格一致的轻量阴影
+    backdrop-filter: blur(8px);
 
     // 动画相关样式 - 通过容器控制
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all 0.25s ease;
 
     // 自定义滚动条 - 日系极简
     &::-webkit-scrollbar {
-        width: 2px; // 更细的滚动条
+        width: 3px; // 更细的滚动条
     }
 
     &::-webkit-scrollbar-track {
@@ -145,11 +151,11 @@
     }
 
     &::-webkit-scrollbar-thumb {
-        background: rgba(0, 0, 0, 0.06); // 更淡的滚动条
-        border-radius: 0; // 直角设计
+        background: rgba(40, 60, 120, 0.12); // 低饱和度深蓝
+        border-radius: 12px;
 
         &:hover {
-            background: rgba(0, 0, 0, 0.1);
+            background: rgba(40, 60, 120, 0.18);
         }
     }
 }
@@ -157,7 +163,7 @@
 // tab包装器 - 垂直布局，一行一个
 .tabWrapper {
     display: block; // 改为block，垂直布局，一行一个
-    margin: 2px 0; // 垂直间距，一行一个
+    margin: 4px 0; // 稍加间距，让卡片有呼吸感
     padding: 0; // 无内边距
     width: 100%; // 占满父容器宽度
     box-sizing: border-box;
@@ -170,10 +176,10 @@
     width: 100%; // 占满侧栏宽度
     overflow-y: auto; // 超出时滚动
     overflow-x: hidden; // 隐藏横向滚动条
-    padding: 16px 20px; // 整体留白，留白美学
+    padding: 12px 18px; // 略收紧留白
     min-height: 0; // 防止flex项目被内容撑开
     line-height: 1.5; // 行高
-   margin-top: 3vh;
+    margin-top: 3vh;
 
     // 自定义滚动条 - 直角设计
     &::-webkit-scrollbar {
@@ -507,22 +513,25 @@
         flex-direction: column; // 垂直堆叠
     }
 
-    .tabsFlowLeft,
-    .tabsFlowRight {
-        flex: none; // 移除均分，按内容高度
-        max-height: 200px; // 限制最大高度
-        border-right: none; // 移除分隔线
-        border-bottom: 1px solid rgba(0, 0, 0, 0.05); // 改为底部分隔线
-        padding: 12px 16px; // 减少留白
-    }
+.tabsFlowLeft,
+.tabsFlowRight {
+    flex: none; // 移除均分，按内容高度
+    max-height: 200px; // 限制最大高度
+    border-right: none; // 移除分隔线
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05); // 改为底部分隔线
+    padding: 12px 16px; // 减少留白
+}
 
-    .tabsFlowRight {
-        background-color: transparent; // 移除背景区分
-        // 移动端动画调整
-        opacity: 1;
-        transform: translateY(-10px);
-        transition: all 0.3s ease;
-        visibility: visible;
+.tabsFlowRight {
+    background: rgba(254, 254, 254, 0.9);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    box-shadow: 2px 0 18px rgba(0, 0, 0, 0.06);
+    border-radius: 0;
+    // 移动端动画调整
+    opacity: 1;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    visibility: visible;
 
         // 移动端通过容器类控制显示/隐藏
         .tabsContainer.collapsed & {
@@ -1856,7 +1865,8 @@
 
     .tabText {
         color: #6a6a6a; // 鼠色文本
-        font-size: 0.75rem; // 稍小字体，体现层级关系
+        font-size: 0.72rem; // 再收紧字体，凸显层级
+        letter-spacing: 0.01em;
     }
 
     // 子项目Tab特有的L型边框 - 默认透明，hover时显示
@@ -1909,8 +1919,9 @@
 
     .tabText {
         color: #5a5a5a; // 消炭色文本
-        font-size: 0.75rem; // 稍小字体，体现层级关系
+        font-size: 0.72rem; // 再收紧字体，体现层级
         font-weight: 350;
+        letter-spacing: 0.01em;
     }
 
     // 子操作Tab特有的L型边框 - 默认透明，hover时显示

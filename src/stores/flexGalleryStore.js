@@ -2,7 +2,7 @@ import { makeAutoObservable } from 'mobx';
 
 /**
  * FlexGalleryStore - 简约flex布局状态管理
- * 所有item大小一致，位置自动计算
+ * 支持等宽瀑布流布局，保存纵横比以便自适应高度
  */
 class FlexGalleryStore {
     constructor() {
@@ -22,12 +22,31 @@ class FlexGalleryStore {
 
     // 初始化分类项目 - 支持响应式列数，宽度由CSS控制
     initializeItems(categoryId, images, standardSize, columns = 3) {
+        const baseHeight = (standardSize && standardSize.height) || 200;
+
         const items = images.map((image, index) => ({
             id: image.id || `flex-${index}`,
             x: 0, // flex布局下位置自动计算
             y: 0, // flex布局下位置自动计算
-            width: 'auto', // 宽度由CSS flex布局控制，不设置固定值
-            height: standardSize.height, // 仅高度由sizeMap控制
+            // 将图片原始宽高标准化为统一的高度，保存真实纵横比用于瀑布流展示
+            width: (() => {
+                const rawWidth = Number(image.width || image.thumbWidth);
+                const rawHeight = Number(image.height || image.thumbHeight);
+                if (Number.isFinite(rawWidth) && Number.isFinite(rawHeight) && rawWidth > 0 && rawHeight > 0) {
+                    const ratio = rawWidth / rawHeight;
+                    return Math.max(1, Math.round(baseHeight * ratio));
+                }
+                return Math.round(baseHeight * (4 / 3));
+            })(),
+            height: baseHeight,
+            aspectRatio: (() => {
+                const rawWidth = Number(image.width || image.thumbWidth);
+                const rawHeight = Number(image.height || image.thumbHeight);
+                if (Number.isFinite(rawWidth) && Number.isFinite(rawHeight) && rawWidth > 0 && rawHeight > 0) {
+                    return rawWidth / rawHeight;
+                }
+                return 4 / 3;
+            })(),
             originalImage: image,
             categoryId: categoryId,
             columns: columns // 保存当前列数，用于响应式布局
