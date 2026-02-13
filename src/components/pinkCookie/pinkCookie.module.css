@@ -67,6 +67,7 @@
 }
 .pinkCookie {
   position: fixed;
+  z-index: 120;
   box-sizing: border-box;
   border-radius: 50%;
   display: flex;
@@ -215,5 +216,12 @@
     transform: scale(1.5);
     opacity: 0;
   }
+}
+.mobilePinkCookie {
+  z-index: 76;
+  transform: rotate(23deg);
+}
+.mobilePinkCookie:hover {
+  transform: rotate(23deg) scale(1.04);
 }
 /*# sourceMappingURL=pinkCookie.module.css.map */

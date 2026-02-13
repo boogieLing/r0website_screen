@@ -4,7 +4,7 @@ import cursorTipsStore from "@/stores/cursorTipsStore";
 import {SortController} from "@/components/sortController/sortController";
 import {addPraise} from "@/request/blogApi";
 
-export const BlogTop = ({post, setComputed}) => {
+export const BlogTop = ({post, setComputed, isImmersive = false}) => {
     const [curPraise, setCurPraise] = useState(0);
     const getDate = useCallback((dateStr) => {
         if (!dateStr) {
@@ -28,7 +28,7 @@ export const BlogTop = ({post, setComputed}) => {
             setCurPraise(post.praise_number);
         }
     }, [post]);
-    return <div className={S.blogTopBox}>
+    return <div className={`${S.blogTopBox} ${isImmersive ? S.blogTopImmersive : ''}`}>
         <div className={S.borderLeftBottom + " " + S.borderClone}/>
         <div className={S.borderRight + " " + S.borderClone}/>
         <div className={S.borderLeftBottom}/>

@@ -5,12 +5,57 @@ import {coldarkDark} from 'react-syntax-highlighter/dist/esm/styles/prism';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import copy from 'copy-to-clipboard';
-import {memo, useCallback, useEffect} from "react";
+import {memo, useCallback, useEffect, useMemo, useState} from "react";
 import cursorTipsStore from "@/stores/cursorTipsStore";
 import curPostStore from "@/stores/curPostStore";
 import PlainLeftScrollBars from "@/components/scrollBars/PlainLeftScrollBars";
 
-export const BlogMarkdown = memo(({post}) => {
+const MOBILE_FONT_STORAGE_KEY = 'blog_mobile_markdown_font_size';
+const MOBILE_FONT_MIN = 12;
+const MOBILE_FONT_MAX = 18;
+const MOBILE_FONT_STEP = 0.5;
+const MOBILE_FONT_DEFAULT = 13;
+
+export const BlogMarkdown = memo(({post, isMobile = false, isImmersive = false, hideMobileFontController = false}) => {
+    const panelWidth = 'clamp(360px, 34vw, 500px)';
+    const panelGap = '30px';
+    const rightOffset = `calc(${panelWidth} + ${panelGap})`;
+    const contentTop = 'clamp(82px, 10vh, 100px)';
+    const contentReservedHeight = 'clamp(180px, 25vh, 220px)';
+    const mobileTop = isImmersive ? '72px' : '158px';
+    const mobileBottomDockHeight = '0px';
+    const mobileBodyHeight = `calc(100% - ${mobileTop} - ${mobileBottomDockHeight})`;
+    const [mobileFontSize, setMobileFontSize] = useState(MOBILE_FONT_DEFAULT);
+    const [mobilePreviewImage, setMobilePreviewImage] = useState('');
+
+    useEffect(() => {
+        if (!isMobile || typeof window === "undefined") {
+            return;
+        }
+        const savedValue = Number(window.localStorage.getItem(MOBILE_FONT_STORAGE_KEY));
+        if (Number.isFinite(savedValue)) {
+            const normalized = Math.max(MOBILE_FONT_MIN, Math.min(MOBILE_FONT_MAX, savedValue));
+            setMobileFontSize(normalized);
+        } else {
+            setMobileFontSize(MOBILE_FONT_DEFAULT);
+        }
+    }, [isMobile]);
+
+    useEffect(() => {
+        if (!isMobile || typeof window === "undefined") {
+            return;
+        }
+        window.localStorage.setItem(MOBILE_FONT_STORAGE_KEY, String(mobileFontSize));
+    }, [isMobile, mobileFontSize]);
+
+    const mobileLineHeight = useMemo(() => {
+        return Number((mobileFontSize * 1.56).toFixed(2));
+    }, [mobileFontSize]);
+
+    const mobileCodeFontSize = useMemo(() => {
+        return Number((mobileFontSize * 0.8).toFixed(2));
+    }, [mobileFontSize]);
+
     const copyCode = useCallback((code) => {
         cursorTipsStore.addTips({
             spanText: "Copy successfully！",
@@ -52,28 +97,90 @@ export const BlogMarkdown = memo(({post}) => {
     }, [post.markdown]);
 
     return <PlainLeftScrollBars
-        style={{
+        style={isMobile ? {
             position: "absolute",
-            top: "100px",
-            right: "530px",
-            // left: "450px",
-            width: "calc(100% - 530px)",
-            maxWidth: "1370px",
-            height: "calc(100% - 220px)", //TODO 丑陋的写法，实际上高度需要根据less变量计算得出
+            top: mobileTop,
+            left: 0,
+            right: 0,
+            width: "100%",
+            maxWidth: "none",
+            height: mobileBodyHeight,
+            minHeight: "180px",
             overflow: "clip",
-            boxSizing: "border-box",
+            boxSizing: "border-box"
+        } : {
+            ...(isImmersive ? {
+                position: "absolute",
+                top: "10px",
+                left: 0,
+                right: 0,
+                width: "100%",
+                maxWidth: "none",
+                height: "calc(100% - 20px)",
+                overflow: "clip",
+                boxSizing: "border-box",
+            } : {
+                position: "absolute",
+                top: contentTop,
+                right: rightOffset,
+                // left: "450px",
+                width: `calc(100% - ${rightOffset})`,
+                maxWidth: "1370px",
+                height: `calc(100% - ${contentReservedHeight})`, // 顶栏+底栏预留空间：小屏时自动缩减
+                overflow: "clip",
+                boxSizing: "border-box",
+            })
         }}>
         <div
-            className={markdownStyle.blogMarkdownBox}>
+            className={`${markdownStyle.blogMarkdownBox} ${(!isMobile && isImmersive) ? markdownStyle.blogMarkdownImmersive : ''}`}
+            style={isMobile ? {
+                '--mobile-md-font-size': `${mobileFontSize}px`,
+                '--mobile-md-line-height': `${mobileLineHeight}px`,
+                '--mobile-md-code-font-size': `${mobileCodeFontSize}px`,
+            } : undefined}
+        >
+            {mobilePreviewImage && (
+                <div
+                    className={markdownStyle.mobileImagePreviewMask}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setMobilePreviewImage('');
+                    }}
+                >
+                    <img
+                        className={markdownStyle.mobileImagePreviewImg}
+                        src={mobilePreviewImage}
+                        alt=""
+                        onClick={(e) => e.stopPropagation()}
+                    />
+                </div>
+            )}
+            {isMobile && !hideMobileFontController && (
+                <div className={markdownStyle.mobileFontController}>
+                    <span className={markdownStyle.mobileFontLabel}>A</span>
+                    <input
+                        className={markdownStyle.mobileFontRange}
+                        type="range"
+                        min={MOBILE_FONT_MIN}
+                        max={MOBILE_FONT_MAX}
+                        step={MOBILE_FONT_STEP}
+                        value={mobileFontSize}
+                        onChange={(e) => setMobileFontSize(Number(e.target.value))}
+                        aria-label="Adjust article font size"
+                    />
+                </div>
+            )}
             <ReactMarkdown
                 children={post.markdown}
-                rehypePlugins={[rehypeRaw, remarkGfm]}
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeRaw]}
                 components={{
                     code({node, inline, className, children, ...props}) {
                         const match = /language-(\w+)/.exec(className || '');
                         const codeStr = String(children).replace(/\n$/, '');
-                        return !inline && match ? (
-                            <div className={markdownStyle.codeBox}>
+                        if (!inline) {
+                            const lang = match ? match[1] : 'text';
+                            return <div className={markdownStyle.codeBox}>
                                 <div className={markdownStyle.infoBox}>
                                     <div
                                         className={markdownStyle.copyBtn} onClick={() => copyCode(codeStr)}
@@ -81,23 +188,24 @@ export const BlogMarkdown = memo(({post}) => {
                                         onMouseLeave={cursorTipsStore.clearTips}>
                                         <i className={markdownStyle.iconfont}>&#xe6f3;</i>
                                     </div>
-                                    <div className={markdownStyle.lang}>{match[1]}</div>
+                                    <div className={markdownStyle.lang}>{lang}</div>
                                 </div>
 
                                 <SyntaxHighlighter
                                     children={codeStr}
                                     style={coldarkDark}
-                                    language={match[1]}
+                                    language={lang}
                                     showLineNumbers
                                     showInlineLineNumbers
                                     {...props}
                                 />
-                            </div>
-                        ) : (
+                            </div>;
+                        }
+                        return (
                             <code className={className} {...props}>
                                 {children}
                             </code>
-                        )
+                        );
                     },
                     a({node, inline, className, children, ...props}) {
                         return <a
@@ -116,6 +224,21 @@ export const BlogMarkdown = memo(({post}) => {
                     },
                     h2({node, inline, className, children, ...props}) {
                         return <h2 id={children} data-name={children}>{children}</h2>
+                    },
+                    img({node, src, alt, ...props}) {
+                        return <img
+                            src={src}
+                            alt={alt || ''}
+                            {...props}
+                            onClick={(e) => {
+                                if (!src) {
+                                    return;
+                                }
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setMobilePreviewImage(src);
+                            }}
+                        />
                     },
                 }}/>
         </div>

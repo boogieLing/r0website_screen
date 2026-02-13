@@ -57,6 +57,7 @@
 
 .pinkCookie {
   position: fixed;
+  z-index: 120;
   box-sizing: border-box;
   border-radius: 50%;
   display: flex;
@@ -182,5 +183,14 @@
   100% {
     transform: scale(1.5);
     opacity: 0;
+  }
+}
+
+.mobilePinkCookie {
+  z-index: 76;
+  transform: rotate(23deg);
+
+  &:hover {
+    transform: rotate(23deg) scale(1.04);
   }
 }

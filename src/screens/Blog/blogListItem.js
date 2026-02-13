@@ -39,56 +39,58 @@ export const BlogListItem = observer(({post, clickHandler}) => {
             onMouseLeave={cursorTipsStore.popTips}
         >
             <div className={blogListStyle.thumbnailBox}>
-                <img src={post.pic_url} alt=""/>
+                <img className={blogListStyle.thumbnailImg} src={post.pic_url} alt=""/>
             </div>
-            <div className={blogListStyle.normalTextBox + " " + blogListStyle.titleBox}>
-                <span className={blogListStyle.textSpan}>{post.title}</span>
-            </div>
-            <div className={blogListStyle.normalTextBox}>
-                <i className={blogListStyle.iconfont}>&#xe621;</i>
-                <span className={blogListStyle.textSpan}>{post.author}</span>
-            </div>
-            <ul className={blogListStyle.ulBox}>
-                <div className={blogListStyle.liBox}>
-                    Categories:
+            <div className={blogListStyle.itemContent}>
+                <div className={blogListStyle.normalTextBox + " " + blogListStyle.titleBox}>
+                    <span className={blogListStyle.textSpan}>{post.title}</span>
                 </div>
-                {React.Children.map(post.categories, (category, index) => {
-                    return <div key={index} className={blogListStyle.liBox}>
-                        <a href="" onMouseEnter={() => addTinyTips(category)}
-                           onMouseLeave={cursorTipsStore.popTips}
-                        > {category}</a>
+                <div className={blogListStyle.normalTextBox}>
+                    <i className={blogListStyle.iconfont}>&#xe621;</i>
+                    <span className={blogListStyle.textSpan}>{post.author}</span>
+                </div>
+                <ul className={blogListStyle.ulBox}>
+                    <div className={blogListStyle.liBox}>
+                        Categories:
                     </div>
-                })}
-                {
-                    !post.categories || post.categories.length === 0 ? <div className={blogListStyle.liBox}>
-                        Monster...
-                    </div> : <div/>
-                }
-            </ul>
-            <ul className={blogListStyle.ulBox}>
-                <div className={blogListStyle.liBox}>
-                    Tags:
-                </div>
-                {React.Children.map(post.tags, (tag, index) => {
-                    return <div key={index} className={blogListStyle.liBox}>
-                        <a href=""
-                           onMouseEnter={() => addTinyTips(tag)}
-                           onMouseLeave={cursorTipsStore.popTips}
-                        >{tag}
-                        </a>
+                    {React.Children.map(post.categories, (category, index) => {
+                        return <div key={index} className={blogListStyle.liBox}>
+                            <a href="" onMouseEnter={() => addTinyTips(category)}
+                               onMouseLeave={cursorTipsStore.popTips}
+                            > {category}</a>
+                        </div>
+                    })}
+                    {
+                        !post.categories || post.categories.length === 0 ? <div className={blogListStyle.liBox}>
+                            Monster...
+                        </div> : <div/>
+                    }
+                </ul>
+                <ul className={blogListStyle.ulBox}>
+                    <div className={blogListStyle.liBox}>
+                        Tags:
                     </div>
-                })}
-            </ul>
-            <ul className={blogListStyle.ulBox}>
-                <div className={blogListStyle.liBox}>
-                    <i className={blogListStyle.iconfont}>&#xe641;</i>
-                    <span>{post.praise_number}</span>
-                </div>
-                <div className={blogListStyle.liBox}>
-                    <i className={blogListStyle.iconfont}>&#xe65f;</i>
-                    <span>{post.reads_number}</span>
-                </div>
-            </ul>
+                    {React.Children.map(post.tags, (tag, index) => {
+                        return <div key={index} className={blogListStyle.liBox}>
+                            <a href=""
+                               onMouseEnter={() => addTinyTips(tag)}
+                               onMouseLeave={cursorTipsStore.popTips}
+                            >{tag}
+                            </a>
+                        </div>
+                    })}
+                </ul>
+                <ul className={blogListStyle.ulBox}>
+                    <div className={blogListStyle.liBox}>
+                        <i className={blogListStyle.iconfont}>&#xe641;</i>
+                        <span>{post.praise_number}</span>
+                    </div>
+                    <div className={blogListStyle.liBox}>
+                        <i className={blogListStyle.iconfont}>&#xe65f;</i>
+                        <span>{post.reads_number}</span>
+                    </div>
+                </ul>
+            </div>
         </div>
         {curPostStore.id === post._id && curPostStore.heads.length>=1 && <div className={blogListStyle.headBox}>
             {curPostStore.heads.map((id, index) => {
@@ -97,7 +99,6 @@ export const BlogListItem = observer(({post, clickHandler}) => {
                     className={blogListStyle.head + (id === curPostStore.curTitle ? " " + blogListStyle.headHere : "")}
                 >
                     {/*<i className={blogListStyle.iconfont}>&#xe6b1;</i>*/}
-                    <span className={blogListStyle.indexSpan}>{index + 1}</span>
                     <span className={blogListStyle.titleSpan}>{id}</span>
                 </div>
             })}

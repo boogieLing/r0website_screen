@@ -1,7 +1,7 @@
 import blogStyle from "./index.module.less";
 
 import {observer} from 'mobx-react-lite';
-import {useCallback, useEffect, useLayoutEffect, useState} from "react";
+import {useCallback, useEffect, useLayoutEffect, useRef, useState} from "react";
 
 import {getPostListByR0, getDetailById, getArticleInCategory, createTimeDescend, addPv} from "@/request/blogApi";
 import {BlogBackground} from "@/screens/Blog/blogBackground";
@@ -16,6 +16,15 @@ import {FilingInfo} from "@/components/filingInfo/filingInfo";
 import {CategoryList} from "@/screens/Blog/categoryList";
 import Cursor from "@/components/cursor/cursor";
 
+const MOBILE_BREAKPOINT = 820;
+
+const getIsMobileLayout = () => {
+    if (typeof window === "undefined") {
+        return false;
+    }
+    return window.innerWidth <= MOBILE_BREAKPOINT;
+};
+
 const Blog = () => {
     const navigate = useNavigate();
     const params = useParams();
@@ -27,6 +36,14 @@ const Blog = () => {
     const [blogBackground, setBlogBackground] = useState("");
     const [curPostDetail, setCurPostDetail] = useState("");
     const [sortParam, setSortParam] = useState(null);
+    const [isMobileLayout, setIsMobileLayout] = useState(() => getIsMobileLayout());
+    const [isMobileRightSidebarOpen, setIsMobileRightSidebarOpen] = useState(false);
+    const [isImmersive, setIsImmersive] = useState(false);
+    const mobileTapRef = useRef({
+        time: 0,
+        x: 0,
+        y: 0,
+    });
     const setPostDetail = useCallback((r, reset = false) => {
         const {data} = r.data;
         const {total_count, page_number, page_size, articles} = data;
@@ -126,6 +143,19 @@ const Blog = () => {
             // console.log(id);
         }
     }, [id])
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobileLayout(getIsMobileLayout());
+        };
+
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        window.addEventListener('orientationchange', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            window.removeEventListener('orientationchange', handleResize);
+        };
+    }, []);
     useLayoutEffect(() => {
         // osuStore.getRandomPicFromTCloud().then(_ => {
         //     setBlogBackground(osuStore.curImageUrl);
@@ -150,23 +180,91 @@ const Blog = () => {
             }
         }
     }, [])
+    const toggleImmersive = useCallback(() => {
+        setIsImmersive((prev) => !prev);
+    }, []);
+    const handleRootTouchEnd = useCallback((e) => {
+        if (!isMobileLayout) {
+            return;
+        }
+        const target = e.target;
+        if (target instanceof Element && target.closest('input, textarea, select, button')) {
+            return;
+        }
+        const touch = e.changedTouches && e.changedTouches[0];
+        if (!touch) {
+            return;
+        }
+        const now = Date.now();
+        const {time, x, y} = mobileTapRef.current;
+        const gap = now - time;
+        const dx = Math.abs(touch.clientX - x);
+        const dy = Math.abs(touch.clientY - y);
+        mobileTapRef.current = {
+            time: now,
+            x: touch.clientX,
+            y: touch.clientY,
+        };
+        if (gap > 0 && gap < 320 && dx < 24 && dy < 24) {
+            setIsImmersive((prev) => !prev);
+            mobileTapRef.current.time = 0;
+        }
+    }, [isMobileLayout]);
+    const hidePeripheralOnPcImmersive = isImmersive && !isMobileLayout;
 
     const [displayCustomCursor, setDisplayCustomCursor] = useState(false);
-    return <div className={blogStyle.blogMain + " " + (displayCustomCursor ? blogStyle.hiddenCursor : blogStyle.staticCursor)}>
+    return <div
+        className={blogStyle.blogMain + " " + (displayCustomCursor ? blogStyle.hiddenCursor : blogStyle.staticCursor)}
+        onDoubleClick={toggleImmersive}
+        onTouchEndCapture={handleRootTouchEnd}
+    >
         <Cursor display={displayCustomCursor}/>
         <BlogBackground backImg={blogBackground}/>
-        <BlogMarkdown post={curPostDetail}/>
-        <BlogTop post={curPostDetail} setComputed={setSortParam}/>
-        <BlogBottom>
-            <CategoryList style={{
-                position: "absolute", bottom: "0"
+        <BlogMarkdown
+            post={curPostDetail}
+            isMobile={isMobileLayout}
+            isImmersive={isImmersive}
+            hideMobileFontController={isImmersive}
+        />
+        {!hidePeripheralOnPcImmersive && (
+            <BlogTop post={curPostDetail} setComputed={setSortParam} isImmersive={isImmersive}/>
+        )}
+        {!hidePeripheralOnPcImmersive && (
+            <BlogBottom
+                isMobile={isMobileLayout}
+                isRightSidebarOpen={isMobileRightSidebarOpen}
+                isImmersive={isImmersive}
+            >
+                <CategoryList style={{
+                    ...(isMobileLayout ? {} : {
+                        position: "absolute",
+                        bottom: "0",
+                        left: "auto",
+                        right: "auto"
+                    })
+                }} isSidebar={isMobileLayout}/>
+            </BlogBottom>
+        )}
+        {!isImmersive && <TinyPinkCookie isMobile={isMobileLayout}/>}
+        {!hidePeripheralOnPcImmersive && (
+            <BlogList
+                posts={posts.data}
+                clickHandler={blogPostItemClickHandler}
+                nextPage={nextPage}
+                isMobile={isMobileLayout}
+                isImmersive={isImmersive}
+                onMobileSidebarOpenChange={setIsMobileRightSidebarOpen}
+            />
+        )}
+        {!hidePeripheralOnPcImmersive && (
+            <FilingInfo style={{
+                position: "fixed",
+                right: isMobileLayout ? "10px" : "200px",
+                bottom: "0",
+                transform: isMobileLayout ? "scale(0.85)" : "none",
+                transformOrigin: "right bottom"
             }}/>
-            <TinyPinkCookie/>
-        </BlogBottom>
-        <BlogList posts={posts.data} clickHandler={blogPostItemClickHandler} nextPage={nextPage}/>
-        <FilingInfo style={{
-            position: "fixed", right: "200px", bottom: "0"
-        }}/>
+        )}
     </div>;
 };
 export default observer(Blog);

@@ -7,22 +7,30 @@ import {useNavigate} from "react-router-dom";
 
 const tinyPinkCookieCanvasId = "tinyPinkCookieCanvasId";
 const pinkColor = colorStore.pink;
-export const TinyPinkCookie = () => {
+export const TinyPinkCookie = ({isMobile = false, diameter}) => {
     const navigate = useNavigate();
-    const clickHandler = useCallback(()=>navigate("/"), []);
-    const cookieDiameter = useMemo(() => 200, []);
+    const clickHandler = useCallback(() => navigate("/"), [navigate]);
+    const cookieDiameter = useMemo(() => {
+        if (Number.isFinite(diameter) && diameter > 0) {
+            return Math.round(diameter);
+        }
+        return isMobile ? 128 : 200;
+    }, [isMobile, diameter]);
+    const ringCutRadius = useMemo(() => Math.round(cookieDiameter * 0.435), [cookieDiameter]);
+    const insideShadowSize = useMemo(() => Math.round(cookieDiameter * 0.87), [cookieDiameter]);
+
     useEffect(() => {
         randomIsoscelesTriangles(
             document.querySelector("#" + tinyPinkCookieCanvasId),
             cookieDiameter, cookieDiameter, pinkColor.list
         );
-    }, []);
+    }, [cookieDiameter]);
 
-    return <div className={pinkCookie.pinkCookie} style={{
+    return <div className={`${pinkCookie.pinkCookie} ${isMobile ? pinkCookie.mobilePinkCookie : ''}`} style={{
         height: `${cookieDiameter}px`,
         width: `${cookieDiameter}px`,
-        bottom: "-40px",
-        right: "-20px",
+        bottom: isMobile ? "-32px" : "-40px",
+        right: isMobile ? "-14px" : "-20px",
     }} onClick={clickHandler}>
         <div className={pinkCookie.cookieDynamic}>
             <canvas
@@ -33,12 +41,12 @@ export const TinyPinkCookie = () => {
                 width: `${cookieDiameter}px`,
             }}/>
             <div className={pinkCookie.ringDynamic} style={{
-                mask: `radial-gradient(transparent 87px, #000 87px)`,
-                WebkitMask: `radial-gradient(transparent 87px, #000 87px)`,
+                mask: `radial-gradient(transparent ${ringCutRadius}px, #000 ${ringCutRadius}px)`,
+                WebkitMask: `radial-gradient(transparent ${ringCutRadius}px, #000 ${ringCutRadius}px)`,
             }}/>
             <div className={pinkCookie.ringDynamicInsideShadow} style={{
-                width: `174px`,
-                height: `174px`,
+                width: `${insideShadowSize}px`,
+                height: `${insideShadowSize}px`,
                 boxShadow: `inset 0 0 5px 0 ${pinkColor.hard_color}`
             }}/>
             <div className={pinkCookie.bigR0Box}>
@@ -46,8 +54,8 @@ export const TinyPinkCookie = () => {
             </div>
         </div>
         <div className={pinkCookie.ringFixed} style={{
-            mask: `radial-gradient(transparent 87px, #000 87px)`,
-            WebkitMask: `radial-gradient(transparent 87px, #000 87px)`,
+            mask: `radial-gradient(transparent ${ringCutRadius}px, #000 ${ringCutRadius}px)`,
+            WebkitMask: `radial-gradient(transparent ${ringCutRadius}px, #000 ${ringCutRadius}px)`,
             width: `${cookieDiameter}px`,
             height: `${cookieDiameter}px`,
         }}/>

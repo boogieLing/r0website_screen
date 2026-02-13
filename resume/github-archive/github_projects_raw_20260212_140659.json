@@ -1,0 +1,1513 @@
+{
+  "user": "boogieLing",
+  "generated_at": "2026-02-12T14:06:59.966872",
+  "repo_count": 51,
+  "self_built_count": 15,
+  "fork_count": 36,
+  "repos": [
+    {
+      "name": "r0website_screen",
+      "full_name": "boogieLing/r0website_screen",
+      "url": "https://github.com/boogieLing/r0website_screen",
+      "fork": false,
+      "private": false,
+      "description": "",
+      "language": "JavaScript",
+      "languages": {
+        "JavaScript": 522183,
+        "Less": 256284,
+        "HTML": 27495,
+        "CSS": 2754,
+        "Dockerfile": 729,
+        "Shell": 330
+      },
+      "topics": [],
+      "created_at": "2022-09-14T17:18:24Z",
+      "updated_at": "2026-02-11T07:51:25Z",
+      "pushed_at": "2026-02-11T07:51:21Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 6901,
+      "role": "个人站点/前端展示项目。",
+      "stack": [
+        "JavaScript",
+        "Less",
+        "HTML",
+        "CSS",
+        "Dockerfile",
+        "Shell",
+        "Go",
+        "Elasticsearch",
+        "Docker",
+        "推荐系统",
+        "自动化脚本",
+        "Web前端"
+      ],
+      "optimization_points": [
+        "性能优化",
+        "工程效率优化",
+        "体验优化"
+      ],
+      "analysis_confidence": "高",
+      "readme_excerpt": "# R0 Website 个人网站与博客 基于 React 和 MobX 的个人网站，包含博客、图片库与多种交互体验模块（Somnium Nexus 摄影集、自定义光标、侧边登录等）。 --- ## 技术栈概览 - 前端框架：`React 18`（函数组件 + Hooks） - 状态管理：`MobX` / `mobx-react-lite` - 路由：`react-router-dom 6` - 构建工具：`Create React App` + `CRACO`，支持 `LESS` 与 CSS Modules - 内容与媒体：`react-markdown`、`react-syntax-highlighter`、多种图片查看与缩放组件 --- ## 目录结构（简要） ```bash src/ ├── components/ # 通用组件（光标、列表、登录、按钮、图集等） ├── screens/ # 页面级组件（Home、Blog、PicBed、SomniumNexus 等） ├── stores/ # MobX Store（全局状态、主题、图片库、SomniumNexus 等） ├── hooks/ # 自定义 Hooks（窗口尺寸、本地存储、图片加载等） ├── request/ # 请求与接口封装 ├── utils/ # 工具函数 └── static/ # 静态资源 ``"
+    },
+    {
+      "name": "r0website_server",
+      "full_name": "boogieLing/r0website_server",
+      "url": "https://github.com/boogieLing/r0website_server",
+      "fork": false,
+      "private": false,
+      "description": "",
+      "language": "Go",
+      "languages": {
+        "Go": 195978,
+        "Python": 18544,
+        "Dockerfile": 1310,
+        "Shell": 1149
+      },
+      "topics": [],
+      "created_at": "2022-10-22T20:55:40Z",
+      "updated_at": "2026-02-11T07:50:21Z",
+      "pushed_at": "2026-02-11T07:50:17Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 112264,
+      "role": "个人站点/前端展示项目。",
+      "stack": [
+        "Go",
+        "Python",
+        "Dockerfile",
+        "Shell",
+        "MongoDB"
+      ],
+      "optimization_points": [
+        "工程效率优化"
+      ],
+      "analysis_confidence": "高",
+      "readme_excerpt": "# r0Website-server [![Autor](https://img.shields.io/badge/Author-r0-ff69b4)]() [![licence](https://img.shields.io/badge/licence-Mozilla-green)]() [![version](https://img.shields.io/badge/version-v2.0.0-orange)]() [![lang](https://img.shields.io/badge/golang-1.17.11-blue)]() r0Website server, using Golang development. 个人网站的服务端，使用Golang开发，主要依赖gin框架和MongoDB。 中间件：logrus、jwt，cors。 目前仍在开发中。 ## 文档（docs/） - 接口说明：见 `docs/API文档.md` 及其兼容版、纯Markdown版。 - 开发与架构说明：见 `docs/CLAUDE.md` 与根目录 `AGENTS.md`。 ## r0Website 个人网站整体开发进度、结构。 [![lang](./.pic/Overallsitestructure.png)]() ----- ## server server端接口施工进度、方案 [!["
+    },
+    {
+      "name": "swimAD",
+      "full_name": "boogieLing/swimAD",
+      "url": "https://github.com/boogieLing/swimAD",
+      "fork": true,
+      "private": false,
+      "description": "",
+      "language": "Python",
+      "languages": {},
+      "topics": [],
+      "created_at": "2025-07-26T11:22:51Z",
+      "updated_at": "2025-11-04T13:03:13Z",
+      "pushed_at": "2025-11-04T13:03:08Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 49112,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [
+        "Python"
+      ],
+      "optimization_points": [
+        "代码结构梳理",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "osu-api",
+      "full_name": "boogieLing/osu-api",
+      "url": "https://github.com/boogieLing/osu-api",
+      "fork": false,
+      "private": false,
+      "description": "",
+      "language": "Python",
+      "languages": {
+        "Python": 38207,
+        "HTML": 123
+      },
+      "topics": [],
+      "created_at": "2022-09-15T16:32:07Z",
+      "updated_at": "2022-09-15T16:34:17Z",
+      "pushed_at": "2023-10-05T12:56:15Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 62,
+      "role": "后端服务或接口工程。",
+      "stack": [
+        "Python",
+        "HTML"
+      ],
+      "optimization_points": [
+        "可维护性提升"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "salt",
+      "full_name": "boogieLing/salt",
+      "url": "https://github.com/boogieLing/salt",
+      "fork": true,
+      "private": false,
+      "description": "Segment Anything Labelling Tool",
+      "language": null,
+      "languages": {},
+      "topics": [],
+      "created_at": "2023-05-16T08:31:51Z",
+      "updated_at": "2023-05-16T08:31:51Z",
+      "pushed_at": "2023-05-11T14:15:39Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 17673,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [],
+      "optimization_points": [
+        "工程效率优化",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "toolformer-pytorch",
+      "full_name": "boogieLing/toolformer-pytorch",
+      "url": "https://github.com/boogieLing/toolformer-pytorch",
+      "fork": true,
+      "private": false,
+      "description": "Implementation of Toolformer, Language Models That Can Use Tools, by MetaAI",
+      "language": null,
+      "languages": {},
+      "topics": [],
+      "created_at": "2023-04-12T11:07:30Z",
+      "updated_at": "2023-04-12T09:56:36Z",
+      "pushed_at": "2023-04-08T17:14:07Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 251,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [],
+      "optimization_points": [
+        "工程效率优化",
+        "算法效果优化",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "r0_es",
+      "full_name": "boogieLing/r0_es",
+      "url": "https://github.com/boogieLing/r0_es",
+      "fork": false,
+      "private": false,
+      "description": "",
+      "language": "Python",
+      "languages": {
+        "Python": 20291547,
+        "HTML": 371352,
+        "CSS": 96349,
+        "C": 66166,
+        "JavaScript": 53666,
+        "Shell": 3919,
+        "TeX": 1628,
+        "Batchfile": 799,
+        "Makefile": 638
+      },
+      "topics": [],
+      "created_at": "2021-09-07T08:49:33Z",
+      "updated_at": "2021-09-11T09:29:35Z",
+      "pushed_at": "2022-12-15T04:23:32Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 32681,
+      "role": "数据中间件能力验证项目。",
+      "stack": [
+        "Python",
+        "HTML",
+        "CSS",
+        "C",
+        "JavaScript",
+        "Shell",
+        "TeX",
+        "Batchfile",
+        "Makefile",
+        "Go",
+        "Elasticsearch",
+        "自动化脚本"
+      ],
+      "optimization_points": [
+        "性能优化",
+        "工程效率优化",
+        "体验优化"
+      ],
+      "analysis_confidence": "高",
+      "readme_excerpt": "# R0 es tools [![License](https://img.shields.io/badge/for-elasticSearch-brightgreen)]() [![Language](https://img.shields.io/pypi/pyversions/fastapi)]() [![Autor](https://img.shields.io/badge/Autor-r0-pink)]() 一个连接elasticSearch的工具，帮助用户添加、删除、修改和检查文档、索引和管理快照。 有着更容易使用的日期相关的操作和管理快照存储库的功能。 此外，该项目还配置了一个小插件来监视文件和自动生成文档。 A tool to connect elasticSearch， and help users to add, delete, modify, and check documents and indexe. Date-related operations are easier to use and manage snapshot repositories. In addition, this project also configured a small plug-in to monitor files and automatically monitor docu"
+    },
+    {
+      "name": "r0Website-screen",
+      "full_name": "boogieLing/r0Website-screen",
+      "url": "https://github.com/boogieLing/r0Website-screen",
+      "fork": false,
+      "private": false,
+      "description": "",
+      "language": "JavaScript",
+      "languages": {
+        "JavaScript": 70213,
+        "Less": 3363,
+        "HTML": 1721
+      },
+      "topics": [],
+      "created_at": "2022-09-14T12:03:34Z",
+      "updated_at": "2022-09-14T12:06:07Z",
+      "pushed_at": "2022-10-16T14:43:58Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 339,
+      "role": "个人站点/前端展示项目。",
+      "stack": [
+        "JavaScript",
+        "Less",
+        "HTML",
+        "Go",
+        "Elasticsearch",
+        "自动化脚本",
+        "Web前端"
+      ],
+      "optimization_points": [
+        "性能优化",
+        "工程效率优化",
+        "体验优化"
+      ],
+      "analysis_confidence": "高",
+      "readme_excerpt": "# Getting Started with Create React App This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app). ## Available Scripts In the project directory, you can run: ### `npm start` Runs the app in the development mode.\\ Open [http://localhost:3000](http://localhost:3000) to view it in your browser. The page will reload when you make changes.\\ You may also see any lint errors in the console. ### `npm test` Launches the test runner in the interactive watch mode.\\ See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tes"
+    },
+    {
+      "name": "gin-demo",
+      "full_name": "boogieLing/gin-demo",
+      "url": "https://github.com/boogieLing/gin-demo",
+      "fork": false,
+      "private": false,
+      "description": "",
+      "language": "Go",
+      "languages": {
+        "Go": 14937,
+        "Shell": 8534,
+        "Dockerfile": 3643
+      },
+      "topics": [],
+      "created_at": "2022-07-10T18:37:46Z",
+      "updated_at": "2022-07-10T18:44:08Z",
+      "pushed_at": "2022-07-31T11:24:38Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 168,
+      "role": "后端服务或接口工程。",
+      "stack": [
+        "Go",
+        "Shell",
+        "Dockerfile",
+        "MongoDB",
+        "Elasticsearch",
+        "Docker",
+        "LLM/AIGC",
+        "自动化脚本",
+        "Web前端"
+      ],
+      "optimization_points": [
+        "性能优化",
+        "可靠性优化",
+        "体验优化",
+        "算法效果优化"
+      ],
+      "analysis_confidence": "高",
+      "readme_excerpt": "# gin-mongo5镜像脚手架实战 ## Apt更新、包安装 构建源 <code>FROM ubuntu:18.04</code> 由于后续mongo的运行需要依赖<code>libcurl4</code>和<code>openssl</code>，所以先更新apt-get的源至<code>/etc/apt/sources.list</code> 增加参数<code>--fix-missing</code>忽略丢失的包，该选项确保在APT不返回错误的情况下执行更新过程^[2]^。 增加参数<code>-o Acquire::http::No-Cache=True</code>禁止缓存，防止出现使用某些网关缓存的可能^[3]^。 此步完成apt的源的更换、更新，以及<code>libcurl4</code>和<code>openssl</code>的安装。 ```dockerfile RUN sed -i \"s@/archive.ubuntu.com/@/mirrors.tuna.tsinghua.edu.cn/@g\" /etc/apt/sources.list \\ && sed -i \"s@/security.ubuntu.com/@/mirrors.ustc.edu.cn/@g\" /etc/apt/sources.list\\ && rm -Rf /var/lib/apt/li"
+    },
+    {
+      "name": "fsm",
+      "full_name": "boogieLing/fsm",
+      "url": "https://github.com/boogieLing/fsm",
+      "fork": true,
+      "private": false,
+      "description": "Finite State Machine for Go",
+      "language": null,
+      "languages": {},
+      "topics": [],
+      "created_at": "2022-07-21T12:13:31Z",
+      "updated_at": "2022-07-21T04:24:19Z",
+      "pushed_at": "2022-07-15T10:40:18Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 64,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [
+        "Go"
+      ],
+      "optimization_points": [
+        "代码结构梳理",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "go-cqhttp",
+      "full_name": "boogieLing/go-cqhttp",
+      "url": "https://github.com/boogieLing/go-cqhttp",
+      "fork": true,
+      "private": false,
+      "description": "cqhttp的golang实现，轻量、原生跨平台.",
+      "language": null,
+      "languages": {},
+      "topics": [],
+      "created_at": "2022-07-12T07:34:58Z",
+      "updated_at": "2022-07-12T02:44:35Z",
+      "pushed_at": "2022-07-09T04:57:53Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 2671,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [
+        "Go"
+      ],
+      "optimization_points": [
+        "代码结构梳理",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "AlphaJong",
+      "full_name": "boogieLing/AlphaJong",
+      "url": "https://github.com/boogieLing/AlphaJong",
+      "fork": true,
+      "private": false,
+      "description": "A Mahjong AI for Mahjong Soul",
+      "language": null,
+      "languages": {},
+      "topics": [],
+      "created_at": "2022-10-03T08:38:45Z",
+      "updated_at": "2022-10-02T11:01:51Z",
+      "pushed_at": "2022-07-08T06:47:23Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 482,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [],
+      "optimization_points": [
+        "代码结构梳理",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "boogieLing.github.io",
+      "full_name": "boogieLing/boogieLing.github.io",
+      "url": "https://github.com/boogieLing/boogieLing.github.io",
+      "fork": false,
+      "private": false,
+      "description": "",
+      "language": "JavaScript",
+      "languages": {
+        "JavaScript": 155975,
+        "C++": 47468,
+        "Less": 21150,
+        "HTML": 4776,
+        "Python": 2119,
+        "CSS": 1447
+      },
+      "topics": [],
+      "created_at": "2022-06-04T20:49:07Z",
+      "updated_at": "2022-07-08T01:13:07Z",
+      "pushed_at": "2022-06-05T16:26:50Z",
+      "stars": 1,
+      "watchers": 1,
+      "size": 5767,
+      "role": "个人站点/前端展示项目。",
+      "stack": [
+        "JavaScript",
+        "C++",
+        "Less",
+        "HTML",
+        "Python",
+        "CSS"
+      ],
+      "optimization_points": [
+        "算法效果优化"
+      ],
+      "analysis_confidence": "高",
+      "readme_excerpt": "# R0_note 本质上是将 md 文件 ajax 到前端进行渲染，使用 js 控制文件之间的跳转。 ## 如何收集文件 在这里该收集的文件就是 base 文件夹下的各个 md 文件，纯浏览器端的 js 本身是不能做到检查所有文件的。 所以手动写了个名为 updateXML 的 py 脚本，将指定文件收集到某个 xml 中，js 再解析 xml 中的内容，调整 xml 节点中文件的路径并生成标签。 之所以使用 xml ，只是因为利用 ActiveXObject 生成的 XMLDOM 处理节点很方便。 缺点是每次新建文件之后都要手动跑一遍，未来计划是结合我的另一个项目——docwatcher来自动完成这个工作。 ## 如何解析md 使用已有的轮子：https://github.com/markedjs/marked 在上一步解析 xml 得到对应文件的 url 之后，ajax 得到文件内容，清空 main.content ，使用上述轮子转换为 html 并做好对应的补丁。 1. 清除掉 ul 的点 2. 清除掉 task 节点的点 3. 使用额外的代码块插件渲染 4. 增加渲染失败的代码块语言解析 ## 其他插件 1. 基于 JQ 的滚动条 jquery.nicescroll.js 2. 高亮代码块 highlight.pack.js 3. 高亮代码块配套的序号补丁 highlig"
+    },
+    {
+      "name": "laser-pen",
+      "full_name": "boogieLing/laser-pen",
+      "url": "https://github.com/boogieLing/laser-pen",
+      "fork": true,
+      "private": false,
+      "description": "Laser Pen is a tool set used to draw mouse trails on the web canvas.",
+      "language": null,
+      "languages": {},
+      "topics": [],
+      "created_at": "2022-09-17T14:25:24Z",
+      "updated_at": "2022-09-15T00:23:32Z",
+      "pushed_at": "2022-04-30T03:23:38Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 1525,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [],
+      "optimization_points": [
+        "工程效率优化",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "osu-cursor",
+      "full_name": "boogieLing/osu-cursor",
+      "url": "https://github.com/boogieLing/osu-cursor",
+      "fork": true,
+      "private": false,
+      "description": "✨ osu!lazer 样式的前端自定义光标 / osu!lazer style custom cursor for web",
+      "language": null,
+      "languages": {},
+      "topics": [],
+      "created_at": "2023-04-08T12:33:18Z",
+      "updated_at": "2023-04-08T12:33:06Z",
+      "pushed_at": "2022-02-19T07:07:48Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 1600,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [],
+      "optimization_points": [
+        "体验优化",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "marked",
+      "full_name": "boogieLing/marked",
+      "url": "https://github.com/boogieLing/marked",
+      "fork": true,
+      "private": false,
+      "description": "A markdown parser and compiler. Built for speed.",
+      "language": null,
+      "languages": {},
+      "topics": [],
+      "created_at": "2021-11-19T06:31:52Z",
+      "updated_at": "2021-11-19T06:31:53Z",
+      "pushed_at": "2021-11-19T06:26:17Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 8418,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [
+        "Web前端"
+      ],
+      "optimization_points": [
+        "体验优化",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "r0_doc_watcher",
+      "full_name": "boogieLing/r0_doc_watcher",
+      "url": "https://github.com/boogieLing/r0_doc_watcher",
+      "fork": false,
+      "private": false,
+      "description": "",
+      "language": "C++",
+      "languages": {
+        "C++": 6929,
+        "Python": 4593
+      },
+      "topics": [],
+      "created_at": "2021-09-11T06:40:49Z",
+      "updated_at": "2021-09-11T06:44:55Z",
+      "pushed_at": "2021-09-11T06:44:51Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 1594,
+      "role": "自动化脚本/效率工具项目。",
+      "stack": [
+        "C++",
+        "Python",
+        "Go",
+        "JavaScript",
+        "Elasticsearch",
+        "自动化脚本",
+        "Web前端"
+      ],
+      "optimization_points": [
+        "工程效率优化",
+        "体验优化"
+      ],
+      "analysis_confidence": "高",
+      "readme_excerpt": "# DOCS Auto Generator [![For](https://img.shields.io/badge/for-doc-%2355efc4)]() [![Autor](https://img.shields.io/badge/Autor-r0-%23f0908d)]() [![rely on](https://img.shields.io/badge/env-Ubuntu-%230984e3)]() 一个自动监控文件并生成文档的工具，利用Linux的inode通知链和能够通过注释生成文档的sphinx库实现。 A tool to automatically monitor files and generate documents, using Linux's inode notification chain and the Sphinx library that can generate documents through annotations. ```shell git clone https://code.deeproute.ai/hanyuanling/docs_watcher ``` ## build 本质上只需要 <code>docs_watcher</code>就可以完成工作。 Essentially all you need is Docs Watch"
+    },
+    {
+      "name": "r0mongo",
+      "full_name": "boogieLing/r0mongo",
+      "url": "https://github.com/boogieLing/r0mongo",
+      "fork": false,
+      "private": false,
+      "description": "",
+      "language": "Python",
+      "languages": {
+        "Python": 143079,
+        "Shell": 115
+      },
+      "topics": [],
+      "created_at": "2021-08-11T06:37:37Z",
+      "updated_at": "2021-09-11T06:36:52Z",
+      "pushed_at": "2021-09-11T06:36:49Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 8276,
+      "role": "数据中间件能力验证项目。",
+      "stack": [
+        "Python",
+        "Shell",
+        "Go",
+        "MongoDB"
+      ],
+      "optimization_points": [
+        "工程效率优化"
+      ],
+      "analysis_confidence": "高",
+      "readme_excerpt": "# R0 mongo tools [![For](https://img.shields.io/badge/for-mongo-%2355efc4)]() [![Autor](https://img.shields.io/badge/Autor-r0-%23f0908d)]() [![Python](https://img.shields.io/badge/python-3.6%7C3.7%7C3.8%7C3.9-%230984e3)]() ## About update: 2021/08/10 ## Install mongo-helper install latest commit on master of mongo-helper ``` pip3 install git+git://github.com/boogieLing/r0mongo ```"
+    },
+    {
+      "name": "shields",
+      "full_name": "boogieLing/shields",
+      "url": "https://github.com/boogieLing/shields",
+      "fork": true,
+      "private": false,
+      "description": "Concise, consistent, and legible badges in SVG and raster format",
+      "language": null,
+      "languages": {},
+      "topics": [],
+      "created_at": "2021-09-11T09:17:31Z",
+      "updated_at": "2021-09-11T09:17:32Z",
+      "pushed_at": "2021-09-11T04:25:42Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 101578,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [
+        "Elasticsearch"
+      ],
+      "optimization_points": [
+        "代码结构梳理",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "r0redis",
+      "full_name": "boogieLing/r0redis",
+      "url": "https://github.com/boogieLing/r0redis",
+      "fork": false,
+      "private": false,
+      "description": "",
+      "language": "Python",
+      "languages": {
+        "Python": 243078,
+        "Shell": 1114
+      },
+      "topics": [],
+      "created_at": "2021-08-11T06:44:45Z",
+      "updated_at": "2021-08-11T06:47:36Z",
+      "pushed_at": "2021-08-11T06:47:29Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 17376,
+      "role": "数据中间件能力验证项目。",
+      "stack": [
+        "Python",
+        "Shell",
+        "Go",
+        "Redis",
+        "Elasticsearch",
+        "Docker",
+        "LLM/AIGC",
+        "推荐系统",
+        "自动化脚本",
+        "Web前端"
+      ],
+      "optimization_points": [
+        "性能优化",
+        "可靠性优化",
+        "工程效率优化",
+        "体验优化",
+        "算法效果优化"
+      ],
+      "analysis_confidence": "高",
+      "readme_excerpt": "> Note: as of redis-helper v0.4.0, version 3.0 of redis-py is in use, which has > backwards incompatible changes withe redis-py 2.x. See > <https://github.com/andymccurdy/redis-py#upgrading-from-redis-py-2x-to-30> ## About update: 2021/07/22 [redis-helper project]: https://github.com/boogieLing/r0-redis-helper [beu-fork]: https://github.com/kenjyco/beu/tree/4aea6146fc5f01df3e344b9fadddf28b795dac89 [Redis]: http://redis.io/topics/data-types-intro [redis-helper package]: https://pypi.python.org/pypi/redis-helper [request logging demo]: https://asciinema.org/a/101422?t=1:10 [urls demo]: https://a"
+    },
+    {
+      "name": "aioquic",
+      "full_name": "boogieLing/aioquic",
+      "url": "https://github.com/boogieLing/aioquic",
+      "fork": true,
+      "private": false,
+      "description": "QUIC and HTTP/3 implementation in Python",
+      "language": null,
+      "languages": {},
+      "topics": [],
+      "created_at": "2021-07-31T17:51:10Z",
+      "updated_at": "2021-07-31T17:51:11Z",
+      "pushed_at": "2021-07-26T10:23:20Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 1688,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [
+        "Python",
+        "Web前端"
+      ],
+      "optimization_points": [
+        "体验优化",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "crud-es-app",
+      "full_name": "boogieLing/crud-es-app",
+      "url": "https://github.com/boogieLing/crud-es-app",
+      "fork": true,
+      "private": false,
+      "description": "Simple CRUD application that uses ElasticSearch as a lookup for a filesystem.",
+      "language": null,
+      "languages": {},
+      "topics": [],
+      "created_at": "2021-08-03T02:47:10Z",
+      "updated_at": "2021-08-03T02:47:11Z",
+      "pushed_at": "2021-07-02T16:19:10Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 28,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [
+        "Elasticsearch"
+      ],
+      "optimization_points": [
+        "代码结构梳理",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "Diana",
+      "full_name": "boogieLing/Diana",
+      "url": "https://github.com/boogieLing/Diana",
+      "fork": true,
+      "private": false,
+      "description": "嘉然小姐的狗 c++版",
+      "language": null,
+      "languages": {},
+      "topics": [],
+      "created_at": "2021-08-01T07:56:30Z",
+      "updated_at": "2021-08-01T07:56:31Z",
+      "pushed_at": "2021-06-28T03:03:58Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 10,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [
+        "C++"
+      ],
+      "optimization_points": [
+        "代码结构梳理",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "TabikaeruArchiveModifier",
+      "full_name": "boogieLing/TabikaeruArchiveModifier",
+      "url": "https://github.com/boogieLing/TabikaeruArchiveModifier",
+      "fork": true,
+      "private": false,
+      "description": "旅行青蛙辅助 存档修改 明信片导出",
+      "language": null,
+      "languages": {},
+      "topics": [],
+      "created_at": "2021-04-06T18:26:36Z",
+      "updated_at": "2021-04-06T18:26:37Z",
+      "pushed_at": "2021-01-24T14:53:07Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 761,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [],
+      "optimization_points": [
+        "代码结构梳理",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "bongocat-osu",
+      "full_name": "boogieLing/bongocat-osu",
+      "url": "https://github.com/boogieLing/bongocat-osu",
+      "fork": true,
+      "private": false,
+      "description": "An osu! Bongo Cat overlay",
+      "language": null,
+      "languages": {},
+      "topics": [],
+      "created_at": "2021-02-02T16:14:45Z",
+      "updated_at": "2021-02-02T16:14:58Z",
+      "pushed_at": "2021-01-07T20:27:04Z",
+      "stars": 1,
+      "watchers": 1,
+      "size": 1392,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [
+        "Go"
+      ],
+      "optimization_points": [
+        "算法效果优化",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "r0_csharp",
+      "full_name": "boogieLing/r0_csharp",
+      "url": "https://github.com/boogieLing/r0_csharp",
+      "fork": false,
+      "private": false,
+      "description": "",
+      "language": "Less",
+      "languages": {
+        "Less": 38849,
+        "CSS": 28405,
+        "HTML": 21654,
+        "ASP.NET": 10404,
+        "C#": 2034
+      },
+      "topics": [],
+      "created_at": "2020-10-01T09:35:11Z",
+      "updated_at": "2020-10-19T14:32:53Z",
+      "pushed_at": "2020-10-19T14:32:50Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 30255,
+      "role": "综合工程实践项目，覆盖实际问题建模与实现。",
+      "stack": [
+        "Less",
+        "CSS",
+        "HTML",
+        "ASP.NET",
+        "C#"
+      ],
+      "optimization_points": [
+        "可维护性提升"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "jsUtil",
+      "full_name": "boogieLing/jsUtil",
+      "url": "https://github.com/boogieLing/jsUtil",
+      "fork": true,
+      "private": false,
+      "description": "日常前端用到的一些封装",
+      "language": null,
+      "languages": {},
+      "topics": [],
+      "created_at": "2021-04-02T08:23:53Z",
+      "updated_at": "2021-04-02T08:23:55Z",
+      "pushed_at": "2020-10-09T06:21:13Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 12,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [],
+      "optimization_points": [
+        "代码结构梳理",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "Translator-sublime",
+      "full_name": "boogieLing/Translator-sublime",
+      "url": "https://github.com/boogieLing/Translator-sublime",
+      "fork": true,
+      "private": false,
+      "description": "a translator for cpp to translate Chinese to English",
+      "language": null,
+      "languages": {},
+      "topics": [],
+      "created_at": "2020-10-12T07:36:40Z",
+      "updated_at": "2020-10-12T07:36:41Z",
+      "pushed_at": "2020-10-06T11:35:36Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 6,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [
+        "C++"
+      ],
+      "optimization_points": [
+        "代码结构梳理",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "clipboard.js",
+      "full_name": "boogieLing/clipboard.js",
+      "url": "https://github.com/boogieLing/clipboard.js",
+      "fork": true,
+      "private": false,
+      "description": ":scissors: Modern copy to clipboard. No Flash. Just 3kb gzipped :clipboard:",
+      "language": null,
+      "languages": {},
+      "topics": [],
+      "created_at": "2020-10-26T15:38:40Z",
+      "updated_at": "2020-10-26T15:38:42Z",
+      "pushed_at": "2020-10-05T11:15:13Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 1986,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [
+        "LLM/AIGC"
+      ],
+      "optimization_points": [
+        "代码结构梳理",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "H5Personal-radio-player",
+      "full_name": "boogieLing/H5Personal-radio-player",
+      "url": "https://github.com/boogieLing/H5Personal-radio-player",
+      "fork": false,
+      "private": false,
+      "description": "根据网易云api制作的一款H5个人电台主页",
+      "language": "CSS",
+      "languages": {
+        "CSS": 198984,
+        "JavaScript": 133460,
+        "HTML": 7531
+      },
+      "topics": [],
+      "created_at": "2020-07-30T08:47:00Z",
+      "updated_at": "2021-08-01T09:55:25Z",
+      "pushed_at": "2020-08-01T14:30:02Z",
+      "stars": 1,
+      "watchers": 1,
+      "size": 21899,
+      "role": "前端交互与多媒体页面项目。",
+      "stack": [
+        "CSS",
+        "JavaScript",
+        "HTML",
+        "推荐系统",
+        "自动化脚本",
+        "Web前端"
+      ],
+      "optimization_points": [
+        "可维护性提升"
+      ],
+      "analysis_confidence": "高",
+      "readme_excerpt": "# H5个人电台主页 ![](https://github.com/boogieLing/H5Personal-radio-player/blob/master/pic/all.png) ## Whisper 制作原因是因为 网易云 的电台不能放歌词，于是利用现有的网易云api制作了一个替代品。也用于练习css。目前的歌单与电台都是本人的歌单与电台 。 有模仿 Osu! 的布局 （经典粉饼） 体积较小，总体采用函数式编程 ， 没有后端 。有些地方写得比较丑陋，后期有 重构 与使用Electron 开发为客户端 的计划 。 没什么亮点，可能亮点是有 某些动画实现方式较为有趣 。 弃用 request，请求改成 AJAX 。 ### 开发环境 1. Windows 10 2. jQuery JavaScript Library v3.5.1 3. Vanilla JS 4. Plain CSS ### 接口 功能不多，不打算给出登录入口，使用 [Meting](https://github.com/metowolf/Meting) 的api。 ## 页面 **层级** ![](https://github.com/boogieLing/H5Personal-radio-player/blob/master/pic/main.png) ![](https://github.com/boo"
+    },
+    {
+      "name": "netease-cloud-api",
+      "full_name": "boogieLing/netease-cloud-api",
+      "url": "https://github.com/boogieLing/netease-cloud-api",
+      "fork": true,
+      "private": false,
+      "description": "网易云音乐升级API",
+      "language": null,
+      "languages": {},
+      "topics": [],
+      "created_at": "2020-07-25T06:49:55Z",
+      "updated_at": "2020-07-25T06:49:57Z",
+      "pushed_at": "2020-07-08T13:44:23Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 43,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [],
+      "optimization_points": [
+        "代码结构梳理",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "chaox-automatic-sign-in",
+      "full_name": "boogieLing/chaox-automatic-sign-in",
+      "url": "https://github.com/boogieLing/chaox-automatic-sign-in",
+      "fork": false,
+      "private": false,
+      "description": "Most of the courses this semester are in chaoxing, so I wrote a script to cope with the check-in of the courses published by the teacher, so that I can get more sleep time.",
+      "language": "HTML",
+      "languages": {
+        "HTML": 498323,
+        "TeX": 178121,
+        "Python": 20493
+      },
+      "topics": [],
+      "created_at": "2020-07-07T08:09:59Z",
+      "updated_at": "2020-07-07T08:34:49Z",
+      "pushed_at": "2020-07-07T08:31:10Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 25196,
+      "role": "自动化脚本/效率工具项目。",
+      "stack": [
+        "HTML",
+        "TeX",
+        "Python",
+        "Go",
+        "Elasticsearch",
+        "自动化脚本"
+      ],
+      "optimization_points": [
+        "工程效率优化",
+        "算法效果优化"
+      ],
+      "analysis_confidence": "高",
+      "readme_excerpt": "# chaox-automatic-sign-in Most of the courses this semester are in chaoxing, so I wrote a script to cope with the check-in of the courses published by the teacher, so that I can get more sleep time. ## Chaox Killer For [http://mooc1-api.chaoxing.com/](http://mooc1-api.chaoxing.com/) ## Features Regularly monitor and automatically complete the registration of multiple courses. Bypass check-in with verification (gesture check-in, photo sign-in wait) ## How to use 1. Speed(s) is the frequency of monitoring 2. After starting the main program, if it is the first time to start \"Cookies\", it will dis"
+    },
+    {
+      "name": "Answer-script-for-Unipus",
+      "full_name": "boogieLing/Answer-script-for-Unipus",
+      "url": "https://github.com/boogieLing/Answer-script-for-Unipus",
+      "fork": false,
+      "private": false,
+      "description": "Since manually completing the questions on Unipus is too cumbersome for me, I completed a script that can automatically obtain the answers to the multiple choice questions and automatically fill in the blank questions...",
+      "language": "HTML",
+      "languages": {
+        "HTML": 573825,
+        "TeX": 196297,
+        "Python": 31049
+      },
+      "topics": [],
+      "created_at": "2020-07-07T07:27:55Z",
+      "updated_at": "2023-12-17T13:19:18Z",
+      "pushed_at": "2020-07-07T08:08:12Z",
+      "stars": 2,
+      "watchers": 2,
+      "size": 26765,
+      "role": "自动化脚本/效率工具项目。",
+      "stack": [
+        "HTML",
+        "TeX",
+        "Python",
+        "自动化脚本"
+      ],
+      "optimization_points": [
+        "工程效率优化",
+        "体验优化",
+        "算法效果优化"
+      ],
+      "analysis_confidence": "高",
+      "readme_excerpt": "# Answer-script-for-Unipus Since manually completing the questions on Unipus is too cumbersome for me, I completed a script that can automatically obtain the answers to the multiple choice questions and automatically fill in the blank questions... ## Unipus Killer For [https://sso.unipus.cn/](https://sso.unipus.cn/) ## Features 1. Automatically crawl answers to questions corresponding to url 2. Fill in the blanks automatically ## How to use 1. Open the main **program**, open the **browser.** 2. Fill the **URL** of the topic you want to find into the software. 3. If you only need to check the a"
+    },
+    {
+      "name": "NeteaseCloudMusicApi",
+      "full_name": "boogieLing/NeteaseCloudMusicApi",
+      "url": "https://github.com/boogieLing/NeteaseCloudMusicApi",
+      "fork": true,
+      "private": false,
+      "description": "网易云音乐 Node.js API service",
+      "language": null,
+      "languages": {},
+      "topics": [],
+      "created_at": "2020-07-07T08:05:22Z",
+      "updated_at": "2020-07-07T08:05:24Z",
+      "pushed_at": "2020-07-06T06:08:16Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 9234,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [
+        "JavaScript"
+      ],
+      "optimization_points": [
+        "代码结构梳理",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "Linear-Multihead-Attention",
+      "full_name": "boogieLing/Linear-Multihead-Attention",
+      "url": "https://github.com/boogieLing/Linear-Multihead-Attention",
+      "fork": true,
+      "private": false,
+      "description": "Reproducing the Linear Multihead Attention introduced in Linformer paper  (Linformer: Self-Attention with Linear Complexity)",
+      "language": null,
+      "languages": {},
+      "topics": [],
+      "created_at": "2022-03-18T18:27:48Z",
+      "updated_at": "2022-02-28T02:55:56Z",
+      "pushed_at": "2020-06-23T08:04:55Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 180,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [],
+      "optimization_points": [
+        "代码结构梳理",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "OS_FIFO_LRU",
+      "full_name": "boogieLing/OS_FIFO_LRU",
+      "url": "https://github.com/boogieLing/OS_FIFO_LRU",
+      "fork": false,
+      "private": false,
+      "description": "",
+      "language": "C++",
+      "languages": {
+        "C++": 9474,
+        "C": 745
+      },
+      "topics": [],
+      "created_at": "2020-06-07T06:55:21Z",
+      "updated_at": "2020-06-07T06:59:33Z",
+      "pushed_at": "2020-06-07T06:59:31Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 534,
+      "role": "系统基础能力与算法机制实验项目。",
+      "stack": [
+        "C++",
+        "C",
+        "Go",
+        "Elasticsearch",
+        "自动化脚本",
+        "系统/OS"
+      ],
+      "optimization_points": [
+        "工程效率优化"
+      ],
+      "analysis_confidence": "高",
+      "readme_excerpt": "# PROJECT：OS_FIFO_LRU <font size=5> Directory</font> [TOC] ------ ## Project description <font size=6> In</font> order to complete the operation of the operating system written code, based on the single linked list to achieve LRU algorithm and FIFO algorithm, and provides the process description.The code may not be very concise, and in some places it is inefficient in order to maintain readability. ------ ## Code instructions LANGUAGE: cpp ; In OS_4.h is the data format used, and in OS_4.hPP is the implementation of the algorithm and the operation of data processing. Os_4.cpp is the test code."
+    },
+    {
+      "name": "Glee",
+      "full_name": "boogieLing/Glee",
+      "url": "https://github.com/boogieLing/Glee",
+      "fork": true,
+      "private": false,
+      "description": "也是个网易云第三方😶",
+      "language": null,
+      "languages": {},
+      "topics": [],
+      "created_at": "2020-07-09T08:45:18Z",
+      "updated_at": "2020-08-01T04:56:37Z",
+      "pushed_at": "2020-06-02T16:26:21Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 46260,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [],
+      "optimization_points": [
+        "代码结构梳理",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "STLSourceCodeNote",
+      "full_name": "boogieLing/STLSourceCodeNote",
+      "url": "https://github.com/boogieLing/STLSourceCodeNote",
+      "fork": true,
+      "private": false,
+      "description": "SGI STL source code analysis and note from 《STL源码剖析》 by 侯捷（包含电子书、源码注释及测试代码）",
+      "language": "C++",
+      "languages": {},
+      "topics": [],
+      "created_at": "2020-05-05T11:25:38Z",
+      "updated_at": "2020-05-26T07:17:30Z",
+      "pushed_at": "2020-05-26T07:17:28Z",
+      "stars": 1,
+      "watchers": 1,
+      "size": 23854,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [
+        "C++"
+      ],
+      "optimization_points": [
+        "代码结构梳理",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "styleguide",
+      "full_name": "boogieLing/styleguide",
+      "url": "https://github.com/boogieLing/styleguide",
+      "fork": true,
+      "private": false,
+      "description": "Style guides for Google-originated open-source projects",
+      "language": "HTML",
+      "languages": {},
+      "topics": [],
+      "created_at": "2020-05-14T13:37:41Z",
+      "updated_at": "2020-05-23T14:39:39Z",
+      "pushed_at": "2020-05-23T14:29:24Z",
+      "stars": 1,
+      "watchers": 1,
+      "size": 2154,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [
+        "HTML",
+        "Go",
+        "Elasticsearch",
+        "Web前端"
+      ],
+      "optimization_points": [
+        "体验优化",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "ieaseMusic",
+      "full_name": "boogieLing/ieaseMusic",
+      "url": "https://github.com/boogieLing/ieaseMusic",
+      "fork": true,
+      "private": false,
+      "description": "网易云音乐第三方",
+      "language": null,
+      "languages": {},
+      "topics": [],
+      "created_at": "2020-04-29T22:59:24Z",
+      "updated_at": "2020-08-01T05:04:37Z",
+      "pushed_at": "2020-04-29T22:59:42Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 109226,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [],
+      "optimization_points": [
+        "代码结构梳理",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "meting",
+      "full_name": "boogieLing/meting",
+      "url": "https://github.com/boogieLing/meting",
+      "fork": true,
+      "private": false,
+      "description": "网易云音乐API for Aplayer",
+      "language": null,
+      "languages": {},
+      "topics": [],
+      "created_at": "2020-07-25T11:15:50Z",
+      "updated_at": "2020-07-25T11:15:52Z",
+      "pushed_at": "2020-03-16T02:25:01Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 48,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [],
+      "optimization_points": [
+        "代码结构梳理",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "dt-helper",
+      "full_name": "boogieLing/dt-helper",
+      "url": "https://github.com/boogieLing/dt-helper",
+      "fork": true,
+      "private": false,
+      "description": "Helper funcs for doing things with datetime objects and UTC floats",
+      "language": null,
+      "languages": {},
+      "topics": [],
+      "created_at": "2021-07-13T03:50:14Z",
+      "updated_at": "2021-07-13T03:50:15Z",
+      "pushed_at": "2020-02-24T00:01:49Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 10,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [],
+      "optimization_points": [
+        "代码结构梳理",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "masonry",
+      "full_name": "boogieLing/masonry",
+      "url": "https://github.com/boogieLing/masonry",
+      "fork": true,
+      "private": false,
+      "description": ":love_hotel: Cascading grid layout plugin",
+      "language": null,
+      "languages": {},
+      "topics": [],
+      "created_at": "2021-08-27T08:21:51Z",
+      "updated_at": "2021-08-27T08:21:52Z",
+      "pushed_at": "2020-01-14T09:30:20Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 1479,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [
+        "Go"
+      ],
+      "optimization_points": [
+        "代码结构梳理",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "fomalhaut",
+      "full_name": "boogieLing/fomalhaut",
+      "url": "https://github.com/boogieLing/fomalhaut",
+      "fork": true,
+      "private": false,
+      "description": "🚀 A Simple API Gateway for Building Security and Flexible Microservices.",
+      "language": null,
+      "languages": {},
+      "topics": [],
+      "created_at": "2021-07-29T15:30:50Z",
+      "updated_at": "2021-07-29T15:30:51Z",
+      "pushed_at": "2019-09-17T01:23:51Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 597,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [
+        "Web前端"
+      ],
+      "optimization_points": [
+        "体验优化",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "DFRobot_ADS1115",
+      "full_name": "boogieLing/DFRobot_ADS1115",
+      "url": "https://github.com/boogieLing/DFRobot_ADS1115",
+      "fork": true,
+      "private": false,
+      "description": "",
+      "language": null,
+      "languages": {},
+      "topics": [],
+      "created_at": "2020-11-06T11:37:52Z",
+      "updated_at": "2020-11-06T11:37:55Z",
+      "pushed_at": "2019-06-19T09:48:01Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 15,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [],
+      "optimization_points": [
+        "代码结构梳理",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "django-blog-tutorial-templates",
+      "full_name": "boogieLing/django-blog-tutorial-templates",
+      "url": "https://github.com/boogieLing/django-blog-tutorial-templates",
+      "fork": true,
+      "private": false,
+      "description": "一套简洁但优雅的 HTML 博客模板",
+      "language": null,
+      "languages": {},
+      "topics": [],
+      "created_at": "2020-08-05T11:59:00Z",
+      "updated_at": "2020-11-26T13:33:10Z",
+      "pushed_at": "2018-04-09T09:08:19Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 146,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [],
+      "optimization_points": [
+        "代码结构梳理",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "FJNU-VirtualJudge",
+      "full_name": "boogieLing/FJNU-VirtualJudge",
+      "url": "https://github.com/boogieLing/FJNU-VirtualJudge",
+      "fork": true,
+      "private": false,
+      "description": "ACM-ICPC远程虚拟评测平台，支持四大平台，基于 Laravel + Swoole。",
+      "language": null,
+      "languages": {},
+      "topics": [],
+      "created_at": "2020-06-03T00:36:42Z",
+      "updated_at": "2020-06-05T13:18:04Z",
+      "pushed_at": "2018-04-04T03:59:18Z",
+      "stars": 1,
+      "watchers": 1,
+      "size": 1463,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [],
+      "optimization_points": [
+        "代码结构梳理",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "DFA",
+      "full_name": "boogieLing/DFA",
+      "url": "https://github.com/boogieLing/DFA",
+      "fork": true,
+      "private": false,
+      "description": "编译器有限状态自动机实现正则表达式分析",
+      "language": null,
+      "languages": {},
+      "topics": [],
+      "created_at": "2021-08-08T15:32:09Z",
+      "updated_at": "2021-08-08T15:32:10Z",
+      "pushed_at": "2017-05-29T10:01:12Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 2,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [],
+      "optimization_points": [
+        "代码结构梳理",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "Windows-10-Color-Control",
+      "full_name": "boogieLing/Windows-10-Color-Control",
+      "url": "https://github.com/boogieLing/Windows-10-Color-Control",
+      "fork": true,
+      "private": false,
+      "description": "A tool for Windows 10 to modify the system colors",
+      "language": null,
+      "languages": {},
+      "topics": [],
+      "created_at": "2020-08-31T02:10:37Z",
+      "updated_at": "2020-08-31T02:10:40Z",
+      "pushed_at": "2016-08-16T16:15:14Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 83,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [],
+      "optimization_points": [
+        "工程效率优化",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "pyfilter",
+      "full_name": "boogieLing/pyfilter",
+      "url": "https://github.com/boogieLing/pyfilter",
+      "fork": true,
+      "private": false,
+      "description": "用python实现的 [字段过滤/别名替换/默认值赋值/有效性检测] 典型应用是网站post数据过滤检测。",
+      "language": null,
+      "languages": {},
+      "topics": [],
+      "created_at": "2021-07-14T03:43:30Z",
+      "updated_at": "2021-07-14T03:43:30Z",
+      "pushed_at": "2015-10-29T14:55:33Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 144,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [
+        "Python"
+      ],
+      "optimization_points": [
+        "代码结构梳理",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    },
+    {
+      "name": "jquery-zclip",
+      "full_name": "boogieLing/jquery-zclip",
+      "url": "https://github.com/boogieLing/jquery-zclip",
+      "fork": true,
+      "private": false,
+      "description": "jQuery ZeroClipboard",
+      "language": null,
+      "languages": {},
+      "topics": [],
+      "created_at": "2020-10-26T15:24:43Z",
+      "updated_at": "2020-10-26T15:24:45Z",
+      "pushed_at": "2014-08-30T13:23:10Z",
+      "stars": 0,
+      "watchers": 0,
+      "size": 361,
+      "role": "上游开源仓库的学习/实验分支，用于吸收能力并迁移到个人项目。",
+      "stack": [
+        "LLM/AIGC"
+      ],
+      "optimization_points": [
+        "代码结构梳理",
+        "上游同步策略"
+      ],
+      "analysis_confidence": "中",
+      "readme_excerpt": ""
+    }
+  ]
+}

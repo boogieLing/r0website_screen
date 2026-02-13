@@ -88,3 +88,23 @@
     }
   }
 }
+
+@media screen and (max-width: 820px) {
+  .blogMain {
+    height: 100dvh;
+    min-height: 100dvh;
+  }
+
+  .blogBackgroundBox {
+    .backGroundImg {
+      &::after {
+        background: rgba(0, 0, 0, 0.72);
+      }
+
+      .backGroundImg {
+        opacity: 0.42;
+        filter: blur(12px);
+      }
+    }
+  }
+}

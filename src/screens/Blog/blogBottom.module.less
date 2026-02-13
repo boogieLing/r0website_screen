@@ -6,10 +6,11 @@
   width: 100%;
   height: @bottomBoxHeight;
   background: rgba(0, 0, 0, .7);
-  z-index: 20;
+  z-index: 26;
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: visible;
 
   .extraButtonList {
     position: relative;
@@ -27,6 +28,7 @@
   bottom: -3px;
   right: 450px;
   height: 123px;
+  z-index: 28;
 
   .navigation {
     @nWidth: 150px ;
@@ -138,5 +140,219 @@
       }
 
     }
+  }
+}
+
+.mobileLeftBackdrop {
+  display: none;
+}
+
+.mobileLeftToggleBtn {
+  display: none;
+}
+
+.mobileLeftSidebar {
+}
+
+.mobileLeftSidebarOpen {
+}
+
+.mobileLeftNavigationBar {
+}
+
+.mobileLeftCategoryWrap {
+}
+
+.mobileLeftContent {
+}
+
+.mobileLeftSidebarHeader {
+}
+
+.mobileLeftToggleIcon {
+}
+
+.mobileLeftToggleBtnOpen {
+}
+
+// 仅小屏 PC（非移动端）适配：底栏自动下沉，释放正文可视空间
+@media screen and (min-width: 1024px) and (max-width: 1440px),
+screen and (min-width: 1024px) and (max-height: 900px) {
+  .blogBottomBox {
+    height: 88px;
+    bottom: 0;
+    transition: height 0.22s ease;
+  }
+
+  .navigationBar {
+    right: clamp(320px, 34vw, 450px);
+    bottom: -3px;
+    height: 106px;
+    transform: scale(0.9);
+    transform-origin: right bottom;
+    transition: transform 0.22s ease;
+
+    &:hover {
+      transform: scale(1);
+    }
+
+    .navigation {
+      width: 132px;
+
+      .nTitle {
+        font-size: 1.2rem;
+        letter-spacing: 1.2px;
+        bottom: 10px;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 820px) {
+  .mobileLeftBackdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(8, 10, 16, 0.35);
+    backdrop-filter: blur(2px);
+    z-index: 70;
+  }
+
+  .mobileLeftToggleBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    right: 12px;
+    left: auto;
+    top: calc(58px + env(safe-area-inset-top, 0px));
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 10px;
+    background: rgba(17, 21, 30, 0.58);
+    color: rgba(241, 246, 255, 0.95);
+    box-shadow: 0 7px 20px rgba(4, 8, 20, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(16px) saturate(140%);
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+    z-index: 91;
+  }
+
+  .mobileLeftToggleBtnOpen {
+    right: 12px;
+  }
+
+  .mobileLeftToggleBtn:active {
+    background: rgba(38, 45, 61, 0.62);
+    box-shadow: 0 4px 10px rgba(4, 8, 20, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  }
+
+  .mobileLeftToggleIcon {
+    font-size: 0.96rem;
+    line-height: 1;
+    font-weight: 900;
+  }
+
+  .mobileLeftSidebar {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: min(80vw, 320px);
+    height: 100dvh;
+    --mobile-left-header-height: calc(52px + env(safe-area-inset-top, 0px));
+    border-right: 1px solid rgba(255, 255, 255, 0.14);
+    background: transparent;
+    box-shadow: 12px 0 34px rgba(0, 0, 0, 0.22);
+    backdrop-filter: blur(18px) saturate(130%);
+    transform: translateX(-100%);
+    transition: transform 0.24s ease;
+    pointer-events: none;
+    z-index: 88;
+    overflow: hidden;
+  }
+
+  .mobileLeftSidebarOpen {
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+
+  .mobileLeftSidebarHeader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    height: var(--mobile-left-header-height);
+    padding: 0 12px;
+    padding-top: env(safe-area-inset-top, 0px);
+    font-size: 0.72rem;
+    letter-spacing: 1.2px;
+    color: rgba(233, 239, 246, 0.86);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .mobileLeftContent {
+    height: calc(100% - var(--mobile-left-header-height));
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 10px 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 10px;
+    overflow: hidden;
+  }
+
+  .mobileLeftNavigationBar {
+    position: relative;
+    order: 2;
+    margin-top: auto;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    width: 100%;
+    height: 64px;
+    box-sizing: border-box;
+    justify-content: flex-end;
+    transform: none;
+    z-index: 1;
+  }
+
+  .mobileLeftNavigationBar .navigation {
+    width: 92px;
+    height: 64px;
+    border-radius: 7px;
+    margin-left: 4px;
+    background: rgba(0, 0, 0, 0.34);
+
+    .nTitle {
+      bottom: 6px;
+      font-size: 0.72rem;
+      letter-spacing: 0.5px;
+      color: rgba(236, 241, 247, 0.78);
+    }
+  }
+
+  .mobileLeftNavigationBar .navigation:hover {
+    .nIconBox {
+      opacity: 1;
+    }
+
+    .nTitle {
+      opacity: 0;
+    }
+  }
+
+  .mobileLeftCategoryWrap {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 2px;
+  }
+
+  .mobileLeftCategoryWrap::-webkit-scrollbar {
+    width: 0;
+    height: 0;
   }
 }

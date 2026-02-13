@@ -2,6 +2,31 @@
   width: 100%;
   box-sizing: border-box;
 }
+.sidebarMode .mainListBox {
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 0;
+  overflow: visible;
+}
+.sidebarMode .mainListBox .itemBox {
+  margin-right: 0;
+  margin-bottom: 8px;
+  width: auto;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.36);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: rgba(230, 236, 244, 0.76);
+  font-size: 0.7rem;
+  text-shadow: none;
+  padding: 5px 9px;
+}
+.sidebarMode .mainListBox .itemBox:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: rgba(243, 247, 252, 0.9);
+  margin-right: 0;
+  padding-bottom: 5px;
+}
 .mainListBox {
   position: relative;
   width: 100%;
@@ -32,5 +57,45 @@
   padding-bottom: 15px;
   text-shadow: 0 0 10px #e1a3bd;
   margin-right: 0;
+}
+@media screen and (max-width: 820px) {
+  .cateGoryList {
+    position: relative;
+    z-index: 37;
+  }
+  .sidebarMode .mainListBox {
+    flex-direction: row-reverse;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-content: flex-start;
+    align-items: flex-start;
+    overflow-x: hidden;
+    overflow-y: visible;
+    padding: 2px 6px 0 14px;
+    column-gap: 6px;
+    row-gap: 7px;
+  }
+  .sidebarMode .mainListBox .itemBox {
+    margin-right: 0;
+    margin-bottom: 0;
+  }
+  .mainListBox {
+    padding: 0 8px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    align-items: flex-end;
+  }
+  .mainListBox::-webkit-scrollbar {
+    height: 0;
+  }
+  .mainListBox .itemBox {
+    flex: 0 0 auto;
+    margin-right: 6px;
+    font-size: 0.72rem;
+    padding: 4px 8px;
+    border-radius: 6px 6px 0 0;
+    background: rgba(237, 51, 152, 0.82);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+  }
 }
 /*# sourceMappingURL=categoryList.module.css.map */

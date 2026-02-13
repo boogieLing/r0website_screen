@@ -1,10 +1,30 @@
 import S from "./showR0.module.less";
 import catr0 from "@/static/pic/catr0.png";
 import signImg from "@/static/pic/sign_line.png";
-import {memo} from "react";
+import {memo, useCallback} from "react";
+import {useNavigate} from "react-router-dom";
 
-export const ShowR0 = memo(({style}) => {
-    return <div className={S.showR0} style={{...style}}>
+export const ShowR0 = memo(({style, navigatePath = '/ushouldknow'}) => {
+    const navigate = useNavigate();
+    const goToUShouldKnow = useCallback(() => {
+        navigate(navigatePath);
+    }, [navigate, navigatePath]);
+    const onNavigateKeyDown = useCallback((event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            goToUShouldKnow();
+        }
+    }, [goToUShouldKnow]);
+
+    return <div
+        className={S.showR0}
+        style={{...style}}
+        onClick={goToUShouldKnow}
+        onKeyDown={onNavigateKeyDown}
+        role='button'
+        tabIndex={0}
+        aria-label={navigatePath === '/' ? '返回首页' : '前往 UShouldKnow 页面'}
+    >
         <div className={S.triangle}>
             <span className={S.text}>What's R0?</span>
             <div className={S.background}></div>

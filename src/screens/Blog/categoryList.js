@@ -2,7 +2,7 @@ import categoryListStyle from "./categoryList.module.less";
 import {useCallback, useEffect, useLayoutEffect, useState} from "react";
 import {getCategories} from "@/request/blogApi";
 
-export const CategoryList = ({style}) => {
+export const CategoryList = ({style, isSidebar = false}) => {
     const [categories, setCategories] = useState([]);
     const loadCategories = useCallback(() => {
         getCategories((r) => {
@@ -14,7 +14,10 @@ export const CategoryList = ({style}) => {
     useLayoutEffect(() => {
         loadCategories();
     }, []);
-    return <div style={{...style}} className={categoryListStyle.cateGoryList}>
+    return <div
+        style={{...style}}
+        className={`${categoryListStyle.cateGoryList} ${isSidebar ? categoryListStyle.sidebarMode : ''}`}
+    >
         <div className={categoryListStyle.mainListBox}>
             {categories.map((category) => {
                 return <a className={categoryListStyle.itemBox} key={category.Id}

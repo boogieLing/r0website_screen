@@ -14,6 +14,7 @@ import {useWindowSize} from "@/hooks/windowSize";
 import {More} from "@/screens/More";
 import {PicBed} from "@/screens/PicBed";
 import {SomniumNexus} from "@/screens/SomniumNexus";
+import UShouldKnow from "@/screens/UShouldKnow";
 
 function App() {
     // TODO 需要浏览器性能。。。。。
@@ -52,6 +53,8 @@ function App() {
                     <Route exact path="/colorful" element={<PicBed/>}/>
                     <Route exact path="/colorful/:categoryName" element={<PicBed/>}/>
                     <Route exact path="/somnium/nexus" element={<SomniumNexus/>}/>
+                    <Route exact path="/ushouldknow" element={<UShouldKnow/>}/>
+                    <Route exact path="/ushouldknow/:lang" element={<UShouldKnow/>}/>
                 </Routes>
             </div>
         </BrowserRouter>
