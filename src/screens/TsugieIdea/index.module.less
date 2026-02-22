@@ -1,0 +1,551 @@
+.page {
+    --swipe-dx: 0px;
+    --swipe-left-progress: 0;
+    --swipe-right-progress: 0;
+    --mobile-settle-duration: 460ms;
+    --mobile-settle-ease: cubic-bezier(0.22, 0.84, 0.24, 1);
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+    color: #fff6ef;
+    font-family: 'Avenir Next', 'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif JP', serif;
+    background:
+        radial-gradient(1300px 760px at 14% 18%, #ff8fbf66 0%, transparent 58%),
+        radial-gradient(900px 820px at 92% 18%, #7ea1ff54 0%, transparent 64%),
+        radial-gradient(900px 680px at 58% 88%, #ffc78b49 0%, transparent 60%),
+        rgb(250, 245, 243);
+}
+
+.topLine {
+    position: fixed;
+    top: clamp(14px, 2vw, 28px);
+    left: clamp(16px, 2vw, 30px);
+    right: clamp(16px, 2vw, 30px);
+    z-index: 80;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+}
+
+.topLink {
+    color: #fff4eb;
+    text-decoration: none;
+    border-bottom: 1px solid #ffe8dc80;
+    transition: border-color 200ms ease, color 200ms ease;
+
+    &:hover {
+        color: #ffffff;
+        border-color: #ffffff;
+    }
+}
+
+.layout {
+    height: 100%;
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(280px, 34vw) 1fr;
+    gap: 0;
+}
+
+.leftPanel {
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    overflow: hidden;
+}
+
+.leftImageWrap {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    overflow: hidden;
+    box-shadow: none;
+    animation: leftFadeIn 540ms ease both;
+    background: rgb(250, 245, 243);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.leftImageBg {
+    position: absolute;
+    inset: -8%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    filter: blur(18px) saturate(1.05) contrast(1.02);
+    transform: scale(1.12);
+    opacity: 0.92;
+}
+
+.leftGlass {
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(170deg, #ffffff2c 0%, transparent 42%),
+        radial-gradient(circle at 20% 14%, #ffdbe167 0%, transparent 36%),
+        linear-gradient(180deg, #fff5f11a 0%, #11131f4e 100%);
+}
+
+.leftImageFrame {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    padding: clamp(18px, 2.2vw, 28px) clamp(16px, 1.9vw, 24px);
+    box-sizing: border-box;
+}
+
+.leftImageFront {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    filter: saturate(1.12) contrast(1.03) drop-shadow(0 14px 28px rgba(15, 8, 12, 0.32));
+}
+
+.rightPanel {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+}
+
+.stage {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    perspective: 2000px;
+    overflow: hidden;
+    touch-action: none;
+}
+
+.mobileStage {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    touch-action: none;
+}
+
+.mobileCard {
+    position: absolute;
+    inset: 0;
+    transition: transform var(--mobile-settle-duration) var(--mobile-settle-ease), opacity 320ms ease;
+    will-change: transform, opacity;
+}
+
+.mobileCardCurrent {
+    transform: translate3d(var(--swipe-dx, 0px), 0, 0);
+    z-index: 6;
+    opacity: 1;
+}
+
+.mobileCardPrev {
+    transform: translate3d(calc(-100% + var(--swipe-dx, 0px)), 0, 0);
+    z-index: 5;
+    opacity: 1;
+}
+
+.mobileCardNext {
+    transform: translate3d(calc(100% + var(--swipe-dx, 0px)), 0, 0);
+    z-index: 5;
+    opacity: 1;
+}
+
+.contentPage {
+    position: absolute;
+    inset: 0;
+    transform-origin: left center;
+    transition: transform 620ms cubic-bezier(.2, .72, .2, 1), opacity 620ms ease, filter 620ms ease;
+    pointer-events: none;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    contain: layout paint style;
+}
+
+.pageSwiping .contentPage {
+    transition: none !important;
+}
+
+.pageSwiping .mobileCard {
+    transition: none !important;
+}
+
+.pageCurrent {
+    transform: rotateY(0deg) translateX(0) scale(1);
+    opacity: 1;
+    filter: none;
+    pointer-events: auto;
+    z-index: 5;
+}
+
+.pagePrev {
+    transform: rotateY(-16deg) translateX(-22%) scale(0.96);
+    opacity: 0.12;
+    filter: blur(1px) saturate(0.82);
+    z-index: 3;
+}
+
+.pageNext {
+    transform: rotateY(16deg) translateX(28%) scale(0.96);
+    opacity: 0.3;
+    filter: blur(0.7px) saturate(0.88);
+    z-index: 4;
+}
+
+.pageFarPrev,
+.pageFarNext {
+    opacity: 0;
+    transform: translateX(34%);
+    z-index: 1;
+}
+
+.pageAura {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 16% 20%, #ff8dbf7d 0%, transparent 44%),
+        radial-gradient(circle at 80% 22%, #7ca7ff73 0%, transparent 45%),
+        radial-gradient(circle at 52% 82%, #ffc97865 0%, transparent 40%),
+        linear-gradient(180deg, #151a2f2a 0%, #0f121f95 80%, #0a0c147f 100%);
+    mix-blend-mode: screen;
+}
+
+.pageInner {
+    position: relative;
+    z-index: 3;
+    width: min(1100px, 94%);
+    height: 100%;
+    margin: 0 auto;
+    padding: clamp(90px, 10vh, 138px) 0 clamp(56px, 7vh, 80px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.pageHead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.titleRow {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.pageBrand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.brandLogo {
+    width: clamp(34px, 3vw, 48px);
+    opacity: 0.74;
+    filter: drop-shadow(0 5px 14px rgba(21, 11, 16, 0.26));
+}
+
+.brandText {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.brandName {
+    margin: 0;
+    font-size: clamp(13px, 1.25vw, 17px);
+    letter-spacing: 0.16em;
+    color: #fff8f2;
+    text-shadow: 0 2px 8px rgba(25, 14, 18, 0.3);
+}
+
+.brandKana {
+    margin: 0;
+    font-size: clamp(10px, 0.95vw, 12px);
+    letter-spacing: 0.16em;
+    color: #fff3ec;
+    text-shadow: 0 2px 8px rgba(25, 14, 18, 0.3);
+}
+
+.heroMidBrand {
+    margin-top: 16px;
+    margin-bottom: -2px;
+    gap: 14px;
+
+    .brandLogo {
+        width: clamp(52px, 5.8vw, 84px);
+        opacity: 1;
+        filter:
+            drop-shadow(0 0 12px rgba(255, 236, 247, 0.84))
+            drop-shadow(0 0 28px rgba(255, 196, 226, 0.66))
+            drop-shadow(0 0 48px rgba(255, 214, 172, 0.52))
+            drop-shadow(0 0 72px rgba(255, 178, 212, 0.32))
+            drop-shadow(0 8px 18px rgba(26, 11, 16, 0.32));
+    }
+
+    .brandName {
+        font-size: clamp(26px, 3.2vw, 42px);
+        letter-spacing: 0.1em;
+        line-height: 1.08;
+        color: #fffaf6;
+        background: linear-gradient(95deg, #fffefb 0%, #ffd1ea 30%, #ffd98d 62%, #ffd8ef 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow:
+            0 0 10px rgba(255, 236, 246, 0.88),
+            0 0 24px rgba(255, 196, 226, 0.76),
+            0 0 44px rgba(255, 214, 172, 0.62),
+            0 0 68px rgba(255, 178, 212, 0.38);
+    }
+}
+
+.kicker {
+    font-size: clamp(11px, 1.1vw, 13px);
+    letter-spacing: 0.2em;
+    color: #ffe9df;
+    text-shadow: 0 2px 10px rgba(14, 7, 11, 0.5);
+}
+
+.pageNo {
+    font-size: clamp(26px, 3.8vw, 44px);
+    letter-spacing: 0.06em;
+    color: #fff7f1;
+    opacity: 0.8;
+}
+
+.pageTitle {
+    margin: 8px 0 0;
+    font-size: clamp(34px, 5vw, 68px);
+    line-height: 1.16;
+    letter-spacing: 0.04em;
+    white-space: pre-line;
+    text-shadow: 0 8px 26px rgba(14, 7, 11, 0.56);
+}
+
+.pageLead {
+    margin: 14px 0 0;
+    max-width: 68ch;
+    font-size: clamp(15px, 1.5vw, 20px);
+    color: #fff2ec;
+    white-space: pre-line;
+    text-shadow: 0 4px 16px rgba(14, 7, 11, 0.44);
+}
+
+.lineStream {
+    margin-top: 22px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 9px;
+}
+
+.lineItem {
+    margin: 0;
+    padding-left: 14px;
+    font-size: clamp(13px, 1.28vw, 17px);
+    line-height: 1.58;
+    color: #fff9f6;
+    text-shadow: 0 3px 12px rgba(14, 7, 11, 0.48);
+    position: relative;
+
+    &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0.85em;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #ffdeea, #fff3ca);
+        box-shadow: 0 0 9px #ffd4e6;
+    }
+}
+
+.ending {
+    margin: 28px 0 0;
+    font-size: clamp(22px, 3.1vw, 40px);
+    line-height: 1.4;
+    letter-spacing: 0.05em;
+    white-space: pre-line;
+    text-shadow: 0 10px 30px rgba(15, 8, 13, 0.58);
+}
+
+
+@keyframes leftFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px) scale(.985);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@media screen and (max-width: 980px) {
+    .layout {
+        grid-template-columns: minmax(210px, 31vw) 1fr;
+    }
+
+    .pageTitle {
+        font-size: clamp(30px, 4.5vw, 52px);
+    }
+
+    .brandLogo {
+        width: clamp(30px, 3.4vw, 42px);
+    }
+
+}
+
+@media screen and (max-width: 760px) {
+    .layout {
+        grid-template-columns: 1fr;
+    }
+
+    .leftPanel {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        padding: 0;
+        pointer-events: none;
+    }
+
+    .leftImageWrap {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .leftImageFrame {
+        padding: 0;
+    }
+
+    .leftImageFront {
+        object-fit: cover;
+        opacity: 0.86;
+        filter: saturate(1.02);
+    }
+
+    .leftImageBg {
+        display: none;
+    }
+
+    .leftGlass {
+        display: none;
+    }
+
+    .pageAura {
+        background: linear-gradient(180deg, #1a1e3338 0%, #0f121f96 72%, #0b0d14cb 100%);
+        mix-blend-mode: normal;
+    }
+
+    .rightPanel {
+        z-index: 2;
+    }
+
+    .mobileStage::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        background:
+            radial-gradient(circle at 18% 14%, #ffd8e056 0%, transparent 38%),
+            linear-gradient(180deg, rgba(22, 24, 41, 0.26) 0%, rgba(10, 12, 18, 0.7) 72%, rgba(8, 9, 14, 0.82) 100%);
+    }
+
+    .mobileCard {
+        z-index: 2;
+    }
+
+    .pageSwiping .pageTitle,
+    .pageSwiping .pageLead,
+    .pageSwiping .lineItem,
+    .pageSwiping .ending,
+    .pageSwiping .kicker,
+    .pageSwiping .pageNo,
+    .pageSwiping .brandName,
+    .pageSwiping .brandKana {
+        text-shadow: none !important;
+    }
+
+    .pageTitle,
+    .pageLead,
+    .lineItem,
+    .ending,
+    .kicker,
+    .pageNo,
+    .brandName,
+    .brandKana {
+        text-shadow: none;
+    }
+
+    .lineItem::before {
+        box-shadow: none;
+    }
+
+    .pageInner {
+        width: min(90vw, 640px);
+        padding-top: 96px;
+        padding-bottom: 72px;
+    }
+
+    .topLine {
+        font-size: 10px;
+    }
+
+    .pageBrand {
+        margin-bottom: 10px;
+    }
+
+    .brandName {
+        font-size: 13px;
+    }
+
+    .brandKana {
+        font-size: 10px;
+    }
+
+    .heroMidBrand {
+        margin-top: 14px;
+
+        .brandLogo {
+            width: 56px;
+            filter: drop-shadow(0 0 8px rgba(255, 207, 232, 0.44));
+        }
+
+        .brandName {
+            font-size: 30px;
+            letter-spacing: 0.08em;
+            text-shadow:
+                0 0 8px rgba(255, 227, 242, 0.46),
+                0 0 18px rgba(255, 214, 172, 0.32);
+        }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mobileCard,
+    .contentPage,
+    .pageCurrent,
+    .pagePrev,
+    .pageNext,
+    .pageFarPrev,
+    .pageFarNext,
+    .leftImageWrap {
+        transition: none !important;
+        animation: none !important;
+    }
+}
