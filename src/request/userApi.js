@@ -7,10 +7,14 @@ import {get, post, put} from '@/request';
  * @param {function} handler - 回调函数，处理响应数据
  */
 export const login = (email, password, handler) => {
-    post("api/base/login", {
+    const request = post("api/base/login", {
         email: email,
         password: password
-    }).then(r => handler(r));
+    });
+    if (typeof handler === 'function') {
+        request.then(r => handler(r));
+    }
+    return request;
 }
 
 /**
@@ -29,11 +33,15 @@ export const logout = (handler) => {
  * @param {function} handler - 回调函数，处理响应数据
  */
 export const register = (email, password, username, handler) => {
-    post("api/base/register", {
+    const request = post("api/base/register", {
         email: email,
         password: password,
         username: username
-    }).then(r => handler(r));
+    });
+    if (typeof handler === 'function') {
+        request.then(r => handler(r));
+    }
+    return request;
 }
 
 /**

@@ -1,5 +1,5 @@
 import {makeAutoObservable, runInAction} from 'mobx';
-import {login as loginApi} from '@/request/userApi';
+import {login as loginApi, register as registerApi} from '@/request/userApi';
 import actionStore from './actionStore';
 
 class UserStore {
@@ -60,33 +60,63 @@ class UserStore {
     async login(email, password) {
         this.setLoading(true);
         this.clearError();
-
-        return new Promise((resolve, reject) => {
-            loginApi(email, password, (response) => {
+        try {
+            const response = await loginApi(email, password);
+            if (response.data.code === "001001200") {
+                const {data} = response.data;
+                const {token, username, email: userEmail, phone = '', brief = '', user_level = -1} = data;
                 runInAction(() => {
-                    if (response.data.code === "001001200") {
-                        const {data} = response.data;
-                        const {token, username, email: userEmail, phone = '', brief = '', user_level = -1} = data;
-
-                        this.setToken(token);
-                        this.setUserInfo(username || '', userEmail || '', phone, brief, user_level);
-                        this.clearError();
-                        resolve(true);
-                    } else {
-                        this.setError(response.data.msg || '登录失败，请检查邮箱和密码');
-                        resolve(false);
-                    }
-                    this.setLoading(false);
+                    this.setToken(token);
+                    this.setUserInfo(username || '', userEmail || '', phone, brief, user_level);
+                    this.clearError();
                 });
-            });
-        }).catch((error) => {
+                return true;
+            }
             runInAction(() => {
-                this.setLoading(false);
+                const detailMsg = typeof response.data.data === 'string' ? response.data.data : '';
+                this.setError(detailMsg || response.data.msg || '登录失败，请检查邮箱和密码');
+            });
+            return false;
+        } catch (error) {
+            runInAction(() => {
                 this.setError('网络错误，请稍后重试');
             });
             console.error('Login error:', error);
             return false;
-        });
+        } finally {
+            runInAction(() => {
+                this.setLoading(false);
+            });
+        }
+    }
+
+    async register(username, email, password) {
+        this.setLoading(true);
+        this.clearError();
+        try {
+            const response = await registerApi(email, password, username);
+            if (response.data.code === "001001200") {
+                runInAction(() => {
+                    this.clearError();
+                });
+                return true;
+            }
+            runInAction(() => {
+                const detailMsg = typeof response.data.data === 'string' ? response.data.data : '';
+                this.setError(detailMsg || response.data.msg || '注册失败，请稍后重试');
+            });
+            return false;
+        } catch (error) {
+            runInAction(() => {
+                this.setError('网络错误，请稍后重试');
+            });
+            console.error('Register error:', error);
+            return false;
+        } finally {
+            runInAction(() => {
+                this.setLoading(false);
+            });
+        }
     }
 
     async logout() {
