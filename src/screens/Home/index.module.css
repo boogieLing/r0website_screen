@@ -37,6 +37,15 @@
   background-color: gray;
   cursor: url("../../static/cursor/person.cur"), auto !important;
 }
+.loginMask {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 2900;
+  transition: 0.25s;
+}
 .backGroundImgBox {
   position: absolute;
   left: -5%;

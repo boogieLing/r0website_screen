@@ -13,16 +13,16 @@ const R0List = ({children, style, classNameO, option}) => {
         _option.widthOffset = _option.widthOffset ? _option.widthOffset : 15;
         _option.lights = _option.lights ? _option.lights : [];
         return _option;
-    }, []);
+    }, [option]);
 
     useEffect(() => {
         setBackPosition({
-            width: currentCheck.width + _option.widthOffset,
+            width: currentCheck.width,
             height: currentCheck.height,
             top: currentCheck.top - fatherPosition.top,
             left: currentCheck.left - fatherPosition.left
         });
-    }, [currentCheck, isLeave]);
+    }, [currentCheck, fatherPosition.left, fatherPosition.top, isLeave, _option.widthOffset]);
     const onMouseEnterHandler = useCallback(() => {
         setIsLeave(false);
     }, []);

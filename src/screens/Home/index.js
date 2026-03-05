@@ -170,6 +170,9 @@ const Home = () => {
                     </div>
                 </div>
             </div>
+            {showLogin && (
+                <div className={home.loginMask} onClick={hiddenLoginHandle}/>
+            )}
             <SideLogin show={showLogin} hiddenLoginHandle={hiddenLoginHandle}/>
         </div>
     </ReactDocumentTitle>;

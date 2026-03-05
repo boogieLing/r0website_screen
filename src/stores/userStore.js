@@ -2,6 +2,26 @@ import {makeAutoObservable, runInAction} from 'mobx';
 import {login as loginApi, register as registerApi} from '@/request/userApi';
 import actionStore from './actionStore';
 
+const parseServerMessage = (payload) => {
+    if (!payload) {
+        return '';
+    }
+    if (typeof payload === 'string') {
+        return payload;
+    }
+    try {
+        return JSON.stringify(payload);
+    } catch {
+        return '';
+    }
+};
+
+const extractErrorMessage = (error, fallback) => {
+    const responseData = error?.response?.data;
+    const detailMsg = parseServerMessage(responseData?.data);
+    return detailMsg || responseData?.msg || fallback;
+};
+
 class UserStore {
     token = localStorage.getItem('token') || '';
     username = localStorage.getItem('username') || '';
@@ -73,13 +93,13 @@ class UserStore {
                 return true;
             }
             runInAction(() => {
-                const detailMsg = typeof response.data.data === 'string' ? response.data.data : '';
+                const detailMsg = parseServerMessage(response.data.data);
                 this.setError(detailMsg || response.data.msg || '登录失败，请检查邮箱和密码');
             });
             return false;
         } catch (error) {
             runInAction(() => {
-                this.setError('网络错误，请稍后重试');
+                this.setError(extractErrorMessage(error, '网络错误，请稍后重试'));
             });
             console.error('Login error:', error);
             return false;
@@ -102,13 +122,13 @@ class UserStore {
                 return true;
             }
             runInAction(() => {
-                const detailMsg = typeof response.data.data === 'string' ? response.data.data : '';
+                const detailMsg = parseServerMessage(response.data.data);
                 this.setError(detailMsg || response.data.msg || '注册失败，请稍后重试');
             });
             return false;
         } catch (error) {
             runInAction(() => {
-                this.setError('网络错误，请稍后重试');
+                this.setError(extractErrorMessage(error, '网络错误，请稍后重试'));
             });
             console.error('Register error:', error);
             return false;

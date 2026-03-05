@@ -23,11 +23,18 @@ const SideLogin = ({show, hiddenLoginHandle}) => {
         message: ""
     });
     const noticeTimerRef = useRef(null);
+    const closeTimerRef = useRef(null);
+    const listLights = isRegisterMode
+        ? [0, 1, 1, 1, 1, 1, 1, 1, 1]
+        : [0, 1, 1, 1, 1, 1, 1];
 
     useEffect(() => {
         return () => {
             if (noticeTimerRef.current) {
                 clearTimeout(noticeTimerRef.current);
+            }
+            if (closeTimerRef.current) {
+                clearTimeout(closeTimerRef.current);
             }
         };
     }, []);
@@ -48,13 +55,22 @@ const SideLogin = ({show, hiddenLoginHandle}) => {
         }, 2600);
     };
 
+    const resetForm = () => {
+        setUserName("");
+        setEmail("");
+        setPassword("");
+        setConfirmPassword("");
+    };
+
     const closePanel = () => {
         if (noticeTimerRef.current) {
             clearTimeout(noticeTimerRef.current);
         }
+        if (closeTimerRef.current) {
+            clearTimeout(closeTimerRef.current);
+        }
         setIsRegisterMode(false);
-        setEmail("");
-        setConfirmPassword("");
+        resetForm();
         setNotice({
             visible: false,
             message: ""
@@ -67,14 +83,30 @@ const SideLogin = ({show, hiddenLoginHandle}) => {
         if (userStore.isLoading) {
             return;
         }
-        const email = username.trim();
-        if (!email || !password) {
-            showNotice("请输入用户名和密码");
+        if (userStore.isLoggedIn) {
+            showNotice(`已登录：${userStore.userDisplayName}`);
             return;
         }
-        const success = await userStore.login(email, password);
+        const loginEmail = email.trim();
+        if (!loginEmail || !password) {
+            if (!loginEmail && !password) {
+                showNotice("请输入邮箱和密码");
+            } else if (!loginEmail) {
+                showNotice("请输入邮箱");
+            } else {
+                showNotice("请输入密码");
+            }
+            return;
+        }
+        const success = await userStore.login(loginEmail, password);
         if (success) {
-            closePanel();
+            showNotice("登录成功");
+            if (closeTimerRef.current) {
+                clearTimeout(closeTimerRef.current);
+            }
+            closeTimerRef.current = setTimeout(() => {
+                closePanel();
+            }, 900);
             return;
         }
         showNotice(userStore.error || "登录失败");
@@ -82,6 +114,7 @@ const SideLogin = ({show, hiddenLoginHandle}) => {
 
     const handleRegister = async () => {
         if (!isRegisterMode) {
+            resetForm();
             setIsRegisterMode(true);
             return;
         }
@@ -102,7 +135,8 @@ const SideLogin = ({show, hiddenLoginHandle}) => {
         if (success) {
             showNotice("注册成功，请登录");
             setIsRegisterMode(false);
-            setEmail("");
+            setUserName("");
+            setEmail(registerEmail);
             setPassword("");
             setConfirmPassword("");
             return;
@@ -124,7 +158,7 @@ const SideLogin = ({show, hiddenLoginHandle}) => {
                     <span>{notice.message}</span>
                 </div>
             </div>
-            <h1>今日天气不错！</h1>
+            <h1/>
             <span className={sideLoginStyle.sentence}>Life is a bear, we must learn to support ourselves.</span>
             <div className={sideLoginStyle.signInBox}>
                 <div className={sideLoginStyle.tips}><span>WELCOME</span></div>
@@ -132,25 +166,31 @@ const SideLogin = ({show, hiddenLoginHandle}) => {
                     <R0List style={{
                         width: "100%"
                     }} option={{
-                        lights: [0, 0, 0, 1, 1, 0, 0]
+                        lights: listLights
                     }}>
                         <span className={sideLoginStyle.signInSpan}>{isRegisterMode ? "REGISTER" : "SIGN IN"}</span>
-                        <InputItem inputTips={"Username"} id={"InputUsername"}
-                                   sendData={(data) => setUserName(data)}/>
+                        {isRegisterMode ? (
+                            <InputItem inputTips={"Username"} id={"InputUsername"}
+                                       sendData={(data) => setUserName(data)} value={username}/>
+                        ) : (
+                            <InputItem inputTips={"Email"} id={"InputEmail"}
+                                       sendData={(data) => setEmail(data)} value={email}/>
+                        )}
                         {isRegisterMode && (
                             <InputItem inputTips={"Email"} id={"InputEmail"}
-                                       sendData={(data) => setEmail(data)}/>
+                                       sendData={(data) => setEmail(data)} value={email}/>
                         )}
                         <InputItem type="password" inputTips={"Password"} id={"InputPassword"}
-                                   sendData={(data) => setPassword(data)}/>
+                                   sendData={(data) => setPassword(data)} value={password}/>
                         {isRegisterMode && (
                             <InputItem type="password" inputTips={"Confirm Password"} id={"InputConfirmPassword"}
-                                       sendData={(data) => setConfirmPassword(data)}/>
+                                       sendData={(data) => setConfirmPassword(data)} value={confirmPassword}/>
                         )}
-                        <OptionItem optionTips={"Remember Username"} check={true}/>
+                        <OptionItem optionTips={isRegisterMode ? "Remember Username" : "Remember Email"} check={true}/>
                         <OptionItem optionTips={"Remember Password"}/>
                         <ButtonItem buttonTips={isRegisterMode ? "Back to sign in" : "Sign in"} onClick={() => {
                             if (isRegisterMode) {
+                                resetForm();
                                 setIsRegisterMode(false);
                                 return;
                             }

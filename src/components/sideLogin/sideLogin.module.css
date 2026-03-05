@@ -14,7 +14,7 @@
   overflow: hidden;
   white-space: nowrap !important;
   transform: translateX(0%) !important;
-  z-index: 100;
+  z-index: 3000;
 }
 .mainHidden {
   transform: translateX(-100%) !important;

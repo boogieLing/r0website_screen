@@ -1,17 +1,11 @@
 import sideLoginStyle from "./sideLogin.module.less";
-import {useEffect, useRef, useState} from "react";
+import {useState} from "react";
 
-const InputItem = ({type, inputTips, id, sendData}) => {
+const InputItem = ({type, inputTips, id, sendData, value}) => {
     const [isClick, setIsClick] = useState(false);
-    const focusRef = useRef();
     const onMouseEnterHandler = () => {
-        setIsClick(!isClick);
+        setIsClick(true);
     };
-    useEffect(() => {
-        if (focusRef && focusRef.current && isClick) {
-            focusRef.current.focus();
-        }
-    }, [isClick]);
     let inputBorderColor = "white";
     if (isClick) {
         inputBorderColor = "#fdcb6e";
@@ -28,7 +22,7 @@ const InputItem = ({type, inputTips, id, sendData}) => {
         <span className={sideLoginStyle.inputTips}>{inputTips}</span>
         <input id={id} style={{
             borderBottom: ` solid 2px ${inputBorderColor}`
-        }} onChange={(e) => onChangeHandler(e)} type={type} ref={focusRef}/>
+        }} onChange={(e) => onChangeHandler(e)} type={type} value={value ?? ""}/>
     </div>;
 };
 export default InputItem;
