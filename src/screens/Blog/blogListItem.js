@@ -38,11 +38,14 @@ export const BlogListItem = observer(({post, clickHandler}) => {
             onMouseEnter={() => addAuthorTips(post.author)}
             onMouseLeave={cursorTipsStore.popTips}
         >
+            <div className={blogListStyle.smallScreenTitleBox}>
+                <span className={blogListStyle.smallScreenTitleSpan}>{post.title}</span>
+            </div>
             <div className={blogListStyle.thumbnailBox}>
                 <img className={blogListStyle.thumbnailImg} src={post.pic_url} alt=""/>
             </div>
             <div className={blogListStyle.itemContent}>
-                <div className={blogListStyle.normalTextBox + " " + blogListStyle.titleBox}>
+                <div className={blogListStyle.normalTextBox + " " + blogListStyle.titleBox + " " + blogListStyle.inlineTitleBox}>
                     <span className={blogListStyle.textSpan}>{post.title}</span>
                 </div>
                 <div className={blogListStyle.normalTextBox}>
