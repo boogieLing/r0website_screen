@@ -3,7 +3,7 @@ import backIconImg from "./backIcon.png";
 import useSound from "use-sound";
 import buiu from "@/static/mp3/bu-iu.wav";
 import bunnnnn from "@/static/mp3/bunnnnn.wav";
-import {useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import userStore from "@/stores/userStore";
 import R0List from "@/components/r0List/r0List";
 import OptionItem from "@/components/sideLogin/optionItem";
@@ -18,11 +18,47 @@ const SideLogin = ({show, hiddenLoginHandle}) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [notice, setNotice] = useState({
+        visible: false,
+        message: ""
+    });
+    const noticeTimerRef = useRef(null);
+
+    useEffect(() => {
+        return () => {
+            if (noticeTimerRef.current) {
+                clearTimeout(noticeTimerRef.current);
+            }
+        };
+    }, []);
+
+    const showNotice = (message) => {
+        if (noticeTimerRef.current) {
+            clearTimeout(noticeTimerRef.current);
+        }
+        setNotice({
+            visible: true,
+            message
+        });
+        noticeTimerRef.current = setTimeout(() => {
+            setNotice({
+                visible: false,
+                message: ""
+            });
+        }, 2600);
+    };
 
     const closePanel = () => {
+        if (noticeTimerRef.current) {
+            clearTimeout(noticeTimerRef.current);
+        }
         setIsRegisterMode(false);
         setEmail("");
         setConfirmPassword("");
+        setNotice({
+            visible: false,
+            message: ""
+        });
         hiddenLoginHandle();
         playBunnnnn();
     };
@@ -33,16 +69,15 @@ const SideLogin = ({show, hiddenLoginHandle}) => {
         }
         const email = username.trim();
         if (!email || !password) {
-            window.alert("请输入用户名和密码");
+            showNotice("请输入用户名和密码");
             return;
         }
         const success = await userStore.login(email, password);
         if (success) {
-            window.alert("登录成功");
             closePanel();
             return;
         }
-        window.alert(userStore.error || "登录失败");
+        showNotice(userStore.error || "登录失败");
     };
 
     const handleRegister = async () => {
@@ -56,23 +91,23 @@ const SideLogin = ({show, hiddenLoginHandle}) => {
         const registerName = username.trim();
         const registerEmail = email.trim();
         if (!registerName || !registerEmail || !password || !confirmPassword) {
-            window.alert("请完整填写注册信息");
+            showNotice("请完整填写注册信息");
             return;
         }
         if (password !== confirmPassword) {
-            window.alert("两次输入的密码不一致");
+            showNotice("两次输入的密码不一致");
             return;
         }
         const success = await userStore.register(registerName, registerEmail, password);
         if (success) {
-            window.alert("注册成功，请登录");
+            showNotice("注册成功，请登录");
             setIsRegisterMode(false);
             setEmail("");
             setPassword("");
             setConfirmPassword("");
             return;
         }
-        window.alert(userStore.error || "注册失败");
+        showNotice(userStore.error || "注册失败");
     };
 
     return <div className={sideLoginStyle.main + (show ? "": " " + sideLoginStyle.mainHidden)}>
@@ -84,6 +119,11 @@ const SideLogin = ({show, hiddenLoginHandle}) => {
             <div className={sideLoginStyle.backText}/>
         </div>
         <div className={sideLoginStyle.mainPage}>
+            <div className={sideLoginStyle.noticeContainer}>
+                <div className={sideLoginStyle.notice + (notice.visible ? " " + sideLoginStyle.noticeShow : "")}>
+                    <span>{notice.message}</span>
+                </div>
+            </div>
             <h1>今日天气不错！</h1>
             <span className={sideLoginStyle.sentence}>Life is a bear, we must learn to support ourselves.</span>
             <div className={sideLoginStyle.signInBox}>
