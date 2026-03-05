@@ -1,20 +1,22 @@
-FROM node:alpine AS prd
+FROM docker.m.daocloud.io/library/node:20-alpine
 
-WORKDIR '/app'
+WORKDIR /app
 
-COPY package.json .
-# RUN yarn add -D @craco/craco
+# npm 国内镜像
+RUN npm config set registry https://registry.npmmirror.com
+
+# 利用缓存
+COPY package*.json ./
+
 RUN npm install --legacy-peer-deps
 
 COPY . .
+
+# React build
 RUN npm run build
 
-# CMD ["npm","start", "y"]
-RUN npm i -g serve
+ENV NODE_ENV=production
 
-#RUN serve -s ./build
-CMD ["serve","-s", "./build"]
 EXPOSE 3000
 
-# docker build -f Dockerfile -t r0website-screen .
-# docker run -d -p 3000:3001 --name r0website-screen r0website-screen
+CMD ["node","server.js"]

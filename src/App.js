@@ -1,4 +1,4 @@
-import {BrowserRouter, Route, Routes} from "react-router-dom";
+import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
 import Test from "@/screens/Test";
 import Home from "@/screens/Home";
 import {observer} from "mobx-react-lite";
@@ -16,6 +16,7 @@ import {PicBed} from "@/screens/PicBed";
 import {SomniumNexus} from "@/screens/SomniumNexus";
 import UShouldKnow from "@/screens/UShouldKnow";
 import TsugieIdea from "@/screens/TsugieIdea";
+import TsugiePrivacy from "@/screens/TsugiePrivacy";
 
 function App() {
     // TODO 需要浏览器性能。。。。。
@@ -45,6 +46,7 @@ function App() {
                 {/*/>*/}
                 <Routes>
                     <Route exact strict path="/" element={<Home/>}/>
+                    <Route exact strict path="/home" element={<Home/>}/>
                     <Route exact strict path="/test" element={<Test/>}/>
                     <Route exact path="/blog" element={<Blog/>}/>
                     <Route exact path="/blog/:id" element={<Blog/>}/>
@@ -55,8 +57,11 @@ function App() {
                     <Route exact path="/colorful/:categoryName" element={<PicBed/>}/>
                     <Route exact path="/somnium/nexus" element={<SomniumNexus/>}/>
                     <Route exact path="/ushouldknow" element={<UShouldKnow/>}/>
+                    <Route exact path="/ushouldknow/detail" element={<Navigate to="/ushouldknow/zh/detail" replace/>}/>
                     <Route exact path="/ushouldknow/:lang" element={<UShouldKnow/>}/>
+                    <Route exact path="/ushouldknow/:lang/detail" element={<UShouldKnow/>}/>
                     <Route exact path="/idea/tsugie" element={<TsugieIdea/>}/>
+                    <Route exact path="/idea/tsugie/privacy" element={<TsugiePrivacy/>}/>
                 </Routes>
             </div>
         </BrowserRouter>

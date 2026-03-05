@@ -14,6 +14,7 @@
     "axios-retry": "^3.3.1",
     "copy-to-clipboard": "^3.3.2",
     "craco-less": "^2.0.0",
+    "katex": "^0.16.22",
     "laser-pen": "^1.0.0",
     "masonic": "^3.7.0",
     "mini-virtual-list": "^0.3.2",
@@ -34,8 +35,10 @@
     "react-scripts": "5.0.1",
     "react-syntax-highlighter": "^15.5.0",
     "react-zmage": "^0.8.5-beta.37",
+    "rehype-katex": "^6.0.3",
     "rehype-raw": "^6.1.1",
     "remark-gfm": "^3.0.1",
+    "remark-math": "^5.1.1",
     "typescript": "^4.8.4",
     "use-sound": "^4.0.1",
     "web-vitals": "^2.1.4"

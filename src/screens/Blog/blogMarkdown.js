@@ -4,17 +4,107 @@ import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
 import {coldarkDark} from 'react-syntax-highlighter/dist/esm/styles/prism';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 import copy from 'copy-to-clipboard';
-import {memo, useCallback, useEffect, useMemo, useState} from "react";
+import {Children, cloneElement, isValidElement, memo, useCallback, useEffect, useMemo, useState} from "react";
 import cursorTipsStore from "@/stores/cursorTipsStore";
 import curPostStore from "@/stores/curPostStore";
 import PlainLeftScrollBars from "@/components/scrollBars/PlainLeftScrollBars";
+import 'katex/dist/katex.min.css';
 
 const MOBILE_FONT_STORAGE_KEY = 'blog_mobile_markdown_font_size';
 const MOBILE_FONT_MIN = 12;
 const MOBILE_FONT_MAX = 18;
 const MOBILE_FONT_STEP = 0.5;
 const MOBILE_FONT_DEFAULT = 13;
+const HIGHLIGHT_MARK_PATTERN = /==([^=\n][^=\n]*?)==/g;
+const CALLOUT_PREFIX_PATTERN = /^\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*/i;
+const CALLOUT_CLASS_MAP = {
+    note: markdownStyle.markdownCalloutNote,
+    tip: markdownStyle.markdownCalloutTip,
+    important: markdownStyle.markdownCalloutImportant,
+    warning: markdownStyle.markdownCalloutWarning,
+    caution: markdownStyle.markdownCalloutCaution,
+};
+
+// 仅在非代码块区域把 ==高亮== 语法转换成 <mark>，避免污染 fenced code 内容。
+const normalizeMarkdownForRender = (markdown = '') => {
+    const lines = markdown.split('\n');
+    let codeFenceTag = '';
+
+    return lines.map((line) => {
+        const trimmed = line.trim();
+        if (/^(```|~~~)/.test(trimmed)) {
+            const fenceTag = trimmed.slice(0, 3);
+            if (!codeFenceTag) {
+                codeFenceTag = fenceTag;
+            } else if (codeFenceTag === fenceTag) {
+                codeFenceTag = '';
+            }
+            return line;
+        }
+        if (codeFenceTag) {
+            return line;
+        }
+        return line.replace(HIGHLIGHT_MARK_PATTERN, '<mark>$1</mark>');
+    }).join('\n');
+};
+
+// 递归提取 React 子节点中的纯文本，供标题锚点和提示文案复用。
+const extractTextFromChildren = (children) => {
+    return Children.toArray(children).map((child) => {
+        if (typeof child === 'string' || typeof child === 'number') {
+            return String(child);
+        }
+        if (isValidElement(child) && child.props && child.props.children) {
+            return extractTextFromChildren(child.props.children);
+        }
+        return '';
+    }).join('');
+};
+
+// 将标题文本去除 Markdown/HTML 装饰符，得到稳定可用的锚点 id。
+const normalizeHeadingTitle = (title = '') => {
+    return title
+        .replace(/<[^>]*>/g, '')
+        .replace(/[`*_~]/g, '')
+        .trim();
+};
+
+// 解析 GitHub 风格 [!NOTE] 提示块前缀，并返回清洗后的内容结构。
+const parseCalloutChildren = (children) => {
+    const childArray = Children.toArray(children);
+    if (childArray.length === 0) {
+        return null;
+    }
+
+    const firstChild = childArray[0];
+    if (!isValidElement(firstChild) || !firstChild.props || !firstChild.props.children) {
+        return null;
+    }
+
+    const firstParagraphChildren = Children.toArray(firstChild.props.children);
+    if (firstParagraphChildren.length === 0 || typeof firstParagraphChildren[0] !== 'string') {
+        return null;
+    }
+
+    const match = firstParagraphChildren[0].match(CALLOUT_PREFIX_PATTERN);
+    if (!match) {
+        return null;
+    }
+
+    const type = match[1].toLowerCase();
+    const cleanedParagraphChildren = [...firstParagraphChildren];
+    cleanedParagraphChildren[0] = firstParagraphChildren[0].replace(CALLOUT_PREFIX_PATTERN, '').trimStart();
+    const cleanedBlockChildren = [...childArray];
+    cleanedBlockChildren[0] = cloneElement(firstChild, {}, cleanedParagraphChildren);
+
+    return {
+        type,
+        children: cleanedBlockChildren,
+    };
+};
 
 export const BlogMarkdown = memo(({post, isMobile = false, isImmersive = false, hideMobileFontController = false}) => {
     const panelWidth = 'clamp(360px, 34vw, 500px)';
@@ -55,6 +145,9 @@ export const BlogMarkdown = memo(({post, isMobile = false, isImmersive = false, 
     const mobileCodeFontSize = useMemo(() => {
         return Number((mobileFontSize * 0.8).toFixed(2));
     }, [mobileFontSize]);
+    const markdownContent = useMemo(() => {
+        return normalizeMarkdownForRender(post?.markdown || '');
+    }, [post?.markdown]);
 
     const copyCode = useCallback((code) => {
         cursorTipsStore.addTips({
@@ -82,19 +175,23 @@ export const BlogMarkdown = memo(({post, isMobile = false, isImmersive = false, 
         });
     }, []);
     useEffect(() => {
-        if (post.markdown && post.markdown !== "") {
-            // 只匹配二级标题
-            let h2Titles = post.markdown.match(/\n## ([\s\S]*?)\n/g);
-            if (!h2Titles) {
-                h2Titles = [];
+        if (markdownContent) {
+            const h2Titles = [];
+            const matcher = /^##\s+(.+)$/gm;
+            let item = matcher.exec(markdownContent);
+
+            while (item) {
+                const normalized = normalizeHeadingTitle(item[1]);
+                if (normalized) {
+                    h2Titles.push(normalized);
+                }
+                item = matcher.exec(markdownContent);
             }
-            curPostStore.setHead(h2Titles.map((str) => {
-                return str.toString()
-                    .replace(/\n## /g, '')
-                    .replace(/\n/g, '');
-            }));
+            curPostStore.setHead(h2Titles);
+            return;
         }
-    }, [post.markdown]);
+        curPostStore.setHead([]);
+    }, [markdownContent]);
 
     return <PlainLeftScrollBars
         style={isMobile ? {
@@ -171,12 +268,12 @@ export const BlogMarkdown = memo(({post, isMobile = false, isImmersive = false, 
                 </div>
             )}
             <ReactMarkdown
-                children={post.markdown}
-                remarkPlugins={[remarkGfm]}
-                rehypePlugins={[rehypeRaw]}
+                remarkPlugins={[remarkGfm, remarkMath]}
+                rehypePlugins={[rehypeRaw, rehypeKatex]}
+                disallowedElements={['script']}
                 components={{
-                    code({node, inline, className, children, ...props}) {
-                        const match = /language-(\w+)/.exec(className || '');
+                    code({inline, className, children, ...props}) {
+                        const match = /language-([\w-]+)/.exec(className || '');
                         const codeStr = String(children).replace(/\n$/, '');
                         if (!inline) {
                             const lang = match ? match[1] : 'text';
@@ -197,6 +294,7 @@ export const BlogMarkdown = memo(({post, isMobile = false, isImmersive = false, 
                                     language={lang}
                                     showLineNumbers
                                     showInlineLineNumbers
+                                    wrapLongLines
                                     {...props}
                                 />
                             </div>;
@@ -207,40 +305,77 @@ export const BlogMarkdown = memo(({post, isMobile = false, isImmersive = false, 
                             </code>
                         );
                     },
-                    a({node, inline, className, children, ...props}) {
+                    a({children, href}) {
+                        const finalHref = typeof href === 'string' ? href.trim() : '';
+                        const tipsText = finalHref || extractTextFromChildren(children);
+                        const isHashLink = finalHref.startsWith('#');
+                        if (!finalHref) {
+                            return <span>{children}</span>;
+                        }
+                        if (isHashLink) {
+                            return <a
+                                href={finalHref}
+                                onMouseEnter={() => addATips(tipsText)}
+                                onMouseLeave={cursorTipsStore.popTips}>
+                                {children}
+                            </a>;
+                        }
                         return <a
-                            href={children + ""} target="_blank"
-                            onMouseEnter={() => addATips(children)}
+                            href={finalHref}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onMouseEnter={() => addATips(tipsText)}
                             onMouseLeave={cursorTipsStore.popTips}>
                             {children}
                         </a>
                     },
-                    del({node, inline, className, children, ...props}) {
+                    del({children}) {
                         return <del
                             onMouseEnter={addDelTips}
                             onMouseLeave={cursorTipsStore.popTips}>
                             {children}
                         </del>
                     },
-                    h2({node, inline, className, children, ...props}) {
-                        return <h2 id={children} data-name={children}>{children}</h2>
+                    h2({children}) {
+                        const headingTitle = normalizeHeadingTitle(extractTextFromChildren(children));
+                        return <h2 id={headingTitle} data-name={headingTitle}>{children}</h2>
                     },
-                    img({node, src, alt, ...props}) {
+                    img({src, alt, ...props}) {
+                        const resolvedSrc = typeof src === 'string' ? src.trim() : '';
+                        if (!resolvedSrc) {
+                            return null;
+                        }
                         return <img
-                            src={src}
+                            src={resolvedSrc}
                             alt={alt || ''}
+                            loading="lazy"
+                            decoding="async"
                             {...props}
                             onClick={(e) => {
-                                if (!src) {
+                                if (!isMobile) {
                                     return;
                                 }
                                 e.preventDefault();
                                 e.stopPropagation();
-                                setMobilePreviewImage(src);
+                                setMobilePreviewImage(resolvedSrc);
                             }}
                         />
                     },
-                }}/>
+                    blockquote({children, ...props}) {
+                        const calloutInfo = parseCalloutChildren(children);
+                        if (!calloutInfo) {
+                            return <blockquote {...props}>{children}</blockquote>;
+                        }
+                        const calloutType = calloutInfo.type;
+                        const calloutClassName = CALLOUT_CLASS_MAP[calloutType] || markdownStyle.markdownCalloutNote;
+                        return <blockquote className={`${markdownStyle.markdownCallout} ${calloutClassName}`} {...props}>
+                            <div className={markdownStyle.markdownCalloutTitle}>{calloutType.toUpperCase()}</div>
+                            <div className={markdownStyle.markdownCalloutBody}>{calloutInfo.children}</div>
+                        </blockquote>;
+                    },
+                }}>
+                {markdownContent}
+            </ReactMarkdown>
         </div>
     </PlainLeftScrollBars>
 });

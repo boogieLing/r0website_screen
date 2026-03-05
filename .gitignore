@@ -26,3 +26,6 @@ yarn-error.log*
 r0proj-read/
 docs
 r0proj-submit/
+
+r0-submit/
+.tsugie-promo-state.json
